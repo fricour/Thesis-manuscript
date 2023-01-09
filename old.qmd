@@ -1,0 +1,106 @@
+I hope that this manuscript will bring you some new insight on our global ocean and th
+
+European governments are no better and the far right is unfortunately getting stronger.
+
+I could not care less about putting some mellow sentences said by some famous people in this work
+
+With this work, I hope to bring something really useful for us be
+
+According to the @United_Nations_Environment_Programme2019-li, we would need to globally reduce carbon emissions by 7.6% in the coming decade to keep global warming below 1.5°C above pre-industrial levels. Funnily enough, we had to wait for a global pandemic to observe the first decrease in carbon dioxide (CO<sub>2</sub>) emissions in decades without achieving more than a 6.4% decrease [@Tollefson2021-bd].
+
+So far, we have been lucky.
+
+We have been lucky that the global ocean acts as a net sink for anthropogenic CO<sub>2</sub>, currently absorbing \~25% of industrial CO<sub>2</sub> emissions each year [@Friedlingstein2021-kc].\
+\
+How the global ocean is going to respond to climate change and how long his mitigating effect on warming temperatures is going to last are key questions for our generation.
+
+The goal of this work is to contribute to the fundamental knowledge on the marine carbon cycle and also to build new tools to study it. It thus takes fully part in the United Nations Decade of Ocean Science for Sustainable Development that finally shed a light on the global ocean, which represents only 70% of the Earth's surface in the end.
+
+\-\-\-\--
+
+Among those instruments, the Optical Sediment trap (OST) initially developed by @bishop2004 and further improved by [@Estapa2013-gw; @Estapa2017-jr] can be used to quantify the downward flux of particles, both the continuous flux from small particles and the stochastic flux of larger particles [@Claustre2021-tx]. However, the OST can intercept particles from the BGP but also particles carried by the other pumps. In order to better characterize each pump, there is a need to deconvolute the downward carbon flux into its pump component using additional and independent measurements [@Claustre2021-tx].
+
+BBP (that can characterize sinking particles [@Briggs2020-gz]
+
+the nature of particle (large vs small, labile vs refractoryà is of paramount importance to asess the fate of POC transferred to depth by the BCPs (bbp can say of it is refractory, labile, fast-sinking), UVP for the size
+
+floats : BGP : OST + UVP; Diel Migration Pump : UVP + high-frequency sonar (acoustic)
+
+Yamamoto et al.(2018) suggested
+
+that circulation change and lower nutrient supply to the surface ocean will reduce the efficiency of the BCP and be the main driver for reduced future oceanic CO
+
+2 uptake
+
+Therefore, only the excess density $\Delta\rho$ (ie. $\rho -\rho_{0}$), the particle diameter and the porosity control the settling speed if one assumes that changes in dynamic viscosity are negligeable compared to changes from the two other parameters. This assumption is reasonable based on the fact that $\nu$ can roughly vary by a factor 2 [@Sharqawy2010-ig] while $\Delta_{\rho}$ can vary by more than a factor 2 and $d$ is quadratic.
+
+Such ecosystems store carbon in their living biomass and non-living biomass (e.g. litter) where the latter will be stored in sediment for millenia [@Mcleod2011-iu]. I
+
+Food web relationships and their impacts on carbon pumps are illustrated for the EZ in panel (a). Deep food web relationships and their impacts on the remineralization of DIC are depicted in panel (b). Sequestration times for DIC are set depending on the depth at which POC and DOC are exported. Figure taken from \@Siegel2022-wd. Note: This illustration does not take into account the MCP nor the fact that DOC and POC can directly be injected in the mesopelagic zone (see Table 2 in \@Claustre2021-tx). CONSIDER CHANGING IT TO THE ONE FROM IVERSEN 2022 REVIEW
+
+For instance, the production of transparent exopolymers particles (TEP) formed by the exudation from phytoplankton and bacteria [@Turner2015-af] is thought to enhance the sinking velocities by causing the aggregation of slow sinking particles into larger, faster-sinking aggregates as well as reducing their porosity, therefore the drag [@De_La_Rocha2007-yi]. In other cases such as mineral ballasting, the main driver is still debated [@De_La_Rocha2007-yi]. Mineral ballasting consists in the inclusion of biominerals such as opal (i.e. silicate) and calcite or lithogenic material such as dust that are thought to increase $\Delta\rho$ on the one hand and protect them from microbial degradation on the other hand [@Armstrong2001-rz; @Francois2002-uc; @Klaas2002-kn]. Nevertheless, there is not a consensus on that matter because [@Ploug2008-vx; @Ploug2008-qk] did not find significant differences in microbial degradation of non ballasted vs. ballasted material while @Passow2004-re stipulates that biominerals could instead be collected (i.e. scavenged) and transported downwards by sinking aggregates and that their integration could fragment aggregates into smaller but denser particles [@Passow2006-hw] which could either decrease (smaller size) or increase (denser particles) their sinking speed.
+
+```{=html}
+<!--#https://github.com/quarto-dev/quarto-cli/discussions/1042-->
+<style type="text/css">
+caption, .table-caption {
+  text-align: left;
+}
+</style>
+```
+---
+tbl-cap-location: bottom
+---
+
+| Pump                   | \% of export | Sequestration potential (% of BGP) |
+|------------------------|--------------|------------------------------------|
+| Gravitational          | 50 (70)      |                                    |
+| Mixed layer            | 1-6 ()       |                                    |
+| Eddy subduction        | 1-22 (N/A)   |                                    |
+| Large-scale subduction | 1 ()         |                                    |
+| Diel migration         | 10-40 ()     |                                    |
+| Seasonal migration     | 3-11 (N/A)   |                                    |
+
+: Percentage of export flux and sequestration potential for the BGP and the PIPs. Percentage of export flux are based on models from @Boyd2019-ez and @Nowicki2022-no in brackets, with, respectively, an estimated export flux of \~9 and \~10 Pg C year$^{-1}$. Potentials for carbon sequestration potential are based on the model of @Boyd2019-ez and is quantified based on the product of their carbon-injection rate and the time until remineralized DIC is returned to the surface. {#tbl-PumpSeqPotential}
+
+), knowledge gained be used to reduce uncertainties in contemporary and future estimates of the export and fates of global ocean NPP. The development of a predictive understanding of the export and fate of global ocean primary production remains among the hardest problems in all of the Earth Sciences, as it requires a synthesis of ocean ecological, biogeochemical, physical, and optical oceanographic processes over an extensive range of time and space scales. . Conducting a field program like EXPORT will accelerate our knowledge of the role of the oceanic food web in the global carbon cycle and provide new models for understanding contemporary and future states of the ocean's carbon cycle and its influences on climate. These results will have tangible societal relevance, leading to advancements in our understanding of our changing planet and reductions in our uncertainties for monitoring its present conditions and for predicting its future state, it will improve our understanding of global ocean carbon dynamics and reduce uncertainties in our ability to monitor and predict carbon export and its sequestration within the ocean's interior.
+
+Question 1 : UVP with Paper of boyd : For all PIPs, the most pressing research issue---needed to address double-accounting issues and improve estimates of carbon sequestra- tion---is to better understand the mechanisms of particle transforma- tions17,65--68
+
+(Fig. 1) within a 4D framework. Specifically, the fate of exported particles between their injection depth and the permanent pycnocline remains poorly constrained. A first step will be improved particle characterization, in particular the ability to distinguish zoo- plankton from other particle types, and to construct aggregate particle size distribution (PSD) profiles through the development and appli- cation of new sensors (Supplementary Table 2). Future developments in acoustic and imaging technologies80
+
+must be deployed on a range of platforms from ships (that is, to provide data for sensor calibra- tion purposes) to an array of long-lived (that is, years), geographically diverse BGC-Argo floats. These developments towards the improve- ment of particle characterization will reduce the likelihood of dou- ble-accounting.
+
+Question 2 : Tjrs boyd (et cadre de REFINE): The way forward in refining estimates of the contribution of PIPs in closing the ocean carbon budget15--17 with the paper of Legendre -\> note que ce n'est peut-être pas forcément ça, mais plus de la séquestration, et pas de l'export; claustre 2021 : This paper proposes an integrated community
+
+observational framework to investigate the BCPs in the World Ocean to better quantify global estimates of carbon storage in the oceans and the underlying drivers of each BCP.
+
+problème du double accounting (boyd) d'où la nécessité de nouveaux instruments (comme l'UVP?)
+
+Understanding the BCP is important for the evaluation of the efficiency of CO2 CDR strategies and to quantify the ocean's biological pump (and reevaluate its potential for sequestration and carbon removal) [@Siegel2022-wd]
+
+OST and upward-looking cameras have been deployed that enable the quantification of carbon export by sinking particles as well as the composition of the sinking flux (durking 2021, 2022, estap 2017) [@Siegel2022-wd]
+
+For how long the exported carbon will remain removed from the atmosphere remains a central question @Passow2012-zh as well as changes in magnitude and sequestration fluxes to constrain the long-term carbon storage and efficiency of the biological pump. (tjrs Passow 2012à
+
+From steinberg 2017 (2& 3) : 2. Zooplankton roles and food-web controls on remineralization and organic matter degra- dationinthemesopelagiczone,whicharefundamentaltodefiningcarbonfluxattenuation and export variability, need to be better measured and understood.
+
+3\. Significant challenges remain in measuring key carbon flows through zooplankton, such as a standard approach for assessing secondary production, or zooplankton-mediated carbon export not measured by traditional sediment traps (e.g., jelly falls and active transport via vertical migration).
+
+improving the resolution of zooplankton migration dynamics as well as
+
+higher-level trophic interactions in the marine food web. Improvements in observational datasets would help to better constrain uncertain aspects of the model. In particular, observations of phytoplankton and zooplankton biomass, as well as direct measurements of carbon flux due to the different biological pump pathways in a range of environments, would provide improved constraints to this model and enhance the accuracy of our estimates. --\> faire ça est équivalent à dire que si on peut avoir des meilleures mesures, on peut mieux contraindre les modèles (logique..) et du coup améliorer notre compréhension de la BCP.
+
+3 research questions in https://www.nature.com/articles/d41586-020-00915-7
+
+aller chercher de l'inspi sur des questions de recherche ici ? https://www.frontiersin.org/articles/10.3389/fmars.2016.00022/full (siegel 2016)
+
+For instance, the importance of the types, transport pathways, particles associated communities, and fates of sinking particles have become apparent thanks to technological breakthroughs, and thus need further research. \[Le Moigne 2019\]
+
+method to clean the signal from non-related flux events (e.g. spikes from transient particles not landing on the transmissometer window) and divide the cleaned attenuation signal into a continuous component, that is the continuous accumulation of small particles on the transmissometer window and a discontinuous signal attributed to
+
+\-\--
+
+The first BGC-Argo floats equipped with transmissometers and UVP6 with automatic classification of particles were deployed in the Labrador Sea in late May 2022. This is the beginning of the deployment phase of the REFINE project (<a>https://erc-refine.eu</a>) which intend to deploy floats in nine oceanic regions representative of the diversity of environmental conditions.
+
+\-\--
