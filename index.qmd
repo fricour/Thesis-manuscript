@@ -1,0 +1,23 @@
+# Foreword {.unnumbered}
+
+```{=html}
+<!--  As of 2022, it has now become obvious to the general public that the Earth's climate is changing. Massive flood events, repeated heatwaves, never-ending droughts, disappearing glaciers, biodiversity collapse, … Reports on weather anomalies were already published in the 1960's, the Intergovernmental Panel on Climate Change (IPCC) was created in 1988, the Kyoto Protocol was adopted in 1997, An Inconvenient Truth was released in 2006, the Paris Agreement was signed in 2015 and still, what has really changed? 
+
+As I am writing this part, the COP27 (sponsored by Coca-Cola, no joke) is taking place with an acknowledged record number of fossil fuels lobbyists, bloody stadiums with outside air conditioning are about to be used in the desert for a month and it seems like 'leaders' of the Free World have been having hearing issues. See for yourself:
+
+*"I am drowning"* said Pakistan
+
+*"I'm sorry, what?"* said the Free World
+
+*"I am starving"* said Ethiopia
+
+*"Can't hear you, louder please!"* said the Free World
+
+*"We are suffocating"* said India
+
+*"Of course, I would love building new pipelines in your garden"* said the Free World
+
+While I am not an activist (yet?) or a politician (I am too honest to be elected), rest assured, there are no fake news in this work.
+
+I hope you will enjoy it and no, I won't tweet about it. -->
+```

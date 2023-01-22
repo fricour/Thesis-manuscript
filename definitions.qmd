@@ -1,0 +1,27 @@
+# Definitions {.unnumbered}
+
+Sequestration: Process of isolating and storing respired CO<sub>2</sub> within the ocean interior and away from atmospheric exchanges
+
+Export flux:
+
+respiration
+
+photosynthesis
+
+BCP strength
+
+BCP efficiency
+
+Net Primary Production: Net conversion rate of inorganic carbon to organic carbon by phytoplankton photosynthesis [@Siegel2022-wd]
+
+Euphotic Zone: Depth range in the near-surface ocean with enough sunlight for phytoplankton net primary production to occur [@Siegel2022-wd]
+
+Twiligth Zone = Mesopélagic zone
+
+Mixed Layer
+
+Remineralization: Conversion of organic matter back to inorganic forms by heterotrophic microbes and animals [@Siegel2022-wd]
+
+Particle size distribution (or particle size spectrum)
+
+Carbon dioxide removal

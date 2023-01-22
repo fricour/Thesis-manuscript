@@ -1,0 +1,438 @@
+# Observing the carbon cycle {#sec-observing-carbon-cycle}
+
+## How it started {#sec-how-it-started}
+
+In the 20th century, the downward POC flux was traditionally measured with sediment traps. Those instruments are composed of one or several collectors of sinking material whose design depends on its use and position in the water column (e.g. moored traps, surface tethered traps, drifting traps) [@Honjo2008-kn]. They were extensively used [@Honjo2008-kn] though their use has been steadily decreasing since 2004, reaching less than 500 measurements per year since 2010 (@fig-sediment-trap-thorium-yearly-distribution).
+
+```{r, poc measurements per year, dpi = 300}
+#| label: fig-sediment-trap-thorium-yearly-distribution
+#| fig-cap: Yearly distibution of POC flux measurements by sediment traps or derived from Thorium 234 deficits. Compilation based on @tbl-poc-from-sediment-traps and @tbl-poc-from-thorium.
+
+library(ggplot2)
+library(viridis)
+trap <- vroom::vroom('DATA/Trap_Thorium/TRAP_DATABASE.csv')
+thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
+trap$year <- lubridate::year(trap$start_date)
+thorium$year <- lubridate::year(thorium$start_date)
+sub_trap <- trap |> dplyr::select(year, instrument_type)
+sub_trap$instrument_type <- 'Sediment trap'
+sub_thorium <- thorium |> dplyr::select(year, instrument_type)
+sub_thorium$instrument_type <- 'Thorium 234'
+combined <- rbind(sub_trap, sub_thorium)
+plot <- ggplot(combined, aes(x = year, fill = instrument_type)) + geom_bar() + scale_fill_manual(values = c('#003366', '#DCEEF3')) + # #57cc99 #80ed99
+    #geom_vline(aes(xintercept = median(year)), color = "#d53e4f", linetype = "dashed") +
+    labs(x = "Year", y = "N records") + 
+    theme_bw() + 
+    #theme(legend.position = c(0.12, 0.85), legend.background = element_rect(fill = "white", color = "white")) + 
+    theme(legend.position = 'top') +
+    theme(legend.title=element_blank())
+
+# plot <- ggplot(combined, aes(x = year, fill = instrument_type)) + geom_bar() + scale_fill_manual(values = c('#E85D04', '#FFBA08')) + # #57cc99 #80ed99
+#     #geom_vline(aes(xintercept = median(year)), color = "#d53e4f", linetype = "dashed") +
+#     labs(x = "Year", y = "N records") + theme_bw() + guides(fill=guide_legend(title="Method"))
+
+plot
+```
+
+```{=html}
+<!-- 
+![Examples of sediment traps. From left to right: (a) Neutrally buoyant, (b) Surface tethered and (c) Funnel-shaped drifting trap. Figure taken from @Baker-XX.](image/ObservingCarbonCycle/sed_traps_high_res.jpg){#fig-sed-traps}
+-->
+```
+```{=html}
+<!-- #https://github.com/quarto-dev/quarto-cli/discussions/1042 -->
+<style type="text/css">
+caption, .table-caption {
+  text-align: left;
+}
+</style>
+```
+```{r, poc database from traps}
+#| label: tbl-poc-from-sediment-traps
+#| tbl-cap: Compilation of POC flux measurements from sediment traps. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne and Meike Vogt). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
+#| tbl-cap-location: bottom
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(purrr)
+
+# read data
+trap <- vroom::vroom('DATA/Trap_Thorium/TRAP_DATABASE.csv')
+#thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
+
+# clean a bit
+trap[trap$doi == 'https://doi.org/10.1007/s00227-018-3376-1',]$doi <- '10.1007/s00227-018-3376-1'
+trap[trap$doi == 'https://doi.org/10.1016/j.dsr.2016.08.015',]$doi <- '10.1016/j.dsr.2016.08.015'
+trap[trap$doi == 'Geochimica et Cosmochimica Acta, Vol. 66, No. 3, pp. 457–465, 2002',]$doi <- '10.1016/S0016-7037(01)00787-6'
+
+# some stats
+trap_resume <- trap |> group_by(doi) |> dplyr::summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
+  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
+
+# BASED ON : https://stackoverflow.com/questions/48506712/kable-kableextra-cells-with-hyperlinks
+# make url links
+make_link <- function(doi){
+  link <- paste0('https://doi.org/',doi)
+  return(link)
+}
+url <- map_chr(trap_resume$doi, make_link)
+
+# # put url in dataframe
+# trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, 'html', link = url)) |> select(doi_url, data_points) |>
+#   kable('html', escape = FALSE, col.names = c('Sources of data', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
+
+trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
+  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') 
+
+# make final table
+trap_resume
+```
+
+```{r, poc database from thorium}
+#| label: tbl-poc-from-thorium
+#| tbl-cap: Compilation of POC flux measurements derived from Thorium 234. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
+#| tbl-cap-location: bottom
+
+# read data
+thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
+
+# some stats
+thorium_resume <- thorium |> group_by(doi) |> summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
+  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
+thorium_resume$doi <- c('10.1594/PANGAEA.809717', '10.1029/2018GB00615', '10.1525/elementa.2020.030')
+
+# make url links
+url <- c('https://doi.org/10.1594/PANGAEA.809717', 'https://doi.org/10.1029/2018GB006158', 'https://doi.org/10.1525/elementa.2020.030')
+
+# put url in dataframe
+thorium_resume <- thorium_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
+  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
+
+# make final table
+thorium_resume
+```
+
+To estimate the downward POC flux, one therefore needs to quantify the amount of POC collected through a given area over a known time period at a given depth. However, the apparent sinking flux measured with sediment traps can be biased due to hydrodynamic issues that could result in over- or under-collection of particles (especially at the surface), swimmers (zooplankton, small fish) that could enter sediment traps and affect the collected material and solubilization of collected material (e.g. by bacteria) [@Buesseler2007-ql].
+
+Given the potential inaccuracy of flux measurements by sediment traps, independent approaches using radionuclide disequilibria have been used to assess the collection efficiency of the latter [@Buesseler1991-vo]. This method is based on the fact that $^{238}U$ is a conservative element in seawater (chemically inert with a half-life of 4.5 billion years) while its daughter nuclide $^{234}Th$ (half-life of 24.1 days) can be adsorbed onto particle surfaces and therefore be scavenged by sinking particles [@Savoye2006-gb]. Consequently, the deficiency of $^{234}Th$ relative to $^{238}U$ is used as a measure of removal of surface $^{234}Th$ through particle scavenging [@Buesseler1991-vo] that is then derived as a flux of exported $^{234}Th$ and subsequently a flux of exported POC by using a known (e.g. estimated from the material collected in sediment traps) POC/$^{234}Th$ ratio [@Buesseler2007-ql].
+
+While this method seems to cope with some of the issues observed in sediment traps, it also has its caveats, particularly a POC/$^{234}Th$ ratio that varies with particle size and the fact that it only works well in the upper 100-200 m [@Buesseler2007-ql].
+
+In all, POC fluxes derived from sediment traps and $^{234}Th$ have their own uncertainties and errors thus their estimations of downward POC fluxes should not be seen as ground truth. In addition, they are labor-intensive and require ship support. Their relative contribution to the estimation of POC fluxes is thus expected to keep decreasing (@fig-sediment-trap-thorium-yearly-distribution) with the advent of AUVs (see @sec-how-it-has-evolved).
+
+## How it has evolved {#sec-how-it-has-evolved}
+
+It is well known that ship-based measurements are the most precise. However, they lack spatiotemporal coverage and they are usually not cost-effective. Consequently, oceanographers have turned to new platforms and have developed new sensors to study the marine carbon cycle and the BCP in particular.
+
+Instrumented moorings have supplemented ship-based measurements by collecting high-resolution data at fixed locations [@Chai2020-uq]. Moorings can be equipped with many sensors (e.g. sediment traps (@sec-how-it-started) or imaging systems to study the type of sinking particles (@sec-BGC-sensors)) to study carbon-related variables (see Table 1 in @Claustre2021-tx). They are therefore ideal platforms for long-term time series (e.g. Bermuda Atlantic Time-series Study (BATS) since 1988) with the disadvantage of limited spatial coverage and high maintenance costs [@Chai2020-uq].
+
+In contrast, satellite remote sensing have a wide spatial coverage but they are limited to the ocean's surface and their measures can be affected by several factors such as the cloud cover or low solar elevation (e.g. @Marshall1994-vk). They have been used for ocean applications since the late 1970s [@Gordon1980-dm] and have been widely used to study key EZ variables related to carbon export [@Claustre2021-tx] such as phytoplankton biomass [@Robinson2004-cj], phytoplankton communities [@Uitz2015-hd] and particle size distribution [@Kostadinov2009-gf; @Kostadinov2010-bu] to name a few.
+
+In order to fill the scarcity of data from research vessels and moorings as well as coping with surface-constrained satellite measurements, AUVs have been developed to take *in situ* measurements in all weathers and at all times, only being dependent on their battery life and ocean currents (for drifting AUVs).
+
+Biogeochemical Argo (BGC-Argo) profiling floats (@fig-bgc-float) are probably the most well known AUVs. They are cost-effective, able to monitor biogeochemical processes at a global scale throughout the year and under all weather conditions [@Chai2020-uq]. The goal of the BGC-Argo community is to develop an array of 1000 floats that measure 6 key biogeochemical and bio-optical variables: Chlorophyll a (Chla), particle backscatter ($b_{bp}$), oxygen, nitrate, pH and downwelling irradiance in addition to temperature and salinity [@Roemmich2019-pn]. Besides this objective, the BGC-Argo community is testing new sensors (see @sec-BGC-sensors) to explore specific topics related to the BCP [@Claustre2020-jo].
+
+Gliders are also effective AUVs to unveil the mysteries of the BCP [e.g. @Omand2015-mf]. In comparison with BGC-Argo floats (@fig-BGC-Argo-cycle), gliders mostly operate in shallow waters [@Chai2020-uq] and are able to take measurements along a predefined transect due to their ability to change their internal weight distribution [@Johnson2009-kb].
+
+![Illustration of a typical BGC-Argo 10-day cycle. From the beginning of the cycle (1), the profiling float descends to its parking depth (2) then drifts for \~ 9 days (3) to dive at 2000 m (4) before the ascent where data are acquired (5) and transmitted to satellite while at the surface (6). Note that the profiling float can be programmed (and reprogrammed during its mission via Iridium transmission) with different configurations, depending on its utilization. For the study of the BCP, some floats could be configured to drift at multiple parking depths to study the BGP or to shorter cycle duration to study the VMP. Image taken from @Claustre2020-jo.](image/ObservingCarbonCycle/argo_float_profiling.jpeg){#fig-BGC-Argo-cycle}
+
+The study of the BCP is a really hot topic in oceanography with new platforms (e.g. unmanned surface vehicles such as saildrones or wave gliders) and new technologies (e.g. lidar) being continuously developed in the hope of understanding all its components [@Chai2020-uq; @Claustre2021-tx].
+
+## Specific sensors for the study of the BCP {#sec-BGC-sensors}
+
+In the frame of the REFINE (Robots Explore plankton-driven Fluxes in the marine twIlight zoNE) project, enhanced BGC-Argo floats (@fig-bgc-float) will have two new sensors specifically designed for the study of the BCP: a transmissometer and the Underwater Vision Profiler 6 (UVP6) [@Picheral2021-sx].
+
+![Illustration of a BGC-Argo float used in the frame of REFINE. From top to bottom: GPS & Iridium (two-way communication) antenna, Oxygen optode, CTD (salinity, temperature and depth), pH sensor, radiometer (downwelling photosynthetic available radiation and downwelling irradiance at 380, 412 and 490 nm), fluorometer (Chla and colored dissolved organic matter) and scattering meter ($b_{bp}$), UVP6 (particle size spectra and images), transmissometer (particle beam attenuation) and nitrate sensor. \@Thomas Boniface.](image/ObservingCarbonCycle/float_picture1.png){#fig-bgc-float width="500"}
+
+A transmissometer measures the transmittance ($T_{r}$) of a light beam at a given wavelength. Given $T_{r}$, the beam attenuation coefficient ($c$) is computed as
+
+$$
+c = \frac{ln(T_{r})}{r}
+$$ {#eq-bean-attenuation}
+
+where $r$ is the transmissometer pathlength.
+
+The value of $c$ is the result of absorption and scattering by particles, water and dissolved substances [@Zaneveld1994-ez]. The transmissometer carried by REFINE BGC-Argo floats uses a light beam at 660 nm whose attenuation coefficient can be splitted into three components: the absorption and scattering of light by particles ($c_{p}$), the absorption by water ($c_{w}$) and the absorption by dissolved organic matter ($c_{DOM}$) [@Jerlov1976-hr]. At 660 nm, $c_{w}$ is assumed constant at 0.364 m$^{-1}$ and $c_{DOM}$ is considered negligible [@Jerlov1976-hr] hence variations of $c$ will be assumed to be variations of $c_{p}$ in what follows.
+
+The use of transmissometers to characterize POC concentrations was shown by @Bishop1999-es who found that POC concentrations were well correlated with $c_{p}$, independently of ocean environment, season or depth. Following that, the idea of using a transmissometer as an Optical Sediment Trap (OST) was firstly applied by @Bishop2004-at where the magnitude of carbon export was quantified based on the particles accumulation on the upward-facing window of vertically oriented transmissometers on autonomous platforms while they were drifting (i.e. parked at a specific depth). This method was later improved by [@Estapa2013-gw] who divided the attenuation signal into a continuous component, that is the continuous accumulation of small particles on the transmissometer window and a discontinuous component resulting in positive jumps likely attributed to the deposition of (rarer) large particles (@fig-estapa-method). @Estapa2017-jr further calibrated the OST carbon flux proxy using codeployed sediment traps and drifting transmissometers thus allowing the conversion of $c_{p}$ attenuation fluxes (units: m$^{-1}$d$^{-1}$) into carbon fluxes (units: mg C m$^{-2}$d$^{-1}$) using empirical POC-to-attenuance (ATN) ratio were ATN (unitless) is the product of $c_{p}$ and the transmissometer pathlength.
+
+```{r, OST on BGC-Argo example with jump}
+#| label: fig-estapa-method
+#| fig-cap: Application of the method of @Estapa2017-jr on a drifting transmissometer to divide the $c_{p}$ signal into a continuous (dark blue) component, cleaned from spikes and negative jumps (assumed as not related to carbon flux) and a discontinuous (positive jumps, light blue) component. Data from BGC-ARGO float WMO 4903634, drifting at 1000 m during its 9$^{th}$ cycle.
+library(tidyverse)
+library(ggplot2)
+library(vroom)
+#library(castr)
+library(plyr)
+library(scales)
+library(lubridate)
+library(latex2exp)
+
+# From Louis Terrats
+clean_cp_data <- function(file, moving_median_order, threshold) {
+  
+  # Store raw data 
+  raw_file <- file
+  
+  #print(head(file))
+  
+  # Remove cp > 2 m-1 
+  if (any(file$cp > 2)) {
+    file <- file[-which(file$cp > 2),]
+  }
+  
+  # Store relevant variables in vectors (for speeding up the process)
+  cp <- file$cp
+  diff_cp <- diff(cp)
+  dates <- file$dates
+  
+  # Spike removal
+  # Spike is identified as a significant increase (threshold = 0.01 m-1 h-1) followed by a return to normal values within the next 3 hours.
+  tmp <- {diff(cp) / as.numeric(diff(dates), units = "hours")} %>% abs()
+  spikes <- which(tmp > threshold)+1 # why +1?
+  if (length(spikes) > 0) {
+    # For each spike
+    for (j in 1 : length(spikes)) {
+      
+      # Get the value measured 3 hours after the spike (= post_spike)
+      spike <- spikes[j]
+      time_diff <- difftime(dates, dates[spike], unit = "hours") 
+      post_spike <- which(time_diff >= 3)[1] 
+      
+      # If the difference between the spike and the post_spike cp is superior to the threshold : values get back to normal ones
+      if (is.na(cp[spike])) {next 
+      } else {
+        if ({!is.na(post_spike)} && {(cp[spike]-cp[post_spike]) > threshold}) { 
+          back_to_normal <- which({(cp - cp[post_spike]) < threshold} & {dates > dates[spike]})[1] # Locate the date of back to normal values 
+          cp[(spike):(back_to_normal-1)] <- NA # And remove the spike zone
+        } else { 
+          if (is.na(post_spike)) { # If post spike is Na, that means spike is near the end of the segment
+            cp[spike:length(cp)] <- NA # Remove the end zone (which contains a spike)
+          }
+        }
+      }
+    }
+  }
+  
+  # Store the sum of spikes 
+  spikes <- spikes[which(spikes %in% which(is.na(cp)))]
+  spikes <- diff_cp[spikes-1] %>% abs() %>% sum(na.rm = TRUE)  
+  
+  # Remove rows with NA (= remove spike zones)
+  if (any(is.na(cp))) {
+    file <- file[-which(is.na(cp)),]
+  }
+  
+  # Moving median
+  if (nrow(file) > 0) {
+    file$cp <- pastecs::decmedian(file$cp, order = moving_median_order, ends = "fill") %>% pastecs::extract(component = "filtered")
+  } else {return(list("data" = file, "plot" = NA, "spikes" = spikes))}
+  
+  # Plot showing results and previous data
+  plot <- ggplot() + 
+    geom_point(data = raw_file, aes(x=dates, y=cp, color = "black"), alpha = 0.5, size = 4) + 
+    geom_point(data = file, aes(x=dates, y=cp, color = "blue"), size = 4) +
+    scale_x_datetime(labels = date_format("%d-%m@%Hh")) + 
+    labs(y = expression(c[p]~"["*m^-1*"]"), x = "Datetime") + 
+    scale_colour_manual(name = '', values =c('black'='black','blue'='blue'), labels = c('Raw data','Filtered signal')) +
+    # Theme
+    theme_bw() +
+    theme(text = element_text(size=16), 
+          legend.text=element_text(size=16), 
+          legend.position = 'right',
+          axis.text = element_text(color="black", size = 16),
+          plot.title = element_text(face="bold", hjust = 0.5))
+  
+  return(list("data" = file, "plot" = plot, "spikes" = spikes)) 
+}
+
+# From me
+float_4903634 <- vroom::vroom('/home/flo/dox/THESIS/DATA/ARGO/4903634_OMTAB_VERSION.csv')
+profile <- 'lovuse017c_016_01'
+drift_depth <- '1000 m'
+
+check <- float_4903634 |> select(dates = juld, everything()) |> filter(cycle == profile, park_depth == drift_depth) |> drop_na(cp)
+despiked_data <- clean_cp_data(check, 3, 0.01)
+
+# save cleaned Cp signal from spikes to a temporary variable
+tmp2 <- despiked_data$data
+# init jump values to NA
+tmp2$jump <- NA
+# compute slope between two adjacent points (except first and last point of drifting time series)
+for (i in 2:(nrow(tmp2)-1)){
+  #print(i)
+  delta_x <- as.numeric(difftime(tmp2$dates[i], tmp2$dates[i-1], units = 'days'))
+  delta_y <- tmp2$cp[i]-tmp2$cp[i-1]
+  tmp2$jump[i] <- delta_y/delta_x
+}
+
+# assign a slope threshold depending on the drifting depth (this was estimated based on all 4 floats, could be refined later but works pretty well)
+if(drift_depth == '200 m'){
+  threshold <- 0.4
+}else if(drift_depth == '500 m'){
+  threshold <- 0.22
+}else{
+  threshold <- 0.177
+}
+
+# assign a colour for the plot
+tmp2$colour <- 'cleaned signal'
+tmp2$colour[which(abs(tmp2$jump)>threshold)] <- 'jump' # abs is needed for 'negative jumps'
+
+# add group to compute slope (for each subgroups of points, separated from a jump)
+tmp2$group <- NA
+
+# compute where the jumps are (index value of the array)
+jump_index <- which(tmp2$colour == 'jump')
+
+# assign group 
+for (i in jump_index){
+  for (j in 1:nrow(tmp2)){
+    if ((j < i) & (is.na(tmp2$group[j]))){
+      tmp2$group[j] <- paste0('group_',i)
+    }
+  }
+}
+
+# add last group (because it is AFTER the last index so it was not computed before)
+tmp2$group[which(is.na(tmp2$group))] <- 'last_group'
+
+# compute slope for each subgroups
+slope_df <- tmp2 |> filter(colour == 'cleaned signal', jump != 'NA') |> dplyr::group_by(group) |> dplyr::summarise(min_time = min(dates), max_time = max(dates), 
+                                                                                                                nb_points = n(), first_cp = cp[1], last_cp = cp[nb_points],
+                                                                                                                delta_x = as.numeric(difftime(max_time, min_time, units = 'days')),
+                                                                                                                delta_y = last_cp-first_cp, slope = delta_y/delta_x)
+
+# remove if only one point (cannot fit a slope with one point)
+slope_df <- slope_df |> filter(nb_points > 1)
+
+# compute mean slope
+mean_slope <- mean(slope_df$slope)
+
+# estapa relationship (see POSTER)
+poc_flux <- 633*(mean_slope**0.77)
+
+# build dataframe to plot each subgroup
+part1 <- slope_df |> select(group, time = min_time, cp = first_cp)
+part2 <- slope_df |> select(group, time = max_time, cp = last_cp)
+part_slope <- rbind(part1, part2)
+
+# spot negative jump
+tmp2$colour[which((tmp2$colour == 'jump') & (tmp2$jump < 0))]  <- 'negative jump'
+
+#jump_plot <- ggplot(clean_data, aes(x = dates, y = cp)) + geom_point() + geom_point(data = tmp2, aes(x = dates, y = cp, colour = colour))
+
+# ggplot(despiked_data$data, aes(x = dates, y = cp)) + geom_step(size= 3, fill ='black') + 
+#   geom_point(data = tmp2, aes(x = dates, y = cp, colour = colour), size = 3) + 
+#   scale_colour_manual(values = c('black','yellow', 'blue')) +
+#   theme_bw() +
+#   ylab(TeX('$c_{p}~(m^{-1})$')) +
+#   xlab('Datetime') +
+#   theme(legend.position = c(0.095, 0.875),
+#         legend.background = element_rect(fill = "white", color = "black"))
+
+jump <- filter(tmp2, colour == 'jump')
+
+jump_plot <- ggplot(tmp2, aes(x = dates, y = cp, fill = colour)) + geom_point(size= 3) +
+  geom_point(data = jump, aes(x = dates, y = cp), size = 3, shape = 21) +
+  scale_fill_manual(values = c('#003366','#DCEEF3')) +
+  theme_bw() +
+  ylab(TeX('$c_{p}~(m^{-1})$')) +
+  xlab('Datetime') +
+  theme(legend.position = 'top', legend.title = element_blank()) 
+
+# ggplot(despiked_data$data, aes(x = dates, y = cp)) + geom_point(size= 3, fill ='black') +
+#   geom_point(data = jump, aes(x = dates, y = cp), size = 3, shape = 21, fill = '#DCEEF3') +
+#   scale_colour_manual(values = c('black','yellow', 'blue')) +
+#   theme_bw() +
+#   ylab(TeX('$c_{p}~(m^{-1})$')) +
+#   xlab('Datetime') +
+#   theme(legend.position = 'top')
+# 
+# jump_plot <- ggplot(base_signal, aes(x = dates, y = cp)) + geom_point(size = 3, shape = 21, fill = '#003366') +
+#   geom_point(data = jump, aes(x = dates, y = cp), size = 3, shape = 21, fill = '#DCEEF3') +
+#   theme_bw() +
+#   ylab(TeX('$c_{p}~(m^{-1})$')) +
+#   xlab('Datetime')
+
+#geom_path(data = part_slope, aes(x = time, y = cp, group = group), colour = 'red', size = 2) + theme_bw() + 
+#labs(x = 'Time', y = 'Cp (1/m)', title = paste0('Mean slope (red): ', round(mean_slope,3), ' m-1 day-1')) # \n', 'POC flux (small particles): ', poc_flux, 'mg'))
+
+jump_plot
+
+```
+
+The UVP6 (@fig-UVP6) is a miniaturized version of the UVP5 [@Picheral2021-sx], an imaging system developed to characterize particles (e.g. size, gray level, taxonomic group). Two versions of the UVP6 have been commercialized: the UVP6-HF (high frequency) and the UVP6-LP (low power) which has been specifically designed for AUVs that have strict energy requirements (e.g. autonomous floats).
+
+The UVP6-LP (hereafter referred to as UVP6) is thus both a particle counter (0.1 mm - 2 mm) and a particle classifier (\> 0.6 mm). The former counts particles in different class sizes in order to compute the particle size distribution (PSD) - also referred to as PSS (@sec-BGP) - while the latter extracts pixel-related and geometric features from each image to classify them (i.e. assign them a taxonomic group) directly on board using artificial intelligence (CHAPTER-XX) with the aim of estimating zooplankton biomass [@Claustre2020-jo; @Claustre2021-tx].
+
+![Illustration of the basic functioning of the UVP6. A light beam illuminates a region in front of the camera (imaged volume: 0.7L) which takes pictures at a given temporal resolution and subsequently characterizes and classifies relevant objects. \@Thomas Boniface.](image/ObservingCarbonCycle/UVP6_b.png){#fig-UVP6}
+
+While the gathering of data from automatic on board particles classification will have to increase to study related applications, the use of PSD in carbon flux studies has already been thoroughly explored [@Guidi2008-vp; @Iversen2010-an; @Jouandet2011-bt; @McDonnell2012-ic; @Roullier2014-wf; @Guidi2015-sj; @Guidi2016-nj; @Ramondenc2016-nu; @Kiko2017-qy; @Fender2019-ou; @Giering2020-mc; @Cael2021-qn; @Bisson2022-bt].
+
+Using the PSD, one can compute the number spectrum $n_{i}$ [@Stemmann2004-jv] which can be defined as the normalized concentration of particles in a given size bin $i$. Knowing the mass ($m$) and sinking speed ($w$, see @eq-sinking-speed) of aggregates, one can derive the total carbon flux ($F$)
+
+$$
+F = \int_{0}^{\infty} n(d) m(d) w(d) dd
+$$ {#eq-carbon-flux}
+
+where $d$ is the aggregate diameter.
+
+Assuming spherical aggregates, $m$ can be written as follow
+
+$$
+m(d) = \frac{\pi\rho d^{3}}{6}
+$$ {#eq-mass-aggregate}
+
+where $\rho$ is the average density of aggregates.
+
+As explained in @sec-sinking-speed, aggregates have fractal geometries ($D$) hence @eq-sinking-speed and @eq-mass-aggregate can be rewritten as follow
+
+$$
+m(d) = \alpha d^{D}
+$$ {#eq-mass-aggregate-fractal}
+
+$$
+w(d) = \beta d^{D-1}
+$$ {#eq-sinking-speed-fractal}
+
+where $\alpha$ and $\beta$ are constant.
+
+Aggregate mass and sinking speed are often described using a power law relationship [@Alldredge1988-lx; @Guidi2008-vp] therefore it can be derived that
+
+$$
+mw = Ad^{B}
+$$
+
+and therefore from @eq-mass-aggregate-fractal and @eq-sinking-speed-fractal that $A= \alpha\beta$ and $D = \frac{B+1}{2}$.
+
+Due to a finite number ($N$) of size bins, @eq-carbon-flux is rewritten as
+
+$$
+F = \sum_{i=1}^{N}n_{i}Ad_{i}^{B}\Delta d_{i}
+$$ {#eq-carbon-flux-finite}
+
+where $d_{i}$ is the mid-point of bin $i$.
+
+UVP6 PSD measurements will therefore allow the computation of carbon fluxes assuming that $A$ and $B$ are known. This was done empirically by @Guidi2008-vp who minimized the following cost function
+
+$$
+Cost = \sum_{j = 1}^{n} (log(F_{UVP,j})-log(F_{ST},j))^{2}
+$$ {#eq-cost-function}
+
+where $F_{UVP,j}$, $F_{ST,j}$ and $n$ are, respectively, the flux estimate for the $j^{th}$ sediment trap measurement, the flux measured in sediment trap $j$ and the number of paired measurements (i.e. match-ups) for trap-UVP comparisons.
+
+@Guidi2008-vp found an optimal couple of parameters $(A, B) = (12.5, 3.81)$ while @Iversen2010-an followed the same procedure and found $(A, B) = (273, 4.27)$ whereas @Fender2019-ou found $(A, B) = (15.4, 1.05)$. @Iversen2010-an assumed that the difference in the optimal couple of parameters was due to the study site used for the minimization (productive upwelling system versus open ocean in @Guidi2008-vp) while @Fender2019-ou suggested that a value of $B < 3$ means that either the density or sinking speed of particles is inversely correlated with particles diameter thus they suspected that the flux was dominated by particles in the lower size detection limit of the UVP they were using. Other values for $A$ and $B$ are being used in the literature [e.g. @Kiko2017-qy] based on a mechanistic approach developed by @Kriest2002-oc to investigate the formation of marine aggregates.
+
+In all, it seems that the choice for the values of $A$ and $B$ is critical if one does not want to under- or overestimate carbon fluxes derived from PSD [@Iversen2010-an; @Fender2019-ou]. Three main limitations highlighted by @Bisson2022-bt for UVP optically derived estimates of flux would be: (1) assuming that $A$ and $B$ are globally valid at all depths, for all UVP models and across all size classes, (2) the size to sinking rate uncertainty and (3) the size to carbon mass uncertainty..
+
+The assumption that all particles of a given size class have the same carbon content and settling rate questions the formulation of the model itself (@eq-carbon-flux-finite). It has been shown that the pool of sinking particles is varied (e.g. compact fecal pellets, porous aggregates) and that the main driver of the sinking speed is currently subject to debate [@sec-sinking-speed]. Therefore, the size-dependent model of [@Guidi2008-vp] could be improved by taking into account the composition and nature of particles and by increasing the number of paired measurements between UVP PSD-derived flux estimations and other direct POC flux estimations (e.g. sediment traps, $^{234}Th$, OST).
+
+## The future of carbon observations {#sec-what-is-next}
+
+The BCP have been studied for many decades by a variety of instruments with their respective pros and cons. Their measurements were unfortunately often taken independently, which hindered their intercomparability due to the low number of concurrent measurements between instruments.
+
+With the advent of fully-equipped AUVs, it is now possible to take high-resolution and independent measurements of key biogeochemical variables. Combining the latter with measurements from conventional platforms (i.e. ships, satellites, moorings) will fulfill the observational framework described by @Claustre2021-tx to investigate the BCP.
+
+This framework will hopefully answer questions raised so far, that is better understand the underlying drivers of each component of the BCP, decouple the contribution of each pump to the observed downward carbon flux lengthily attributed to the BGP and better quantify global estimates of carbon storage.
