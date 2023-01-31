@@ -39,6 +39,7 @@ library(RColorBrewer)
 library(vroom)
 library(castr)
 library(reactablefmtr)
+library(gt)
 ```
 
 ```{r, map of 4 floats}
@@ -494,7 +495,7 @@ $F_{big}$ was estimated at 200 m between 0 (no deposition of big particles on th
 
 ### UVP6 particle abundances
 
-#### When drifting
+#### On drifting mode
 
 ```{r, uvp data}
 
@@ -613,13 +614,13 @@ p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_poi
 p1000m
 ```
 
-#### When profiling 
+#### On profiling mode
 
 @fig-uvp-vertical-profiles shows that all floats measure similar patterns in the vertical profiles of particles concentrations in all size classes. In the 102-512 $\mu$m range, all 4 floats measured a local maximum between 500 and 1500 m, likely due to both sinking and remineralization processes. Above 512 $\mu$m, the relative abundance is maximum along a depth track centered on August. It can be seen among all size classes that the water column is being drained proportionally to the class size.
 
 ```{r, uvp_data on the vertical}
 #| label: fig-uvp-vertical-profiles
-#| fig-cap: Normalized concentrations of particles for all UVP6 vertical profiles. Plots were arranged to respect the deployment of each couple of floats (e.g. the first two rows of plots are related to co-deployed floats 6904241 and 1902578). The colorbar depicts the log$_{10}$ of normalized concentrations. Grey areas indicate that particles were not measured in the size range of interest.
+#| fig-cap: Normalized concentrations of particles for all UVP6 vertical profiles. Plots were arranged to respect the deployment of each couple of floats (e.g. the first two rows of plots are related to co-deployed floats 6904240 and 4903634). The colorbar depicts the log$_{10}$ of normalized concentrations. Grey areas indicate that particles were not measured in the size range of interest.
 
 particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld))
 
@@ -630,7 +631,7 @@ particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 
 particles_bis <- particles_bis |> group_by(wmo, size) |> mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
 
 # order floats by couple of deployment
-particles_bis$wmo <- factor(particles_bis$wmo, levels = c(6904241,1902578,6904240,4903634))
+particles_bis$wmo <- factor(particles_bis$wmo, levels = c(6904240,4903634,6904241,1902578))
 
 # plot concentration
 # particles_bis |> filter(depth < 200) |>
@@ -644,21 +645,42 @@ particles_bis$wmo <- factor(particles_bis$wmo, levels = c(6904241,1902578,690424
 #   geom_path(data = particles_bis, aes(juld, MLD), colour = "white")
 
 ## plot absolute concentrations
-particles_bis |> filter(depth < 2000) |>
+up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
   #group_by(size) |>
   ggplot() + facet_grid(wmo~size) + theme_bw() +
   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
   #geom_point(aes(x=juld, y=depth, colour=rel_conc), size=1, shape=15) +
-  scale_colour_viridis(option = 'H', limits = c(-3,-1), oob = scales::squish, na.value = 'grey') +
+  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + # A or F
   #scale_colour_viridis(option = 'H') +
   scale_y_reverse() +
   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
-  labs(colour = 'Normalized concentrations (#/L)', x = 'Month', y = 'Depth (m)') +
+  #labs(colour = 'Log10 normalized abundance)', x = 'Month', y = 'Depth (m)') +
+  labs(colour = '#/L', x = 'Month', y = 'Depth (m)')
+  #theme(legend.title = element_text(angle = -90))
+  #guides(fill = guide_legend(title.theme = element_text(size = 200)))
+  #+ theme(legend.position = 'none')
   #geom_path(data = particles_bis, aes(juld, MLD), colour = "black") +
-  theme(legend.position = 'bottom') #+
+  #theme(legend.position = 'none') #+
   #geom_hline(yintercept = c(200,500,1000), linetype = 'dotted') #+
   #guides(colour = guide_legend(title.position = "bottom"))
 
+#Normalized concentrations (#/L)
+
+up_part
+
+down_part <- particles_bis |> filter(depth < 2000, size >= 512) |>
+  #group_by(size) |>
+  ggplot() + facet_grid(wmo~size) + theme_bw() +
+  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+  #geom_point(aes(x=juld, y=depth, colour=rel_conc), size=1, shape=15) +
+  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) +
+  #scale_colour_viridis(option = 'H') +
+  scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  #labs(colour = 'Log10 normalized abundance)', x = 'Month', y = 'Depth (m)') +
+  labs(colour = '#/L', x = 'Month', y = 'Depth (m)')
+
+down_part
 
 # # interpolate to see better
 # dli <- particles_bis |> mutate(juldi = as.numeric(juld)) |>
@@ -698,29 +720,120 @@ particles_bis |> filter(depth < 2000) |>
 
 ## Discussion
 
-### Remineralization processes
+### Processes at play
 
 ```{r, monthly anomaly between drifting at 500 and 1000 m}
+#| label: fig-processes-at-play
+#| fig-cap: Ratio of monthly mean particles concentrations during drifting (1000 m over 500 m) for size classes below 1.63 mm. 
 
-tmp <- uvp_data |> filter(park_depth != '200 m', month > 5) |> group_by(wmo, size, month, park_depth) |> 
+tmp <- uvp_data |> filter(park_depth != '200 m') |> group_by(wmo, size, month, park_depth) |> 
   summarize(monthly_mean_conc = mean(conc), monthly_median_conc = median(conc)) |>
   # compute concentration anomaly at 500 and 1000 m
-  mutate(anomaly = monthly_mean_conc - lead(monthly_mean_conc)) |> drop_na(anomaly) |>
-  select(wmo, size, month, anomaly) |> mutate(month = month.abb[month]) |> 
+  mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
+  select(wmo, size, month, diff_anomaly, div_anomaly) |> mutate(month = month.abb[month]) |> 
   mutate(size = as.character(size)) |>
-  #mutate(anomaly = round(anomaly, 3))
+  mutate(rev_div_anomaly = 1/div_anomaly) |> 
+  #filter(is.finite(rev_div_anomaly)) |>
+  mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1), div_anomaly = round(div_anomaly, 1)) |>
   ungroup()
 
-tt <- tmp |> filter(wmo == 6904241) |> select(size, month, anom = anomaly)
-#tt <- tt |> pivot_wider(names_from = month, values_from = anom) |> mutate(size = as.character(size))
+# test en weekly
+# tmp <- uvp_data |> filter(park_depth != '200 m', month != 5) |> group_by(wmo, size, week, park_depth) |> 
+#   summarize(monthly_mean_conc = mean(conc), monthly_median_conc = median(conc)) |>
+#   # compute concentration anomaly at 500 and 1000 m
+#   mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
+#   select(wmo, size, week, diff_anomaly, div_anomaly) |> 
+#   mutate(size = as.character(size)) |>
+#   mutate(rev_div_anomaly = 1/div_anomaly) |> 
+#   #filter(is.finite(rev_div_anomaly)) |>
+#   mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1)) |>
+#   ungroup()
+# 
+# create_data_for_heatmap <- function(float){
+#   y <- unique(tmp$size)[1:12] # above, data is way too low
+#   d <- tmp |> filter(wmo == float, size %in% y, week > 5)
+#   x <- unique(d$week)
+#   data <- expand.grid(X=x, Y=y)
+#   #data$Z <- tt$diff_anomaly
+#   data$Z <- d$rev_div_anomaly
+#   data$wmo <- float
+#   return(data)
+# }
 
-x <- c('Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
-y <- unique(tt$size)
-data <- expand.grid(X=x, Y=y)
-data$Z <- tt$anom
+# d1 <- create_data_for_heatmap(6904241)
+# d2 <- create_data_for_heatmap(1902578)
+# d3 <- create_data_for_heatmap(4903634)
+# d4 <- create_data_for_heatmap(6904240)
+# 
+# dd <- rbind(d1, d2, d3, d4)
 
-ggplot(data, aes(X, Y, fill= Z)) + 
-  geom_tile() + scale_fill_gradientn(colors = c('darkblue', 'blue', 'white', 'red', 'darkred'))
+# ggplot(dd, aes(X, Y, fill= Z)) + 
+#   geom_tile() + scale_fill_viridis() + facet_wrap(~wmo)
+
+create_data_for_heatmap <- function(float, df){
+  y <- unique(df$size)[1:12] # above, data is way too low
+  d <- df |> filter(wmo == float, size %in% y)
+  #x <- c('Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan')
+  x <- unique(d$month)
+  data <- expand.grid(X=x, Y=y)
+  #data$Z <- tt$diff_anomaly
+  data$Z <- d$rev_div_anomaly
+  #data$Z <- d$div_anomaly
+  data$wmo <- float
+  return(data)
+}
+
+# for some reason, there is some bug with the quarto compilation .. so I save the tibble .. and reload it 
+# d1 <- create_data_for_heatmap(6904241, tmp)
+# d2 <- create_data_for_heatmap(1902578, tmp)
+# d3 <- create_data_for_heatmap(4903634, tmp)
+# d4 <- create_data_for_heatmap(6904240, tmp)
+# dd <- rbind(d1, d2, d3, d4)
+# vroom_write(dd, 'heatmap_data.csv')
+
+# reload + redo some annoying stuff that were lost during the writing of the csv
+dd <- vroom('heatmap_data.csv') |> mutate(Y = as.character(Y)) 
+dd$X <- factor(dd$X, levels = c('May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'))
+dd$Y <- factor(dd$Y, levels = c('102', '128', '161', '203', '256', '323', '406', '512', '645', '813', '1020', '1290'))
+dd$Y <- factor(dd$Y, levels = c('1290', '1020', '813', '645', '512', '406', '323', '256', '203', '161', '128', '102'))
+dd$wmo <- factor(dd$wmo, levels = c(6904240,4903634,6904241,1902578))
+
+#dd <- dd |> mutate(Z_binned = cut(Z, breaks = c(0,1,1.5,2.5,max(Z))))
+dd <- dd |> mutate(Z_binned = cut(Z, breaks = c(0,.5,1,1.5,2,max(Z))))
+
+# ggplot(dd) +
+#   geom_tile(aes(X, Y, fill = Z), alpha = 0.75) + scale_fill_viridis() + theme_bw() + labs(x = 'Month', y = 'Size class') +
+#   facet_wrap(~wmo) +
+#   geom_text(data = dd, aes(X, Y, label = Z))
+
+ggplot(dd) + 
+  geom_tile(aes(X, Y, fill = Z_binned), colour = 'black', alpha = 1) + theme_bw() + labs(fill = 'Ratio', x = 'Month', y = 'Size class') +
+  facet_wrap(~wmo) + scale_fill_viridis_d(option = 'A')
+
+# plot_heatmap <- function(float){
+#   y <- unique(tmp$size)[1:12]
+#   tt <- tmp |> filter(wmo == float, size %in% y) 
+#   x <- c('Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan')
+#   data <- expand.grid(X=x, Y=y)
+#   #data$Z <- tt$anom
+#   data$Z <- tt$diff_anomaly
+#   data$Z <- tt$rev_div_anomaly
+# 
+#   p <- ggplot(data, aes(X, Y, fill= Z)) + 
+#     geom_tile() + scale_fill_viridis() +
+#     geom_text(data = data, aes(X, Y, label = Z)) +
+#     labs(title = float)
+#   
+#   return(p)
+# }
+# 
+# p1 <- plot_heatmap(4903634)
+# p2 <- plot_heatmap(6904240)
+# p3 <- plot_heatmap(1902578)
+# p4 <- plot_heatmap(6904241)
+# 
+# (p1 | p2) / 
+# (p3 | p4)
 
 # # https://kcuilla.github.io/reactablefmtr/articles/reactablefmtr_cookbook.html
 # tt <- tt |> pivot_wider(names_from = month, values_from = anom) |> mutate(size = as.character(size))
@@ -763,6 +876,19 @@ ggplot(data, aes(X, Y, fill= Z)) +
 #     )
 #   )
 # ) 
+
+```
+
+```{r, test gt table}
+
+monthly_mean <- uvp_data |> mutate(month = month.abb[month(juld)]) |> group_by(size, park_depth, month) |> summarize(mean_conc = round(mean(conc, na.rm=T), 2)) |> ungroup()
+
+# pivot wider
+monthly_mean <- monthly_mean |> pivot_wider(names_from = month, values_from = mean_conc) |> select(size, depth = park_depth, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec, Jan) 
+
+monthly_mean |> group_by(size) |> gt(rowname_col = 'depth')
+
+#monthly_mean |> gt(rowname_col = c('size')) |> tab_stubhead(label = 'Class') 
 
 ```
 
