@@ -74,7 +74,7 @@ ggplot(argo_map) + w + geom_path(aes(lon, lat, colour = WMO), size = 1) +
   labs(x = 'longitude', y = 'latitude') +
   #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/#suppress-aesthetics-from-part-of-the-legend
   guides(color = guide_legend(override.aes = list(size = c(1.5,1.5,1.5,1.5),
-                                                  shape = c(NA, NA, NA, NA)))) 
+                                                  shape = c(NA, NA, NA, NA))))
   
 ```
 
@@ -1196,10 +1196,10 @@ ggplot(dd) +
 ```{r, TEST }
 
 depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
-part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, NP_Size_512) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |>
-  mutate(month = month.abb[month(juld)]) |> ungroup() #|> filter(month != 'May') # I filtered May because I had some troubles.. I need to fill some cases unseen by the float (eg. when they start profiling until 1000 m then go to 2000 -> ça fout un peu la merde..)
+part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, NP_Size_256) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |>
+  mutate(month = month.abb[month(juld)]) |> ungroup() 
 
-tmp <- part_distrib |> group_by(wmo, depth_bin, month) |> summarize(mean_part = log10(mean(NP_Size_512))) |> 
+tmp <- part_distrib |> group_by(wmo, depth_bin, month) |> summarize(mean_part = log10(mean(NP_Size_256))) |> 
   mutate(cut_part = cut(mean_part, breaks = c(seq(0,100,20),+Inf))) |> ungroup()
 
 create_data_for_heatmap_bis <- function(float, df){
@@ -1224,8 +1224,44 @@ dd <- rbind(d1, d2, d3, d4) |> mutate(X = factor(X, levels = c('May','Jun', 'Jul
   #mutate(Z = factor(Z, levels = levels(tmp$cut_part)))
   
 ggplot(dd) + 
-  geom_tile(aes(X, Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + labs(fill = 'Flux range', x = 'Month', y = 'Depth bin') +
-  facet_wrap(~wmo) + scale_fill_viridis(option = 'A') 
+  geom_tile(aes(X, Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + labs(fill = 'Log10(abundance) #/L', x = 'Month', y = 'Depth bin', title = 'NP_Size_256') +
+  facet_wrap(~wmo) + scale_fill_viridis(option = 'A')
+
+```
+
+#### same plots mais par mois
+
+Il y a une erreur lors de la standardisation -> WHY doesn't it want to group it by month???
+
+```{r, monthly heatmap}
+
+depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
+part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, all_of(lpm_class)) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |> mutate(month = month.abb[month(juld)]) |> ungroup() |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration')
+
+tmp <- part_distrib |> group_by(depth_bin, size, month) |> summarize(mean_part = mean(concentration)) |> mutate(rel_mean_conc = (mean_part-min(mean_part))/(max(mean_part) - min(mean_part))) |> ungroup()
+
+plot_heat_month <- function(m){
+  # transform data for heatmap
+  #m <- 'May'
+  tmp2 <- tmp |> filter(month == m) |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) |> select(-c(month, mean_part))
+  y <- unique(tmp2$depth_bin)
+  x <- unique(tmp2$size)
+  test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = rel_mean_conc) 
+  #test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = mean_part) 
+  data <- expand.grid(X=x, Y=y)
+  data$Z <- as.vector(as.matrix(test |> select(-size)))
+  data$month <- m
+  return(data)
+}
+
+m_data <- map_dfr(c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'), plot_heat_month)
+
+m_data <- m_data |> mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T)),
+                   month = factor(month, levels = c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan')))
+
+ggplot(m_data |> mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T)))) + 
+  geom_tile(aes(as.factor(X), Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + scale_fill_viridis(option = 'A') +
+  facet_wrap(~month)
 
 ```
 
@@ -1265,6 +1301,71 @@ ggplot(vertical_profiles |> mutate(ratio_flux = guidi_flux/total_pred)) + geom_p
   scale_colour_viridis(option = 'A', limits = c(1,5), oob = scales::squish, na.value = 'grey') +
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
   labs(x = 'Time', y = 'Ratio Guidi/Total Model') + facet_wrap(~wmo) + theme_bw()
+
+```
+### Modèle basé sur les pentes
+
+```{r, model based on slope}
+
+# compute biovolumes for mid size bin (ESD)
+# DSE from 102 microns to 2.05 mm (this class to goes to 2.58 mm) (values obtained from Guidi's Matlab code converted on python)
+DSE <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685,
+              0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
+              1.16170742, 1.46365963, 1.84409558, 2.32341484)
+
+# DSE obtained with Rainer's code
+DSE_Rainer <- c(0.11645117591608793,0.14636003747903648,0.18439151433041295,
+                0.23251999827981656,0.2933257316240555,0.36916500651202966,0.4650399965596331,
+                0.5860454935035602,0.738553273391974,0.9280422447589767,1.1705684285914486,
+                1.4795320531800742,1.8636618038457486,2.3449457391257185)
+
+# compute biovolume
+get_biovolume <- function(DSE){
+  r <- DSE/2
+  biovolume <- (4*pi/3)*r**3
+  return(biovolume)
+}
+
+# get biovolume for each DSE (equivalent to say for each size bin)
+biovolumes <- map_dbl(DSE, get_biovolume)  # unit = m^3
+
+# spectra at parking depth
+uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |> 
+  drop_na(NP_Size_102) |> mutate(juld = as_date(juld), WMO = factor(wmo))
+
+# convert abundance to biovolume
+spectra_biovolume <- tibble(as.data.frame(t(t(uvp_spectra[,all_of(lpm_class)])*biovolumes))) 
+colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('Size', 'Biovolume')
+
+uvp_spectra <- cbind(uvp_spectra, spectra_biovolume) |> mutate()
+
+cflux <- cflux |> mutate(small_slope = (small_flux/633)**(1/0.77), big_slope = (big_flux/633)**(1/0.77))
+
+## try model for small slopes
+cflux2 <- cflux |> mutate(flux = big_slope)
+
+data_model <- merge(cflux2, uvp_spectra) |> mutate(depth = if_else(park_depth == '1000 m', 1000, if_else(park_depth == '500 m', 500, 200))) |> select(-park_depth)
+
+# training data
+tmp <- data_model |> select(flux, all_of(colnames(spectra_biovolume)))
+
+set.seed(101)
+boosting_rounds <- 3000
+# model
+model <- gbm(flux ~ ., data=tmp, distribution="gaussian",
+cv.folds=5,
+n.trees=boosting_rounds, shrinkage=0.005, interaction.depth=6,
+bag.fraction=0.5,
+n.cores=1
+)
+   
+# get best model and thus best round number
+best <- gbm.perf(model)
+#print(best)
+  
+# get features importance
+features_importance <- summary(model, n.trees=best, plotit = FALSE)
+
 
 ```
 
