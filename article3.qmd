@@ -4,8 +4,7 @@
 
 introduire la notion de cycle de flotteurs BGC-Argo etc (+ parking depth)
 
-+ dire que le but du papier est de faire une comparaison OST UVP qui sont deux instruments qui permettent de mesurer la meme chose (le flux des particules, l'abondance de particules) et donc le flux de carbone de manière indirecte
-papier GRL Lacour de 2015
+-   dire que le but du papier est de faire une comparaison OST UVP qui sont deux instruments qui permettent de mesurer la meme chose (le flux des particules, l'abondance de particules) et donc le flux de carbone de manière indirecte papier GRL Lacour de 2015
 
 ## Methods
 
@@ -116,7 +115,7 @@ $$ {#eq-estapa}
 
 where $slope_{w}$ is multiplied by the transmissometer pathlength due to the fact that @eq-estapa is an empirical POC-to-attenuance (ATN) relationship where ATN is the product of $c_{p}$ and the transmissometer pathlength.
 
-We used the same relationship to compute $F_{big}$ by replacing $slope_{w}$ as the sum of positive jumps divided by the drifting time. 
+We used the same relationship to compute $F_{big}$ by replacing $slope_{w}$ as the sum of positive jumps divided by the drifting time.
 
 ```{r, example of a cp signal analyzed for jumps (with an old method here)}
 #| label: fig-estapa-method_article
@@ -526,7 +525,7 @@ uvp_data <- uvp_data |> pivot_longer(cols = lpm_class, names_to = 'size', values
 mean_uvp_data <- uvp_data |> group_by(cycle, WMO, size, park_depth, juld) |> summarize(mean_conc = mean(conc, na.rm=T))
 ```
 
-In this study, we focus on 14 size classes, from 102 $\mu$m to 2.5 mm. In @fig-uvp-200m, @fig-uvp-500m and @fig-uvp-1000m, we show the daily averaged concentrations of particles in each class size for each float at their respective drifting depth. At 200 m, it can be observed that particles concentrations in the 102 - 512 $\mu$m range are relatively uniform between June and October before decreasing sharply towards January. Between 512 $\mu$m and 1.29 mm, concentrations are steadily decreasing from June. Above 1.29 mm, the abundance of particles is already very low (< 0.1 particle/L) in June and keeps decreasing over time.
+In this study, we focus on 14 size classes, from 102 $\mu$m to 2.5 mm. In @fig-uvp-200m, @fig-uvp-500m and @fig-uvp-1000m, we show the daily averaged concentrations of particles in each class size for each float at their respective drifting depth. At 200 m, it can be observed that particles concentrations in the 102 - 512 $\mu$m range are relatively uniform between June and October before decreasing sharply towards January. Between 512 $\mu$m and 1.29 mm, concentrations are steadily decreasing from June. Above 1.29 mm, the abundance of particles is already very low (\< 0.1 particle/L) in June and keeps decreasing over time.
 
 ```{r, uvp data at 200 m}
 #| label: fig-uvp-200m
@@ -558,7 +557,7 @@ p200m <- mean_uvp_data |> filter(park_depth == '200 m') |> ggplot() + geom_point
 p200m
 ```
 
-At 500 m, particles concentrations in the 102 - 645 $\mu$ range slowly decrease from July to September with a sharp decrease starting in October. Above 645 $\mu$m, the trend shows a maximum between the end of July and the first half of August though the concentrations of particles in those classes are very low (< 0.5 particle/L) on the entire timeserie.
+At 500 m, particles concentrations in the 102 - 645 $\mu$ range slowly decrease from July to September with a sharp decrease starting in October. Above 645 $\mu$m, the trend shows a maximum between the end of July and the first half of August though the concentrations of particles in those classes are very low (\< 0.5 particle/L) on the entire timeserie.
 
 ```{r, uvp data at 500 m}
 #| label: fig-uvp-500m
@@ -595,6 +594,9 @@ At 1000 m, all 4 floats measured a clear maximum in particles abundance in the 1
 ```{r, uvp data at 1000 m}
 #| label: fig-uvp-1000m
 #| fig-cap: Daily averaged concentrations of particles abundance in 14 size classes measured by the UVP6 for each float at 1000 m. Black lines and shaded areas represent, respectively, the daily mean particles abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particles abundance is maximum.
+#| fig-dpi: 96
+
+#{r, uvp data at 1000 m, out.width="900px", out.height="800px"}
 
 p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
@@ -622,7 +624,7 @@ p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_poi
 p1000m
 ```
 
-TODO : It should be noted that all floats measure the same trend -> logique si on parle de la dynamique du bruit de fond de la zone et pas de la dynamique évènementielle qui serait différentes en fonction des flotteurs vu qu'ils dérivent chacun dans le parcours respectifs. Ça devrait renforcer cet aspect.
+TODO : It should be noted that all floats measure the same trend -\> logique si on parle de la dynamique du bruit de fond de la zone et pas de la dynamique évènementielle qui serait différentes en fonction des flotteurs vu qu'ils dérivent chacun dans le parcours respectifs. Ça devrait renforcer cet aspect.
 
 ## Discussion
 
@@ -707,19 +709,17 @@ gt(correlations) |> tab_spanner(label = "Small flux", columns = 2:4) |> tab_span
 
 TODO :
 
-- TS diagram at drifting depth + isopycnals
-- NPQ chla + MLD (same y axis) 
-- satellite chla + MLD -> show that conditions for bloom (stable and shallow MLD) + chla happened before deployment in the area
-- faire le modèle de pente avec les biovolues pour prédire quels types de particules explique le plus la pente -> faire un modèle pour le small flux et un modèle pour le big flux, pas un modèle pour les small + big car les pentes ne sont pas additives
-- discuter des corrélations
-- science: on voit le système latent, on a raté le bloom
-- rajouter les vitesses de sédimentations (n'importe quelle méthode fera l'affaire)
-- rajouter dans les méthodes les produits satellites qu'on utilise
-- différentes dynamiques post-bloom
-- phénologie du bloom printanier
-- MLD au cours du temps dans la zone, voir les variations
+-   TS diagram at drifting depth + isopycnals
+-   satellite chla + MLD -\> show that conditions for bloom (stable and shallow MLD) + chla happened before deployment in the area
+-   faire le modèle de pente avec les biovolues pour prédire quels types de particules explique le plus la pente -\> faire un modèle pour le small flux et un modèle pour le big flux, pas un modèle pour les small + big car les pentes ne sont pas additives
+-   discuter des corrélations
+-   science: on voit le système latent, on a raté le bloom
+-   rajouter les vitesses de sédimentations (n'importe quelle méthode fera l'affaire) -> permet d'utiliser le graphique de l'UVP en vertical -> hop une justification en plus
+-   rajouter dans les méthodes les produits satellites qu'on utilise
+-   différentes dynamiques post-bloom
+-   phénologie du bloom printanier
 
-### Which particles drive 
+### Which particles drive the flux
 
 ```{r, flux model 2, include = FALSE}
 
@@ -774,7 +774,6 @@ flux_model <- function(boosting_rounds, which_flux){
 #load(file = 'DATA/MODEL/model_xgboost_data')
 
 ```
-
 
 #### On profiling mode
 
@@ -853,46 +852,79 @@ down_part <- particles_bis |> filter(depth < 2000, size >= 512) |>
   labs(colour = '#/L', x = 'Month', y = 'Depth (m)')
 
 down_part
+```
 
-# # interpolate to see better
-# dli <- particles_bis |> mutate(juldi = as.numeric(juld)) |>
-#   group_by(wmo, size) |>
-#   do({
-#     i <- akima::interp(x=.$juldi, y=.$depth, z=.$concentration, nx=50, ny=150, duplicate="mean") |>
-#       tidy()
-#     # ggplot(i) + geom_raster(aes(x=x, y=-y, fill=z))
-#     rename(i, juldi=x, pres=y, concentration=z)
-#   }) |>
-#   # re-compute relative concentration to see stuff better
-#   group_by(size) |>
-#   mutate(rel_conc=concentration/max(concentration, na.rm=TRUE)) |>
-#   mutate(juld = as_date(juldi, origin = "1970-01-01")) |>
-#   drop_na(rel_conc) |>
-#   ungroup()
+### Environmental conditions prior to bloom
+
+ + aller chercher les produits satellitaires pour montrer que l'on a bien raté le bloom ou que les conditions du bloom n'étaient pas réunies
+
+```{r, chla corrected for NPQ and MLD}
+
+# fetch data
+npq_data <- vroom('DATA/ARGO/npq_corrected_data.csv')  
+
+# clean and smoothed chla data
+d <- npq_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> mutate(date = as_date(juld))
+d <- d |> group_by(date, wmo, pres, cycle) |> summarize(mean_chla = mean(chla_npq, na.rm=T), mld = unique(MLD))
+d <- d |> mutate(smoothed_chla = smooth(mean_chla))
+
+#d$wmo <- factor(d$wmo, levels = c(6904240,4903634,6904241,1902578))
+
+# plot it
+ggplot(d) + geom_point(aes(x = date, y = pres, colour = log10(smoothed_chla))) +
+  scale_y_reverse(limits = c(200,0)) +
+  #scale_colour_viridis(option = 'A') +
+  scale_colour_cmocean(name = 'algae', oob = scales::squish, limits = c(-1,1), na.value = 'grey') +
+  scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+  labs(x = 'Time', y = 'NPQ-corrected Chla') + facet_wrap(~wmo) + theme_bw() +
+  geom_line(aes(x = date, y = mld), colour = 'black', size = 1)
+
+# compute chla integration in the MLD and in the 0-100 m zone
+d_chla <- d |> group_by(wmo, date) |> summarize(chla_0_100m = integrate(smoothed_chla, pres, from=0, to=100),
+                                       mld = unique(mld),
+                                       chla_0_mld = integrate(smoothed_chla, pres, from = 0, to=mld))
 # 
-# dli |> 
-#   ggplot() + facet_grid(wmo~size) +
-#   geom_raster(aes(x=juldi, y=-pres, fill=rel_conc)) +
-#   #scale_y_reverse() |>
-#   scale_x_continuous(expand=c(0,0), limits=c(NA, NA)) +
-#   scale_y_continuous(expand=c(0,0), limits=c(-300,0)) +
-#   scale_fill_viridis_c(option = 'H')
-
-
-# test_sigma <- all_floats |> filter(PhaseName == 'NPAR', sigma > 26) |> select(juld, cycle, depth = pres, wmo, sigma, MLD) |> drop_na(sigma) |> mutate(juld = as_date(juld))
-# test_sigma |> ggplot() + geom_point(aes(x = juld, y = depth, colour = sigma)) + 
-#   scale_colour_viridis(option = 'H', oob = scales::squish, na.value = 'transparent') +
-#   scale_y_reverse(limits = c(200,0)) +
-#   scale_x_date(labels = date_format("%m"), date_breaks = '2 month') +
-#   labs(x = 'Month', y = 'Depth (m)') +
-#   facet_wrap(~wmo, nrow = 4) + theme_bw() +
-#   geom_path(data = test_sigma, aes(juld, MLD), colour = "grey")
+# ggplot(d_chla) + geom_point(aes(date, chla_0_100m)) + facet_wrap(~wmo, scales = 'free') + theme_bw() + labs(x = 'Month', y = 'Integrated Chla 0-100 m (CHLA UNITS)')
+#ggplot(d_chla) + geom_point(aes(date, chla_0_mld)) + facet_wrap(~wmo, scales = 'free')
 
 ```
 
-### Environmental conditions
+```{r, chla and MLD from satellite}
 
-Add NPQ plot avec MLD dessus, les memes échelles verticales (depth) + aller chercher les produits satellitaires pour montrer que l'on a bien raté le bloom ou que les conditions du bloom n'étaient pas réunies
+chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_with_clouds_sat.feather')
+#chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_without_clouds_sat.feather')
+mld_sat <- arrow::read_feather('DATA/SATELLITE/mld_sat.feather') |> mutate(lat = latitude, lon = longitude - 360) |> select(time, lat, lon, mld = mlotst)
+  
+# CHLA
+x <- 1
+y <- 1
+chla_cover_deployment1 <- chla_sat |> filter(lat > 58.9 - y, lat < 58.9 + y, lon > -49.3 - x, lon < -49.3 + x) |> mutate(date = as_date(time), group = 'couple 1') |> mutate(deploy = as_date('2022-05-22'))
+chla_cover_deployment2 <- chla_sat |> filter(lat > 56.7 - y, lat < 56.7 + y, lon > -52.3 - x, lon < -52.3 + x) |> mutate(date = as_date(time), group = 'couple 2') |> mutate(deploy = as_date('2022-05-30'))
+chla_cover <- rbind(chla_cover_deployment1, chla_cover_deployment2)
+
+ggplot(chla_cover) + geom_errorbar(aes(x = date, y = CHL),
+                      stat = 'summary',
+                      fun.min = function(z) {quantile(z, 0.25)},
+                      fun.max = function(z) {quantile(z, 0.75)},
+                      fun = median, colour = 'black', width = .5) + theme_bw() +
+  labs(x = 'Time', y = 'Chla')+ facet_wrap(~group) +
+  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "red")
+
+# MLD
+mld_cover_deployment1 <- mld_sat |> filter(lat > 58.9 - y, lat < 58.9 + y, lon > -49.3 - x, lon < -49.3 + x) |> mutate(date = as_date(time), group = 'couple 1') 
+mld_cover_deployment2 <- mld_sat |> filter(lat > 56.7 - y, lat < 56.7 + y, lon > -52.3 - x, lon < -52.3 + x) |> mutate(date = as_date(time), group = 'couple 2')
+mld_cover <- rbind(mld_cover_deployment1, mld_cover_deployment2)
+
+ggplot(mld_cover) + geom_errorbar(aes(x = date, y = mld),
+                      stat = 'summary',
+                      fun.min = function(z) {quantile(z, 0.25)},
+                      fun.max = function(z) {quantile(z, 0.75)},
+                      fun = median, colour = 'black', width = 5) +
+  labs(x = 'Time', y = 'MLD (m)') + facet_wrap(~group, scales = 'free_y')
+
+```
+
+
 
 ### Processes at play
 
@@ -1066,7 +1098,6 @@ monthly_mean |> group_by(size) |> gt(rowname_col = 'depth')
 
 ```
 
-
 ### Chlorophyll data
 
 ```{r, chla data}
@@ -1098,6 +1129,7 @@ ggplot(d_chla) + geom_point(aes(date, chla_0_100m)) + facet_wrap(~wmo, scales = 
 #ggplot(d_chla) + geom_point(aes(date, chla_0_mld)) + facet_wrap(~wmo, scales = 'free')
 
 ```
+
 ### Mixed layer depth
 
 ```{r, mld data}
@@ -1236,23 +1268,26 @@ ggplot(features) + geom_point(aes(x = as.factor(size), y = importance, colour = 
 
 ```
 
-
 #### Predictions
 
 ```{r, plot predictions}
 
 p_small <- ggplot(all_predictions) + geom_point(aes(true_small, pred_small)) + xlim(c(0,25)) + ylim(c(0,25)) + theme_bw() +
+
   annotate("text", x = 3, y = 23, label = paste0('R² = ' , round(R2_Score(all_predictions$true_small, all_predictions$pred_small), 2)))
 
 p_big <- ggplot(all_predictions) + geom_point(aes(true_big, pred_big)) + xlim(c(0,50)) + ylim(c(0,50)) + theme_bw() +
+
   annotate("text", x = 5, y = 45, label = paste0('R² = ' , round(R2_Score(all_predictions$true_big, all_predictions$pred_big), 2)))
 
 p_total <- ggplot(all_predictions) + geom_point(aes(true_total, pred_total)) + xlim(c(0,100)) + ylim(c(0,100)) + theme_bw() +
+
   annotate("text", x = 3, y = 80, label = paste0('R² = ' , round(R2_Score(all_predictions$true_total, all_predictions$pred_total), 2)))
 
 (p_small + p_big) / p_total
 
 # plot(test$true_flux, y=test$pred_flux, asp=1)
+
 # print(R2_Score(test$pred_flux, test$true_flux))
 
 ```
@@ -1264,37 +1299,57 @@ p_total <- ggplot(all_predictions) + geom_point(aes(true_total, pred_total)) + x
 vertical_profiles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class)) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld))
 
 # make predictions
+
 small_predicted_flux <- predict(small_model$model, newdata = vertical_profiles, n.trees = small_model$best_tree)
+
 big_predicted_flux <- predict(big_model$model, newdata = vertical_profiles, n.trees = big_model$best_tree)
+
 total_predicted_flux <- predict(total_model$model, newdata = vertical_profiles, n.trees = total_model$best_tree)
 
 # add predictions to vertical data
+
 vertical_profiles <- vertical_profiles |> mutate(small_pred = small_predicted_flux, big_pred = big_predicted_flux, total_pred = total_predicted_flux)
 
 vertical_profiles$wmo <- factor(vertical_profiles$wmo, levels = c(6904240,4903634,6904241,1902578))
 
 # pv_small <- ggplot(vertical_profiles, aes(x = juld, y = depth, colour = log10(small_pred))) + geom_point() + scale_color_viridis(option = 'H') +
+
 #   scale_y_reverse(limits = c(500,0)) +
+
 #   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
 #   labs(x = 'Time', y = 'Predicted Fsmall') + facet_wrap(~wmo)
-# 
+
+#
+
 # pv_big <- ggplot(vertical_profiles, aes(x = juld, y = depth, colour = log10(big_pred))) + geom_point() + scale_color_viridis(option = 'H') +
+
 #   scale_y_reverse(limits = c(500,0)) +
+
 #   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
 #   labs(x = 'Time', y = 'Predicted Fbig') + facet_wrap(~wmo)
 
 pv_total <- ggplot(vertical_profiles, aes(x = juld, y = depth, colour = total_pred)) + geom_point() + #scale_color_viridis(option = 'H') +
+
   scale_y_reverse(limits = c(2000,0)) +
+
   scale_colour_viridis(option = 'A', limits = c(quantile(all_predictions$true_total, probs = 0.25), quantile(all_predictions$true_total, probs = 0.75)), oob = scales::squish, na.value = 'grey', direction = -1) +
+
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
   labs(x = 'Time', y = 'Predicted Ftotal') + facet_wrap(~wmo) + theme_bw()
 
 pv_total
 
 ggplot(vertical_profiles, aes(x = juld, y = depth, colour = total_pred)) + geom_point() + #scale_color_viridis(option = 'H') +
+
   scale_y_reverse(limits = c(500,0)) +
+
   scale_colour_viridis(option = 'A', limits = c(20,100), oob = scales::squish, na.value = 'grey', direction = -1) +
+
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
   labs(x = 'Time', y = 'Predicted Ftotal') + facet_wrap(~wmo) + theme_bw()
 
 ```
@@ -1302,46 +1357,76 @@ ggplot(vertical_profiles, aes(x = juld, y = depth, colour = total_pred)) + geom_
 ```{r, flux distribution}
 
 depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
+
 flux_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, total_pred) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |>
+
   mutate(month = month.abb[month(juld)]) |> ungroup() #|> filter(month != 'May') # I filtered May because I had some troubles.. I need to fill some cases unseen by the float (eg. when they start profiling until 1000 m then go to 2000 -> ça fout un peu la merde..)
 
-tmp <- flux_distrib |> group_by(wmo, depth_bin, month) |> summarize(mean_flux = mean(total_pred)) |> 
+tmp <- flux_distrib |> group_by(wmo, depth_bin, month) |> summarize(mean_flux = mean(total_pred)) |>
+
   mutate(cut_flux = cut(mean_flux, breaks = c(0,10,20,30,40,50,75,100,+Inf))) |> ungroup()
 
 create_data_for_heatmap_bis <- function(float, df){
+
   # df <- tmp |> filter(wmo == float)
+
   # y <- unique(df$depth_bin)
+
   # if(float == 1902578){
+
   #   y <- y[1:15]
+
   # }
+
   # x <- unique(df$month)
+
   # data <- expand.grid(X=x, Y=y)
+
   # data$Z <- df$cut_flux
+
   # data$wmo <- float
+
   # data$month <- df$month
-  df <- df |> filter(wmo == float) |> select(cut_flux, depth_bin, month) 
+
+  df <- df |> filter(wmo == float) |> select(cut_flux, depth_bin, month)
+
   y <- unique(df$depth_bin)
-  df <- df|> pivot_wider(names_from = depth_bin, values_from = cut_flux) 
+
+  df <- df|> pivot_wider(names_from = depth_bin, values_from = cut_flux)
+
   x <- unique(df$month)
+
   data <- expand.grid(X=x, Y=y)
+
   data$Z <- as.vector(as.matrix(df |> select(-month)))
+
   data$wmo <- float
+
   return(data)
+
 }
 
 d1 <- create_data_for_heatmap_bis(6904241, tmp)
+
 d2 <- create_data_for_heatmap_bis(1902578, tmp)
+
 d3 <- create_data_for_heatmap_bis(4903634, tmp)
+
 d4 <- create_data_for_heatmap_bis(6904240, tmp)
 
 dd <- rbind(d1, d2, d3, d4) |> mutate(X = factor(X, levels = c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'))) |>
+
   mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T))) |>
+
   mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578))) |>
+
   mutate(Z = factor(Z, levels = levels(tmp$cut_flux)))
-  
-ggplot(dd) + 
+
+ggplot(dd) +
+
   geom_tile(aes(X, Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + labs(fill = 'Flux range', x = 'Month', y = 'Depth bin') +
-  facet_wrap(~wmo) + scale_fill_viridis_d(option = 'A') 
+
+  facet_wrap(~wmo) + scale_fill_viridis_d(option = 'A')
 
 ```
 
@@ -1350,35 +1435,55 @@ ggplot(dd) +
 ```{r, TEST }
 
 depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
-part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, NP_Size_256) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |>
-  mutate(month = month.abb[month(juld)]) |> ungroup() 
 
-tmp <- part_distrib |> group_by(wmo, depth_bin, month) |> summarize(mean_part = log10(mean(NP_Size_256))) |> 
+part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, NP_Size_256) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |>
+
+  mutate(month = month.abb[month(juld)]) |> ungroup()
+
+tmp <- part_distrib |> group_by(wmo, depth_bin, month) |> summarize(mean_part = log10(mean(NP_Size_256))) |>
+
   mutate(cut_part = cut(mean_part, breaks = c(seq(0,100,20),+Inf))) |> ungroup()
 
 create_data_for_heatmap_bis <- function(float, df){
-  df <- df |> filter(wmo == float) |> select(mean_part, depth_bin, month) 
+
+  df <- df |> filter(wmo == float) |> select(mean_part, depth_bin, month)
+
   y <- unique(df$depth_bin)
-  df <- df|> pivot_wider(names_from = depth_bin, values_from = mean_part) 
+
+  df <- df|> pivot_wider(names_from = depth_bin, values_from = mean_part)
+
   x <- unique(df$month)
+
   data <- expand.grid(X=x, Y=y)
+
   data$Z <- as.vector(as.matrix(df |> select(-month)))
+
   data$wmo <- float
+
   return(data)
+
 }
 
 d1 <- create_data_for_heatmap_bis(6904241, tmp)
+
 d2 <- create_data_for_heatmap_bis(1902578, tmp)
+
 d3 <- create_data_for_heatmap_bis(4903634, tmp)
+
 d4 <- create_data_for_heatmap_bis(6904240, tmp)
 
 dd <- rbind(d1, d2, d3, d4) |> mutate(X = factor(X, levels = c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'))) |>
+
   mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T))) |>
+
   mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578))) #|>
+
   #mutate(Z = factor(Z, levels = levels(tmp$cut_part)))
-  
-ggplot(dd) + 
+
+ggplot(dd) +
+
   geom_tile(aes(X, Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + labs(fill = 'Log10(abundance) #/L', x = 'Month', y = 'Depth bin', title = 'NP_Size_256') +
+
   facet_wrap(~wmo) + scale_fill_viridis(option = 'A')
 
 ```
@@ -1390,35 +1495,50 @@ Il y a une erreur lors de la standardisation -> WHY doesn't it want to group it 
 ```{r, monthly heatmap}
 
 depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
+
 part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, all_of(lpm_class)) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |> mutate(month = month.abb[month(juld)]) |> ungroup() |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration')
 
 tmp <- part_distrib |> group_by(depth_bin, size, month) |> summarize(mean_part = mean(concentration)) |> mutate(rel_mean_conc = (mean_part-min(mean_part))/(max(mean_part) - min(mean_part))) |> ungroup()
 
 plot_heat_month <- function(m){
+
   # transform data for heatmap
+
   #m <- 'May'
+
   tmp2 <- tmp |> filter(month == m) |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) |> select(-c(month, mean_part))
+
   y <- unique(tmp2$depth_bin)
+
   x <- unique(tmp2$size)
-  test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = rel_mean_conc) 
-  #test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = mean_part) 
+
+  test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = rel_mean_conc)
+
+  #test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = mean_part)
+
   data <- expand.grid(X=x, Y=y)
+
   data$Z <- as.vector(as.matrix(test |> select(-size)))
+
   data$month <- m
+
   return(data)
+
 }
 
 m_data <- map_dfr(c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'), plot_heat_month)
 
 m_data <- m_data |> mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T)),
+
                    month = factor(month, levels = c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan')))
 
-ggplot(m_data |> mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T)))) + 
+ggplot(m_data |> mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T)))) +
+
   geom_tile(aes(as.factor(X), Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + scale_fill_viridis(option = 'A') +
+
   facet_wrap(~month)
 
 ```
-
 
 #### Compute fluxes with Guidi et al. 2008
 
@@ -1431,19 +1551,29 @@ mid_DSE <- c(0.2892699,0.3644572,0.4591873,0.5785398,0.7289145,0.9183747,1.15707
 guidi_spectra <- vertical_profiles |> select(NP_Size_203:NP_Size_1290)
 
 # Guidi 2008
+
 A <- 12.5
+
 b <- 3.81
+
 exp <- A * mid_DSE ** b
+
 estimated_flux <- rowSums(t(t(guidi_spectra)*exp))
+
 #estimated_flux
 
 vertical_profiles$guidi_flux <- estimated_flux
 
 ggplot(vertical_profiles, aes(x = juld, y = depth, colour = total_pred)) + geom_point() + #scale_color_viridis(option = 'H') +
+
   scale_y_reverse(limits = c(2000,0)) +
+
   scale_colour_viridis(option = 'A', limits = c(quantile(vertical_profiles$guidi_flux, probs = 0.25), quantile(vertical_profiles$guidi_flux, probs = 0.50)), oob = scales::squish, na.value = 'grey', direction = -1) +
+
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
   labs(x = 'Time', y = 'Predicted Guidi Flux') + facet_wrap(~wmo) + theme_bw()
+
 ```
 
 #### Guidi vs. No Guidi Ha Diguedi
@@ -1451,44 +1581,67 @@ ggplot(vertical_profiles, aes(x = juld, y = depth, colour = total_pred)) + geom_
 ```{r, anomaly guidi}
 
 ggplot(vertical_profiles |> mutate(ratio_flux = guidi_flux/total_pred)) + geom_point(aes(x = juld, y = depth, colour = ratio_flux)) +
+
   scale_y_reverse(limits = c(2000,0)) +
+
   scale_colour_viridis(option = 'A', limits = c(1,5), oob = scales::squish, na.value = 'grey') +
+
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
   labs(x = 'Time', y = 'Ratio Guidi/Total Model') + facet_wrap(~wmo) + theme_bw()
 
 ```
+
 ### Modèle basé sur les pentes
 
 ```{r, model based on slope}
 
 # compute biovolumes for mid size bin (ESD)
+
 # DSE from 102 microns to 2.05 mm (this class to goes to 2.58 mm) (values obtained from Guidi's Matlab code converted on python)
+
 DSE <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685,
+
               0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
+
               1.16170742, 1.46365963, 1.84409558, 2.32341484)
 
 # DSE obtained with Rainer's code
+
 DSE_Rainer <- c(0.11645117591608793,0.14636003747903648,0.18439151433041295,
+
                 0.23251999827981656,0.2933257316240555,0.36916500651202966,0.4650399965596331,
+
                 0.5860454935035602,0.738553273391974,0.9280422447589767,1.1705684285914486,
+
                 1.4795320531800742,1.8636618038457486,2.3449457391257185)
 
 # compute biovolume
+
 get_biovolume <- function(DSE){
+
   r <- DSE/2
+
   biovolume <- (4*pi/3)*r**3
+
   return(biovolume)
+
 }
 
 # get biovolume for each DSE (equivalent to say for each size bin)
+
 biovolumes <- map_dbl(DSE, get_biovolume)  # unit = m^3
 
 # spectra at parking depth
-uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |> 
+
+uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |>
+
   drop_na(NP_Size_102) |> mutate(juld = as_date(juld), WMO = factor(wmo))
 
 # convert abundance to biovolume
-spectra_biovolume <- tibble(as.data.frame(t(t(uvp_spectra[,all_of(lpm_class)])*biovolumes))) 
+
+spectra_biovolume <- tibble(as.data.frame(t(t(uvp_spectra[,all_of(lpm_class)])*biovolumes)))
+
 colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('Size', 'Biovolume')
 
 uvp_spectra <- cbind(uvp_spectra, spectra_biovolume) |> mutate()
@@ -1496,87 +1649,120 @@ uvp_spectra <- cbind(uvp_spectra, spectra_biovolume) |> mutate()
 cflux <- cflux |> mutate(small_slope = (small_flux/633)**(1/0.77), big_slope = (big_flux/633)**(1/0.77))
 
 ## try model for small slopes
+
 cflux2 <- cflux |> mutate(flux = big_slope)
 
 data_model <- merge(cflux2, uvp_spectra) |> mutate(depth = if_else(park_depth == '1000 m', 1000, if_else(park_depth == '500 m', 500, 200))) |> select(-park_depth)
 
 # training data
+
 tmp <- data_model |> select(flux, all_of(colnames(spectra_biovolume)))
 
 set.seed(101)
+
 boosting_rounds <- 3000
+
 # model
+
 model <- gbm(flux ~ ., data=tmp, distribution="gaussian",
+
 cv.folds=5,
+
 n.trees=boosting_rounds, shrinkage=0.005, interaction.depth=6,
+
 bag.fraction=0.5,
+
 n.cores=1
+
 )
-   
+
 # get best model and thus best round number
+
 best <- gbm.perf(model)
+
 #print(best)
-  
+
 # get features importance
+
 features_importance <- summary(model, n.trees=best, plotit = FALSE)
 
-
 ```
-
 
 ### SPECTRAL SLOPES
 
 ```{r, function compute slope}
 
 # mid_DSE <- c(0.1147968,0.1446349,0.1822286,0.2295937,0.2892699,0.3644572,0.4591873,0.5785398,0.7289145,0.9183747,1.1570796,1.4578289,1.83674934,2.31415916)
+
 # sizebin <- c(0.02640633,0.03326989,0.04191744,0.05281267,0.06653979,0.08383488,0.10562533,0.13307958,0.16766976,0.21125066,0.26615915,0.33533952,0.422501323,
+
 #              0.532318310)
 
 mid_DSE <- c(0.0911143073, 0.1147968,0.1446349,0.1822286,0.2295937,0.2892699,0.3644572,0.4591873,0.5785398,0.7289145,0.9183747,1.1570796,1.4578289,1.83674934,2.31415916)
+
 sizebin <- c(0.0209587201, 0.02640633,0.03326989,0.04191744,0.05281267,0.06653979,0.08383488,0.10562533,0.13307958,0.16766976,0.21125066,0.26615915,0.33533952,0.422501323,
+
              0.532318310)
 
 vertical_profiles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class)) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld)) |> select(-NP_Size_64)
+
 drifting_profiles <- all_floats |> filter(PhaseName == 'PAR') |> select(juld, cycle, depth = pres, park_depth, wmo, all_of(lpm_class)) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld)) |> select(-NP_Size_64)
 
 compute_slope <- function(i, data_spectra){
-  
+
   spectrum <- data_spectra[i,]
-  
+
   spectrum_norm <- spectrum/sizebin
-  
+
   # prepare data for linear regression
+
   Y <- log(spectrum_norm)
+
   X <- log(mid_DSE)
-  
+
   # check for finite value
+
   h <- is.finite(Y)
+
   Y <- Y[h]
+
   X <- X[h]
-  
+
   data_slope <- tibble(X=X, Y=Y)
-  
+
   model <- lm(formula = Y ~ X, data = data_slope)
+
   slope <- model$coefficients[2]
-  
+
   return(slope)
+
 }
 
 # compute slope on drifting profiles
+
 drifting_spectra <- as.matrix(data.frame(drifting_profiles[,6:20]))
+
 index <- seq(from = 1, to = nrow(drifting_spectra), by = 1)
+
 slopes <- map_dbl(index, compute_slope, data_spectra = drifting_spectra)
+
 drifting_profiles$spectral_slope <- slopes
+
 ggplot(drifting_profiles, aes(x = juld, y = spectral_slope, colour = factor(park_depth))) + geom_smooth() + facet_wrap(~wmo) + theme_bw() +
-  scale_x_date(labels = date_format("%m"), date_breaks = '1 month') + 
-  scale_color_brewer(palette = 'Dark2') + labs(x = 'Month', y = 'Spectral slope') 
+
+  scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
+  scale_color_brewer(palette = 'Dark2') + labs(x = 'Month', y = 'Spectral slope')
 
 # compute slope on vertical profiles
-vertical_spectra <- as.matrix(data.frame(vertical_profiles[,5:19]))
-index <- seq(from = 1, to = nrow(vertical_spectra), by = 1)
-slopes <- map_dbl(index, compute_slope, data_spectra = vertical_spectra)
-vertical_profiles$spectral_slope <- slopes
 
+vertical_spectra <- as.matrix(data.frame(vertical_profiles[,5:19]))
+
+index <- seq(from = 1, to = nrow(vertical_spectra), by = 1)
+
+slopes <- map_dbl(index, compute_slope, data_spectra = vertical_spectra)
+
+vertical_profiles$spectral_slope <- slopes
 
 ```
 
@@ -1585,9 +1771,12 @@ vertical_profiles$spectral_slope <- slopes
 # vertical_profiles$slope <- slopes
 
 ggplot(vertical_profiles, aes(x = juld, y = depth, colour = spectral_slope)) + geom_point() + scale_colour_viridis(option = 'H') +
+
   scale_y_reverse(limits = c(2000,0)) +
+
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
-  labs(x = 'Time', y = TeX('slope')) + facet_wrap(~wmo) 
+
+  labs(x = 'Time', y = TeX('slope')) + facet_wrap(~wmo)
 
 ```
 
@@ -1598,21 +1787,29 @@ ggplot(vertical_profiles, aes(x = juld, y = depth, colour = spectral_slope)) + g
 tmp <- cflux |> mutate(ratioF = small_flux/(small_flux+big_flux))
 
 # ggplot(tmp |> filter(big_flux>0), aes(x = min_time, y = ratioF, colour = park_depth)) + geom_point() + facet_wrap(~wmo)
-# 
+
+#
+
 # ggplot(tmp |> filter(big_flux>0), aes(x = min_time, y = ratioF)) + geom_point() + facet_wrap(~park_depth)
-# 
+
+#
+
 # ggplot(tmp |> filter(big_flux>0), aes(x = min_time, y = ratioF)) + geom_smooth() + facet_wrap(~park_depth)
 
 ggplot(tmp |> filter(big_flux>0), aes(x = min_time, y = ratioF)) + geom_point() + geom_smooth() + facet_wrap(~park_depth)
 
 ggplot(drifting_profiles, aes(x = juld, y = spectral_slope, colour = factor(park_depth))) + geom_smooth() + facet_wrap(~wmo) + theme_bw() +
-  scale_x_date(labels = date_format("%m"), date_breaks = '1 month') + 
+
+  scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+
   scale_color_brewer(palette = 'Dark2') + labs(x = 'Month', y = 'Spectral slope')
 
-tmp2 <- drifting_profiles |> group_by(wmo, cycle, park_depth) |> summarize(median_spectral_slope = median(spectral_slope)) 
+tmp2 <- drifting_profiles |> group_by(wmo, cycle, park_depth) |> summarize(median_spectral_slope = median(spectral_slope))
 
 # merge data
-check <- merge(tmp, tmp2) 
+
+check <- merge(tmp, tmp2)
+
 check2 <- merge(tmp, tmp2) |> filter(ratioF < 1)
 
 ggplot(check, aes(ratioF, median_spectral_slope)) + geom_point()
@@ -1620,8 +1817,8 @@ ggplot(check, aes(ratioF, median_spectral_slope)) + geom_point()
 ggplot(check2, aes(ratioF, median_spectral_slope)) + geom_point()
 
 # ggplot(tmp, aes(x = min_time, y = ratioF)) + geom_smooth() + facet_wrap(~park_depth)
-```
 
+```
 
 ## Discussion2
 
