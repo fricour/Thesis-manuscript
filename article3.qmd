@@ -43,6 +43,7 @@ library(castr)
 library(reactablefmtr)
 library(gt)
 library(gtExtras)
+library(spatialrisk)
 ```
 
 ```{r, map of 4 floats}
@@ -642,7 +643,7 @@ The use of @eq-guidi-article3 to derive carbon fluxes from PSD was firstly imple
 
 ```{r, compute guidi fluxes at parking depth}
 #| label: fig-comparison-ost-uvp
-#| fig-cap: Comparison of total carbon fluxes derived from the OST (black) and the UVP6 (red) where the error bars represent the 25$^{th}$ and 75^{th}$ percentiles around the median.
+#| fig-cap: Comparison of total carbon fluxes derived from the OST (black) and the UVP6 (red) where the error bars represent the 25$^{th}$ and 75$^{th}$ percentiles around the median.
 
 compute_flux <- function(A, b, PSD){ # PSD = Particle Size Distribution
   # for classes sizes between 0.102 mm and 1.5 mm
@@ -653,6 +654,9 @@ compute_flux <- function(A, b, PSD){ # PSD = Particle Size Distribution
   mid_ESD <- c(0.23051195, 0.29042685,
                0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
                1.16170742, 1.46365963) # With Lionel's script
+    # mid_ESD <- c(0.29042685,
+    #            0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
+    #            1.16170742, 1.46365963) # With Lionel's script
   exp <- A * mid_ESD ** b
   estimated_flux <- rowSums(t(t(PSD)*exp))
   return(estimated_flux)
@@ -709,8 +713,6 @@ gt(correlations) |> tab_spanner(label = "Small flux", columns = 2:4) |> tab_span
 
 TODO :
 
--   TS diagram at drifting depth + isopycnals
--   satellite chla + MLD -\> show that conditions for bloom (stable and shallow MLD) + chla happened before deployment in the area
 -   faire le modèle de pente avec les biovolues pour prédire quels types de particules explique le plus la pente -\> faire un modèle pour le small flux et un modèle pour le big flux, pas un modèle pour les small + big car les pentes ne sont pas additives
 -   discuter des corrélations
 -   science: on voit le système latent, on a raté le bloom
@@ -785,13 +787,13 @@ Cette partie devrait venir dans la discussion si on part du principe que la prem
 #| label: fig-uvp-vertical-profiles
 #| fig-cap: Normalized concentrations of particles for all UVP6 vertical profiles. Plots were arranged to respect the deployment of each couple of floats (e.g. the first two rows of plots are related to co-deployed floats 6904240 and 4903634). The colorbar depicts the log$_{10}$ of normalized concentrations. Grey areas indicate that particles were not measured in the size range of interest.
 
-particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld))
-
-particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric())
-#particles_bis$size <- factor(particles_bis$size, levels = lpm_class)
-
-# rel_conc
-particles_bis <- particles_bis |> group_by(wmo, size) |> mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
+# particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld))
+# 
+# particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric())
+# #particles_bis$size <- factor(particles_bis$size, levels = lpm_class)
+# 
+# # rel_conc
+# particles_bis <- particles_bis |> group_by(wmo, size) |> mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
 
 # order floats by couple of deployment
 # particles_bis$wmo <- factor(particles_bis$wmo, levels = c(6904240,4903634,6904241,1902578))
@@ -813,45 +815,45 @@ particles_bis <- particles_bis |> group_by(wmo, size) |> mutate(rel_conc = (conc
 #   labs(x = 'Month', y = 'Depth (m)') +
 #   geom_path(data = particles_bis, aes(juld, MLD), colour = "white")
 
-## plot absolute concentrations
-up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
-  #group_by(size) |>
-  ggplot() + facet_grid(wmo~size) + theme_bw() +
-  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
-  #geom_point(aes(x=juld, y=depth, colour=rel_conc), size=1, shape=15) +
-  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + # A or F
-  #scale_colour_viridis(option = 'A', limits = c(-2,-1), oob = scales::squish, na.value = 'grey', direction = -1) + # A or F
-  #scale_colour_viridis(option = 'H') +
-  scale_y_reverse() +
-  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
-  #labs(colour = 'Log10 normalized abundance)', x = 'Month', y = 'Depth (m)') +
-  labs(colour = '#/L', x = 'Month', y = 'Depth (m)') #+
-  #geom_hline(yintercept = c(600, 1100), linetype = 'dotted')
-  #theme(legend.title = element_text(angle = -90))
-  #guides(fill = guide_legend(title.theme = element_text(size = 200)))
-  #+ theme(legend.position = 'none')
-  #geom_path(data = particles_bis, aes(juld, MLD), colour = "black") +
-  #theme(legend.position = 'none') #+
-  #geom_hline(yintercept = c(200,500,1000), linetype = 'dotted') #+
-  #guides(colour = guide_legend(title.position = "bottom"))
-
-#Normalized concentrations (#/L)
-
-up_part
-
-down_part <- particles_bis |> filter(depth < 2000, size >= 512) |>
-  #group_by(size) |>
-  ggplot() + facet_grid(wmo~size) + theme_bw() +
-  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
-  #geom_point(aes(x=juld, y=depth, colour=rel_conc), size=1, shape=15) +
-  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) +
-  #scale_colour_viridis(option = 'H') +
-  scale_y_reverse() +
-  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
-  #labs(colour = 'Log10 normalized abundance)', x = 'Month', y = 'Depth (m)') +
-  labs(colour = '#/L', x = 'Month', y = 'Depth (m)')
-
-down_part
+# ## plot absolute concentrations
+# up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
+#   #group_by(size) |>
+#   ggplot() + facet_grid(wmo~size) + theme_bw() +
+#   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+#   #geom_point(aes(x=juld, y=depth, colour=rel_conc), size=1, shape=15) +
+#   scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + # A or F
+#   #scale_colour_viridis(option = 'A', limits = c(-2,-1), oob = scales::squish, na.value = 'grey', direction = -1) + # A or F
+#   #scale_colour_viridis(option = 'H') +
+#   scale_y_reverse() +
+#   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+#   #labs(colour = 'Log10 normalized abundance)', x = 'Month', y = 'Depth (m)') +
+#   labs(colour = '#/L', x = 'Month', y = 'Depth (m)') #+
+#   #geom_hline(yintercept = c(600, 1100), linetype = 'dotted')
+#   #theme(legend.title = element_text(angle = -90))
+#   #guides(fill = guide_legend(title.theme = element_text(size = 200)))
+#   #+ theme(legend.position = 'none')
+#   #geom_path(data = particles_bis, aes(juld, MLD), colour = "black") +
+#   #theme(legend.position = 'none') #+
+#   #geom_hline(yintercept = c(200,500,1000), linetype = 'dotted') #+
+#   #guides(colour = guide_legend(title.position = "bottom"))
+# 
+# #Normalized concentrations (#/L)
+# 
+# up_part
+# 
+# down_part <- particles_bis |> filter(depth < 2000, size >= 512) |>
+#   #group_by(size) |>
+#   ggplot() + facet_grid(wmo~size) + theme_bw() +
+#   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+#   #geom_point(aes(x=juld, y=depth, colour=rel_conc), size=1, shape=15) +
+#   scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) +
+#   #scale_colour_viridis(option = 'H') +
+#   scale_y_reverse() +
+#   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+#   #labs(colour = 'Log10 normalized abundance)', x = 'Month', y = 'Depth (m)') +
+#   labs(colour = '#/L', x = 'Month', y = 'Depth (m)')
+# 
+# down_part
 ```
 
 ### Environmental conditions prior to bloom
@@ -866,7 +868,7 @@ npq_data <- vroom('DATA/ARGO/npq_corrected_data.csv')
 # clean and smoothed chla data
 d <- npq_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> mutate(date = as_date(juld))
 d <- d |> group_by(date, wmo, pres, cycle) |> summarize(mean_chla = mean(chla_npq, na.rm=T), mld = unique(MLD))
-d <- d |> mutate(smoothed_chla = smooth(mean_chla))
+d <- d |> mutate(smoothed_chla = smooth(mean_chla)/2.15, smoothed_chla_up = smooth(mean_chla)/(2.15-0.37), smoothed_chla_down = smooth(mean_chla)/(2.15+0.37)) # 2.15 = Roesler factor in the Labrador Sea
 
 #d$wmo <- factor(d$wmo, levels = c(6904240,4903634,6904241,1902578))
 
@@ -882,48 +884,160 @@ ggplot(d) + geom_point(aes(x = date, y = pres, colour = log10(smoothed_chla))) +
 # compute chla integration in the MLD and in the 0-100 m zone
 d_chla <- d |> group_by(wmo, date) |> summarize(chla_0_100m = integrate(smoothed_chla, pres, from=0, to=100),
                                        mld = unique(mld),
-                                       chla_0_mld = integrate(smoothed_chla, pres, from = 0, to=mld))
+                                       chla_0_mld = integrate(smoothed_chla, pres, from = 0, to=mld),
+                                       median_chla_0_20m = median(smoothed_chla[pres<=20], na.rm=T),
+                                       median_chla_0_20m_up = median(smoothed_chla_up[pres<=20], na.rm=T),
+                                       median_chla_0_20m_down = median(smoothed_chla_down[pres<=20], na.rm=T))
 # 
 # ggplot(d_chla) + geom_point(aes(date, chla_0_100m)) + facet_wrap(~wmo, scales = 'free') + theme_bw() + labs(x = 'Month', y = 'Integrated Chla 0-100 m (CHLA UNITS)')
 #ggplot(d_chla) + geom_point(aes(date, chla_0_mld)) + facet_wrap(~wmo, scales = 'free')
+
+# add couple info
+d_chla <- d_chla |> mutate(group = if_else(wmo %in% c(6904240,4903634), '6904240 - 4903634', '6904241 - 1902578'))
 
 ```
 
 ```{r, chla and MLD from satellite}
 
-chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_with_clouds_sat.feather')
-#chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_without_clouds_sat.feather')
-mld_sat <- arrow::read_feather('DATA/SATELLITE/mld_sat.feather') |> mutate(lat = latitude, lon = longitude - 360) |> select(time, lat, lon, mld = mlotst)
+#chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_with_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
+chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_without_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
+mld_sat <- arrow::read_feather('DATA/SATELLITE/mld_sat.feather') |> mutate(longitude = longitude - 360) |> select(time, lat = latitude, lon = longitude, mld = mlotst)
   
 # CHLA
-x <- 1
-y <- 1
-chla_cover_deployment1 <- chla_sat |> filter(lat > 58.9 - y, lat < 58.9 + y, lon > -49.3 - x, lon < -49.3 + x) |> mutate(date = as_date(time), group = 'couple 1') |> mutate(deploy = as_date('2022-05-22'))
-chla_cover_deployment2 <- chla_sat |> filter(lat > 56.7 - y, lat < 56.7 + y, lon > -52.3 - x, lon < -52.3 + x) |> mutate(date = as_date(time), group = 'couple 2') |> mutate(deploy = as_date('2022-05-30'))
+chla_cover_deployment1 <- points_in_circle(chla_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
+chla_cover_deployment1 <- chla_cover_deployment1 |> mutate(date = as_date(time), group = '6904240 - 4903634') |> mutate(deploy = as_date('2022-05-22'))
+
+chla_cover_deployment2 <- points_in_circle(chla_sat, lon_center = -52.3, lat_center = 56.7, radius = 10000) # 50 km around center
+chla_cover_deployment2 <- chla_cover_deployment2 |> mutate(date = as_date(time), group = '6904241 - 1902578') |> mutate(deploy = as_date('2022-05-30'))
+
+# all deploy
 chla_cover <- rbind(chla_cover_deployment1, chla_cover_deployment2)
 
-ggplot(chla_cover) + geom_errorbar(aes(x = date, y = CHL),
+chla_plot <- ggplot(chla_cover |> filter(date > '2022-04-01')) + geom_errorbar(aes(x = date, y = chla),
                       stat = 'summary',
                       fun.min = function(z) {quantile(z, 0.25)},
                       fun.max = function(z) {quantile(z, 0.75)},
                       fun = median, colour = 'black', width = .5) + theme_bw() +
   labs(x = 'Time', y = 'Chla')+ facet_wrap(~group) +
-  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "red")
-
+  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "black", linetype = 'dashed') +
+  geom_pointrange(data = d_chla |> filter(date < '2022-08-01'), aes(x = date, ymin = median_chla_0_20m_down, ymax = median_chla_0_20m_up, y = median_chla_0_20m), colour = "red", size = .25)
+                
 # MLD
-mld_cover_deployment1 <- mld_sat |> filter(lat > 58.9 - y, lat < 58.9 + y, lon > -49.3 - x, lon < -49.3 + x) |> mutate(date = as_date(time), group = 'couple 1') 
-mld_cover_deployment2 <- mld_sat |> filter(lat > 56.7 - y, lat < 56.7 + y, lon > -52.3 - x, lon < -52.3 + x) |> mutate(date = as_date(time), group = 'couple 2')
+mld_cover_deployment1 <- points_in_circle(mld_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
+mld_cover_deployment1 <- mld_cover_deployment1 |> mutate(date = as_date(time), group = '6904240 - 4903634') |> mutate(deploy = as_date('2022-05-22'))
+
+mld_cover_deployment2 <- points_in_circle(mld_sat, lon_center = -52.3, lat_center = 56.7, radius = 100000) # 50 km around center
+mld_cover_deployment2 <- mld_cover_deployment2 |> mutate(date = as_date(time), group = '6904241 - 1902578') |> mutate(deploy = as_date('2022-05-30'))
+
 mld_cover <- rbind(mld_cover_deployment1, mld_cover_deployment2)
 
-ggplot(mld_cover) + geom_errorbar(aes(x = date, y = mld),
+mld_plot <- ggplot(mld_cover |> filter(date > '2022-04-01')) + geom_errorbar(aes(x = date, y = mld),
                       stat = 'summary',
                       fun.min = function(z) {quantile(z, 0.25)},
                       fun.max = function(z) {quantile(z, 0.75)},
                       fun = median, colour = 'black', width = 5) +
-  labs(x = 'Time', y = 'MLD (m)') + facet_wrap(~group, scales = 'free_y')
+  labs(x = 'Time', y = 'MLD (m)') + facet_wrap(~group) + theme_bw() +
+  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "black", linetype = 'dashed') +
+  geom_point(data = d_chla |> filter(date < '2022-08-01') |> mutate(week = week(date), DOY = yday(date)) |> group_by(week, group) |> summarize(median_mld = median(mld), mean_date = as_date(mean(DOY), origin = '2022-01-01')), aes(mean_date, median_mld), colour = "red")
+
+chla_plot / mld_plot
 
 ```
 
+with a radius of 100 km around both deployment positions
+
+### Sinking speed
+
+- Montrer que les sinking speed observées ne sont pas compatibles avec des valeurs de bloom (càd rapides pour les grosses particules à minima)
+
+```{r, sinking speed plot}
+
+sinking_fit <- vroom('DATA/ARGO/gaussian_fit_sinking_speed_full.csv') |> mutate(size = size_class |> str_remove('NP_Size_') |> as.numeric(), date = as_date(date))
+
+estimate_sinking_speed <- function(siz, data, threshold){
+  
+  # above 500 m
+  tmp <- data |> filter(size == siz) |> filter(depth <= threshold)
+  model <- lm(formula = depth ~ time_max_abundance, data = tmp)
+  tmp$sinking_speed_above_threshold <- model$coefficients[2] # equivalent to slope of the fit
+  tmp2 <- tmp
+  
+  # below 500 m
+  tmp <- data |> filter(size == siz) |> filter(depth > threshold)
+  model <- lm(formula = depth ~ time_max_abundance, data = tmp)
+  tmp2$sinking_speed_below_threshold <- model$coefficients[2] # equivalent to slope of the fit
+  
+  return(tmp2)
+}
+
+# sinking speed for each float
+sinking_6904240 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 6904240), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+sinking_6904241 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 6904241), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+sinking_1902578 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 1902578), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+sinking_4903634 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 4903634), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+all_sinking_speed <- rbind(sinking_1902578, sinking_4903634, sinking_6904240, sinking_6904241)
+
+```
+
+
+```{r, vertical plots + sinking speed}
+
+particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld))
+
+particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric())
+#particles_bis$size <- factor(particles_bis$size, levels = lpm_class)
+
+# rel_conc
+particles_bis <- particles_bis |> group_by(wmo, size) |> mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
+
+up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
+  #group_by(size) |>
+  ggplot() + facet_grid(wmo~size) + theme_bw() +
+  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+  scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
+  geom_pointrange(data = sinking_fit |> filter(size < 512), aes(xmin = as_date(xmin, origin = '2022-01-01'), xmax = as_date(xmax, origin = '2022-01-01'), x = as_date(DOY, origin = '2022-01-01'), y = depth), size = .2, colour = 'white') 
+
+up_part
+
+down_part <- particles_bis |> filter(depth < 2000, size > 512) |>
+  #group_by(size) |>
+  ggplot() + facet_grid(wmo~size) + theme_bw() +
+  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+  scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
+  geom_pointrange(data = sinking_fit |> filter(size > 512), aes(xmin = as_date(xmin, origin = '2022-01-01'), xmax = as_date(xmax, origin = '2022-01-01'), x = as_date(DOY, origin = '2022-01-01'), y = depth), size = .2, colour = 'white') 
+
+down_part
+
+```
+
+
+### TS diagram
+
+- Pour le drift à 200, 500 et 1000 m
+
+```{r, TS diagram}
+
+#ts_data <- all_floats |> filter(PhaseName == 'NPAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26) |> mutate(date = as_date(date))
+
+ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26, park_depth != '200 m') |> mutate(date = as_date(date))
+#ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26) |> mutate(date = as_date(date))
+ggplot(ts_data) + geom_point(aes(psal, temp, colour = factor(park_depth))) + theme_bw()
+
+# ggplot(ts_data) + geom_point(aes(psal, temp, colour = wmo))
+
+ts_data <- all_floats |> filter(PhaseName == 'NPAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26) |> mutate(date = as_date(date))
+
+# add contour
+# breaks_sigma <- seq(min(round(ts_data$sigma*2)/2), max(round(ts_data$sigma*2)/2), by = 1)
+ggplot(ts_data) + geom_point(aes(psal, temp, colour = depth)) + scale_color_viridis_c(option = 'A') + theme_bw()
+
+```
 
 
 ### Processes at play
