@@ -218,11 +218,11 @@ check_colour <- unique(tmp3$colour)
 if(length(check_colour) == 3){
   index_neg_jump <- which(tmp3$colour == 'negative jump')
   tmp3 <- tmp3[-c(index_neg_jump, index_neg_jump+1),]
-  tmp3 <- tmp3 |> mutate(diff_jump = cp - lag(cp)) 
+  tmp3 <- tmp3 |> mutate(diff_jump = cp - lag(cp))
   even_indexes <- seq(2,nrow(tmp3),2)
   tmp3 <- tmp3[even_indexes,]
 }else if(length(check_colour) == 2){
-  tmp3 <- tmp3 |> mutate(diff_jump = cp - lag(cp)) 
+  tmp3 <- tmp3 |> mutate(diff_jump = cp - lag(cp))
   even_indexes <- seq(2,nrow(tmp3),2)
   tmp3 <- tmp3[even_indexes,]
 }else{ # NO jump
@@ -362,13 +362,20 @@ plot_jumps <- function(data){
   
   # remove negative jumps, if any
   check_colour <- unique(tmp2$colour)
-  if(length(check_colour) == 3){ # there is at least a negative jump
-    index_neg_jump <- which(tmp2$colour == 'negative jump')
-    tmp2 <- tmp2[-c(index_neg_jump, index_neg_jump+1),]
-    tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
-    even_indexes <- seq(2,nrow(tmp2),2)
-    tmp2 <- tmp2[even_indexes,]
-  }else if(length(check_colour) == 2){ # only positive jumps
+  # if(length(check_colour) == 3){ # there is at least a negative jump
+  #   index_neg_jump <- which(tmp2$colour == 'negative jump')
+  #   tmp2 <- tmp2[-c(index_neg_jump, index_neg_jump+1),]
+  #   tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
+  #   even_indexes <- seq(2,nrow(tmp2),2)
+  #   tmp2 <- tmp2[even_indexes,]
+  # }else if(length(check_colour) == 2){ # only positive jumps
+  #   tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
+  #   even_indexes <- seq(2,nrow(tmp2),2)
+  #   tmp2 <- tmp2[even_indexes,]
+  # }else{ # No jump
+  #   tmp2 <- NULL
+  # }
+  if(length(check_colour) >= 2){ # there is a least a jump (positive or negative)
     tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
     even_indexes <- seq(2,nrow(tmp2),2)
     tmp2 <- tmp2[even_indexes,]
@@ -706,6 +713,187 @@ gt(correlations) |> tab_spanner(label = "Small flux", columns = 2:4) |> tab_span
 Figure @fig-comparison-ost-uvp shows a comparison of carbon fluxes estimated with the OST ($F_{total} = F_{small} + F_{big}$) and the UVP6 (median of all UVP measurements while the float was drifting) at all drifting depths. Overall, carbon fluxes estimated with the coefficients ($A$, $b$) of @Guidi2008-vp, are lower than the ones measured by the OST. Without additional measurements (e.g. co-deployed sediment traps), it is however impossible to decipher which measurements is closest to the truth. Nonetheless, the trends measured by both instruments are very well correlated at all drifting depths for floats 6904240 and 6904241 with correlations comprised between `r min(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])` and `r max(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])`. @tbl-correlation also shows that the correlation between UVP-derived carbon fluxes and $F_{small}$ and $F_{big}$ is `r mean(as.vector(as.matrix(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,2:7])))` on average. We calculated lower correlations with the other two floats, especially the float 1902578 at 200 m, where correlations between the UVP-derived carbon fluxes and all fluxes (small, big and total) are close to 0. 
 
 Floats equipped with both a transmissometer and a UVP6 represent an opportunity to look at the influence of parts of the size spectrum on $F_{small}$ and $F_{big}$. For this, we decided to build a regression model using XGBoost, a gradient boosting method [REF], using biovolumes measured by the UVP to predict the slope of $F_{small}$ and $F_{big}$ measured by the OST.
+
+```{r, get jump info}
+
+get_jump_info <- function(data){
+  
+  # make sure that the cp signal is in chronological order
+  tmp <- data |> arrange(dates)
+  
+  # despike cp data with a 7-point moving window
+  tmp$cp <- despike(tmp$cp, k = 3)
+  
+  # smooth cp data with a 3-point moving median, n time(s)
+  tmp$cp <- slide(tmp$cp, fun = median, k = 3, n = 1, na.rm=T)
+  
+  # compute slope between two adjacent points (except first point) # we could start after 1h to let the float stabilize
+  delta_x <- as.numeric(tmp$dates - lag(tmp$dates), units = 'days')
+  delta_y <- tmp$cp - lag(tmp$cp)
+  tmp$slope <- delta_y/delta_x
+  
+  # compute a Z score (assuming a normal distribution of the slopes) on the slopes
+  tmp <- tmp |> mutate(zscore = (slope - mean(slope, na.rm = T))/sd(slope, na.rm = T))
+  
+  # spot outliers on the Z score signal
+  # interquartile range between Q25 and Q75 -> had to used that and not the despike function because slopes are often close (or equal) to 0 so it can miss clear jumps. Q25 and Q75 are more trustworthy in this case than the despike function of Jean-Olivier (see package castr on his github: https://github.com/jiho/castr)
+  IQR <- quantile(tmp$zscore, probs = 0.75, na.rm=T) - quantile(tmp$zscore, probs = 0.25, na.rm=T)
+  # outliers ('spikes' in the Z score signal)
+  spikes_down <- tmp$zscore < quantile(tmp$zscore, 0.25, na.rm=T) - 1.5 *IQR
+  spikes_up <-  tmp$zscore > quantile(tmp$zscore, 0.75, na.rm=T) + 1.5 *IQR
+  spikes <- as.logical(spikes_down + spikes_up)
+  
+  # assign spikes
+  tmp$spikes <- spikes
+  
+  # assign colour code to cp signal
+  tmp$colour <- 'base signal' # base signal = smoothed despiked cp signal
+  tmp[which(tmp$spikes == TRUE),]$colour <- 'jump'
+  
+  # add group to compute the slope of each group of points, separated by a jump
+  tmp$group <- NA
+  
+  # index of jumps in the array
+  jump_index <- which(tmp$colour == 'jump')
+  
+  # assign group identity to each group of points, separated by a jump (= subgroup)
+  for (i in jump_index){
+    for (j in 1:nrow(tmp)){
+      if ((j < i) & (is.na(tmp$group[j]))){
+        tmp$group[j] <- paste0('group_',i)
+      }
+    }
+  }
+  tmp$group[which(is.na(tmp$group))] <- 'last_group'
+  
+  # compute slope for each subgroup
+  slope_df <- tmp |> filter(colour == 'base signal', slope != 'NA') |> dplyr::group_by(group) |> dplyr::summarise(min_time = min(dates), max_time = max(dates), 
+                                                                                                                  nb_points = n(), first_cp = cp[1], last_cp = cp[nb_points],
+                                                                                                                  delta_x = as.numeric(difftime(max_time, min_time, units = 'days')),
+                                                                                                                  delta_y = (last_cp-first_cp)*0.25, slope = delta_y/delta_x) # *0.25 to convert cp to ATN
+  
+  # remove negative slope from the mean slope (no physical meaning)
+  slope_df <- slope_df |> filter(slope > 0)
+  
+  # remove if only one point (cannot fit a slope with one point)
+  slope_df <- slope_df |> filter(nb_points > 1)
+  
+  # compute weighted average slope (to take into account the fact that some subgroups might have 2 points and a high slope vs. large group of points with a small slope)
+  mean_slope <- sum(slope_df$nb_points * slope_df$slope)/sum(slope_df$nb_points)
+  
+  # convert cp to POC using Estapa's relationship 
+  poc_flux <- 633*(mean_slope**0.77) # /!\ slope computed for ATN on y axis (delta_y *0.25 because ATN = cp*0.25) -> should be OK
+  
+  # build dataframe to plot each subgroup
+  part1 <- slope_df |> select(group, time = min_time, cp = first_cp)
+  part2 <- slope_df |> select(group, time = max_time, cp = last_cp)
+  part_slope <- rbind(part1, part2)
+  
+  # spot negative jump
+  tmp$colour[which((tmp$colour == 'jump') & (tmp$slope < 0))]  <- 'negative jump'
+  
+  # add big particles flux to the party
+  rows_to_keep <- c(jump_index, jump_index-1)
+  tmp2 <- tmp[rows_to_keep,] |> select(dates, cp, slope, colour, group) |> arrange(dates)
+  
+  # remove negative jumps, if any
+  check_colour <- unique(tmp2$colour)
+  if(length(check_colour) >= 2){ # there is a least a jump (positive or negative)
+    tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
+    even_indexes <- seq(2,nrow(tmp2),2)
+    tmp2 <- tmp2[even_indexes,]
+  }else{ # No jump
+    tmp2 <- NULL
+  }
+  
+  if(is.null(tmp2)){ # no jump
+    big_part_poc_flux <- 0
+    tmp3 <- NULL
+  }else{
+    tmp3 <- tmp2 |> filter(diff_jump > 0) # remove negative
+    if(nrow(tmp3) == 0){ # no positive jumps
+      big_part_poc_flux <- 0
+    }else{
+      delta_y <- sum(tmp3$diff_jump) *0.25 # to get ATN (= cp*0.25)
+      max_time <- max(tmp$dates)
+      min_time <- min(tmp$dates)
+      delta_x <- as.numeric(difftime(max_time, min_time, units = 'days'))
+      slope_big_part <- delta_y/delta_x
+      big_part_poc_flux <- 633*(slope_big_part**0.77)
+    }
+  }
+  
+  # compute total drifting time
+  max_time <- max(tmp$dates)
+  min_time <- min(tmp$dates)
+  drifting_time <- as.numeric(difftime(max_time, min_time, units = 'days'))
+  
+  # to plot subgroups
+  part_slope_tmp <- part_slope |> mutate(dates = time, colour = 'slope')
+  
+  # plot
+  # jump_plot <- plot_ly(tmp, x = ~dates, y = ~cp, type = 'scatter', mode = 'markers', color = ~colour, colors = c('#003366','#E31B23', '#FFC325')) |>
+  #   add_lines(data= part_slope_tmp, x = ~dates, y = ~cp, split = ~group, color = I('#DCEEF3'), showlegend = F) |>
+  #   layout(title= paste0('Drifting time: ', round(drifting_time,3), ' days\n',
+  #                        'Mean ATN slope (light blue): ', round(mean_slope,3), ' day-1\n',
+  #                        'POC flux (small particles): ', round(poc_flux,1), ' mg C m-2 day-1\n',
+  #                        'POC flux (big particles): ', round(big_part_poc_flux,1), ' mg C m-2 day-1'), yaxis = list(title = 'Cp (1/m)'), xaxis = list(title = 'Time'))
+  
+  
+  # adapt script to return big and small flux
+  df <- tibble('max_time' = max_time, 'min_time' = min_time, 'small_flux' = poc_flux, 'big_flux' = big_part_poc_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],
+               cycle = data$cycle[1])
+  
+  # clean data to send
+  slope_df <- slope_df |> arrange(min_time) |> mutate(min_drifting_time = df$min_time, max_drifting_time = df$max_time, small_flux = df$small_flux, big_flux = df$big_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1])
+  if(is.null(tmp3)){
+    big_jump <- tmp3
+  }else{
+     big_jump <- tmp3 |> mutate(park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1]) 
+  }
+  
+  return(list(slope_info = slope_df, jump_info = big_jump))
+}
+```
+
+TO DO HERE
+
+```{r, compute slope and jump info}
+
+# start loop for all data
+wmo <- c(4903634, 6904240, 6904241, 1902578)
+park_depth <- c('200 m', '500 m', '1000 m')
+
+# i <- 4903634
+# j <- '1000 m'
+# k <- 15
+# tmp <- all_floats_slope |> filter(wmo == i, park_depth == j, cycle == k)
+# 
+# data <- tmp
+
+res_slope <- data.frame()
+res_jumps <- data.frame()
+for (i in wmo){
+  max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
+  for (j in park_depth){
+    for (k in seq(1:max_cycle)){
+      tmp <- all_floats_slope |> filter(wmo == i, park_depth == j, cycle == k)
+      if(nrow(tmp) == 0){
+        next
+      }else if(nrow(tmp) < 3){ # case where there is not enough data
+        next
+      }else{
+          output <- get_jump_info(tmp)
+          res_slope <- rbind(res_slope, output$slope_info)
+          res_jumps <- rbind(res_jumps, output$jump_info)
+      }
+    }
+  }
+}
+
+```
+
+
 
 ```{r, model based on slope}
 
@@ -1142,6 +1330,35 @@ down_part
 ```{r, sinking speed values}
 
 gt(all_sinking_speed)
+
+```
+
+```{r, check gaussian profiles}
+
+# depth layers for Gaussian fit
+depthL <- c(seq(40,200,20), c(250,300,400,500,600,800,1000,1250,1500,1750,2000))
+
+# Gaussian formula #> but z is not the depth but the TIME
+fgauss <- function(z, peak_conc, peak_doy, dz){
+  peak_conc*exp(-((z-peak_doy)**2)/(dz**2))
+}
+
+return_fitted <- function(d){
+  
+  #timeframe near the bloom so to say
+  ztime <- seq(160,240,1)
+  # gaussian fit
+  tib <- map_dfr(1:nrow(d), function(i){tibble(ztime = ztime, fgauss = fgauss(ztime, d$max_abundance[i], d$time_max_abundance[i], d$standard_dev[i]), depth = d$depth[i])})
+  return(tib)
+}
+
+# test
+tmp <- sinking_fit |> filter(wmo == 6904240, size == 645)
+
+test <- return_fitted(tmp)
+
+ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() + theme_bw() #+ ylim(c(0,.2)) 
+
 
 ```
 
