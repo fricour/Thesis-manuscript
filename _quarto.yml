@@ -10,18 +10,24 @@ book:
     - summary.qmd
     - intro.qmd
     - observingCarbonCycle.qmd
-    - article3.qmd
+    #- article3.qmd
     - references.qmd
+    - annexes.qmd
 
 bibliography: references.bib
+csl: journal-of-oceanography.csl
+#bibliography: https://api.citedrive.com/bib/fc082fe7-66b6-4ce0-971e-df5eb80d7808/references.bib?x=eyJpZCI6ICJmYzA4MmZlNy02NmI2LTRjZTAtOTcxZS1kZjVlYjgwZDc4MDgiLCAidXNlciI6ICIyNjg2IiwgInNpZ25hdHVyZSI6ICJhN2E2MmEyNTFmYjExZmI4MTA3OTUwOTQ0NjNiOTNiNjljNGNiOTVjODAyOWVhZDJiZmM2MDdkYzZkYjUwYjliIn0=/bibliography.bib
+link-citations: true
 
 format:
   #docx: default
-  html:
-    theme: cosmo
-  # pdf:
-  #   #pdf-engine: xelatex
-  #   documentclass: scrreprt
+  # html:
+  #   theme: cosmo
+  pdf:
+    #pdf-engine: xelatex
+    documentclass: scrreprt
+    #cite-method: biblatex
+    include-in-header: preamble.tex
 
 editor: visual
 

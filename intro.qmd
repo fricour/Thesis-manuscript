@@ -2,23 +2,23 @@
 
 ## The global carbon cycle {#sec-global_carbon_cycle}
 
-The global carbon cycle (@fig-global_carbon_cycle) consists of a series of exchanges of carbon in various organic and inorganic forms among four major reservoirs: the lithosphere, the hydrosphere, the atmosphere and the biosphere. These exchanges occur at different timescales, such that the carbon cycle can be divided into a slow and a fast component. The former operates on geological timescales where carbon is hidden from the surface for millions of years (e.g. in hydrocarbon deposits such as petroleum or natural gas) before being released through volcanic activity while the latter operates on shorter timescales, from minutes to years (e.g. photosynthesis, air-sea fluxes) up to decades and millenia (e.g. ocean ventilation, changing ocean buffering capacity) [@Bertrand2021-nh; @Canadell2021-ds].
+The global carbon cycle (@fig-global_carbon_cycle) consists of a series of exchanges of carbon in various organic and inorganic forms among four major reservoirs: the lithosphere, the hydrosphere, the atmosphere and the biosphere. These exchanges occur at different timescales, such that the carbon cycle can be roughly divided into a slow and a fast component. The former operates on geological timescales where carbon is hidden from the surface for millions of years (e.g. in hydrocarbon deposits such as petroleum or natural gas) before a part of it is released through volcanic activity while the latter operates on shorter timescales, from minutes to years (e.g. photosynthesis, air-sea fluxes) up to decades and millenia (e.g. ocean ventilation, changing ocean buffering capacity) [@Bertrand2021-nh; @Canadell2021-ds].
 
-99% of the Earth's carbon is stored in rocks, holding about 100,000 times as much carbon as the atmosphere while the ocean contains about 60 times as much carbon as the atmosphere [@DeVries2022-of; @Bertrand2021-nh; @Sarmiento2006-ec] with roughly 37,000 Pg (i.e. 1 Pg = 10$^{15}$ g = 1 Gt) of dissolved inorganic carbon (DIC) and 700 Pg of dissolved organic carbon (DOC) [@Friedlingstein2021-kc].
+99% of the Earth's carbon is stored in rocks, holding about 100,000 times as much carbon as the atmosphere while the ocean contains about 60 times as much carbon as the atmosphere [@Sarmiento2006-ec; @Bertrand2021-nh; @DeVries2022-of] with roughly 37,000 Pg (i.e. 1 Pg = 10$^{15}$ g = 1 Gt) of dissolved inorganic carbon (DIC) and 700 Pg of dissolved organic carbon (DOC) [@Friedlingstein2022-th].
 
-![Illustration of the global carbon cycle (numbers were taken for the year 2020). Arrows and boxes depict, respectively, carbon fluxes in Pg C year$^{-1}$ and carbon content in Pg C. Figure taken from @DeVries2022-of.](image/intro/carbon_cycle_devries2022.jpeg){#fig-global_carbon_cycle}
+![Illustration of the global carbon cycle (numbers represent a global average for the decade 2012-2021). Arrows and circles depict, respectively, carbon fluxes in Pg C year$^{-1}$ and carbon content in Pg C. Figure taken from @Friedlingstein2022-XX.](image/intro/global_carbon_cycle.png){#fig-global_carbon_cycle}
 
 The global carbon cycle had been at close equilibrium for millions of years before the industrial revolution started in the 18th century. Since then, human have been burning fossil fuels at an unprecedented rate, releasing huge amounts of carbon dioxide ($CO_{2}$) in the atmosphere that should have been discharged slowly through the slow carbon cycle [@Bertrand2021-nh]. These emissions, resulting from fossil emissions but also from land use (e.g. deforestation, land management) have been estimated around 700 Pg C since 1750 [@Canadell2021-ds].
 
-Thankfully, more than half of this anthropogenic $CO_{2}$ has been absorbed by terrestrial ecosystems and by the ocean [@Friedlingstein2021-kc], forming major carbon sinks.
+Thankfully, more than half of this anthropogenic $CO_{2}$ has been absorbed by terrestrial ecosystems and by the ocean [@Friedlingstein2022-XX], forming major carbon sinks.
 
 ## How is the ocean a $CO_{2}$ sink? {#sec-ocean_co2_sink}
 
-The ocean is known to play a key role in the fast carbon cycle due to its size and rapid exchange of $CO_{2}$ with the atmosphere, controlling atmospheric $CO_{2}$ levels on timescales of decades to millennia [@DeVries2022-of; @Sarmiento2006-ec]. Currently, the ocean absorbs \~2.5 Gt C year$^{-1}$, which represents about 25% of annual anthropogenic $CO_{2}$ emissions [@Canadell2021-ds; @Friedlingstein2021-kc]. In order to understand how the ocean absorbs the latter, one must take a look at seawater carbonate chemistry.
+The ocean is known to play a key role in the fast carbon cycle due to its size and rapid exchange of $CO_{2}$ with the atmosphere, controlling atmospheric $CO_{2}$ levels on timescales of decades to millennia [@Sarmiento2006-ec; @DeVries2022-of]. Currently, the ocean absorbs \~2.5 Pg C year$^{-1}$, which represents about 25% of annual anthropogenic $CO_{2}$ emissions [@Canadell2021-ds; @Friedlingstein2022-XX]. In order to understand how the ocean absorbs the latter, one must take a look at seawater carbonate chemistry.
 
 ### Inorganic carbonate chemistry {#sec-inorganic_carbonate_chemistry}
 
-The intensity of the exchange of $CO_{2}$ at the air-sea interface is driven by the difference in the partial pressure of $CO_{2}$ in the atmosphere ($pCO_{2}^{atm}$) and in the surface ocean ($pCO_{2}^{surface}$).
+The intensity of the exchange of $CO_{2}$ at the air-sea interface is driven by the difference between the partial pressure of $CO_{2}$ in the atmosphere ($pCO_{2}^{atm}$) and in the surface ocean ($pCO_{2}^{surface}$).
 
 $$
 \Delta pCO_{2} = pCO_{2}^{surface} - pCO_{2}^{atm}
@@ -104,7 +104,7 @@ This gradient is mostly due to processes often referred to as carbon pumps, oper
 
 #### Solubility pump {#sec-solubility-pump}
 
-From @eq-carbonic_acid, one can derive that p$CO_{2}$<sup>water parcel</sup> is related to the dissolved $CO_{2}$ concentration by the following relation
+From @eq-carbonic_acid, one can derive that p$CO_{2}^{water~parcel}$ is related to the dissolved $CO_{2}$ concentration by the following relation
 
 $$
 pCO_{2}^{water~parcel} = \frac{[CO_{2}]}{K_{0}}  
@@ -114,7 +114,7 @@ where $K_{0}$ is the solubility coefficient of $CO_{2}$ in seawater.
 
 $K_{0}$ is a function of temperature and salinity with a strong dependence on the former [@Sarmiento2006-ec] such that the solubility of $CO_{2}$ increases with decreasing temperatures. Consequently, waters that cool as they are transported to higher latitudes by the thermohaline circulation will be undersaturated in $CO_{2}$ once they reach the surface. Thus, there will be a net exchange of carbon dioxide from the atmosphere to the ocean, enriching surface waters in DIC before they dive back to the abyss at deep water formation zones in North Atlantic polar regions (e.g. the Labrador Sea) and along the Antarctic shelf in the Southern Ocean [@DeVries2022-of].
 
-The solubility pump is responsible for the great majority of all the anthropogenic $CO_{2}$ that has been absorbed by the ocean and it would be contributing to 10% of the observed DIC gradient according to [@Sarmiento2006-ec] or 35% according to @Toggweiler2003-ye. Both values are used in the literature (e.g. 10% in @Boyd2019-ez and @Iversen2022-qj and 35% in @DeVries2022-of, @Passow2012-zh and @Riebesell2009-qj).
+The solubility pump is responsible for the great majority of all the anthropogenic $CO_{2}$ that has been absorbed by the ocean and it would be contributing to 10% of the observed DIC gradient according to @Sarmiento2006-ec or 35% according to @Toggweiler2003-ye. Both values are used in the literature (e.g. 10% in @Boyd2019-ez and @Iversen2022-qj and 35% in @Riebesell2009-qj, @Passow2012-zh and @DeVries2022-of).
 
 #### Carbonate pump {#sec-carbonate-pump}
 
@@ -140,21 +140,29 @@ $$
 CO_{2} + H_{2}O \rightarrow CH_{2}O + O_{2} 
 $$ {#eq-photosynthesis}
 
-The BCP would thus be responsible for the remaining 70% of the observed DIC gradient according to @Sarmiento2006-ec. However, it should be emphasized that in contrast to the solubility pump, the BCP is not responsible for the absorption of excess $CO_{2}$, released by anthropogenic activities. First, as explained in @Sarmiento2006-ec, atmospheric $CO_{2}$ levels were stable for several thousand years before the industrial revolution started, therefore it is assumed that the BCP was operating at steady state. Second, phytoplankton organisms are mostly controlled by light and nutrients availability, not by $CO_{2}$.
+This sequestration (storage) of carbon is usually defined as the long-term removal of $CO_{2}$ (or other forms of carbon) from the atmosphere on climatically significant time scales [e.g. @Boyd2019-ez; @Ipcc2019-qc]. While this definition seems logical, it does not specify precisely what is meant by "climatically significant time scales". In what follows, I will use the 100-year time horizon to refer to carbon sequestration (unless specified otherwise) as used by other BCP studies [e.g. @Lampitt2008-kq; @Passow2012-zh].
 
-The BCP is a natural-based solution for carbon sequestration by definition (@eq-photosynthesis). However, natural-based solutions for carbon sequestration are generally aligned with the concept of 'blue carbon' defined by @Ipcc2019-qc as "all biologically-driven carbon fluxes and storage in marine systems that are amenable to management" which usually encompasses only coastal ecosystems [@Ipcc2019-qc; @Lovelock2019-dr].
-
-Coastal blue carbon ecosystems (e.g. mangroves, tidal marshes, seagrass meadows) are thought to store in their living biomass (years to decades) and sediment (millenia) more than 30 Pg C with an estimated absorption of \~0.3 Pg C year$^{-1}$ [@Macreadie2021-rb] though those numbers should be taken with caution because there are major uncertainties in the distribution of seagrass meadows and tidal marshes [@Macreadie2021-rb] as well as in carbon burial rates [@Williamson2022-ud]. In spite of that, the current expectation of additional carbon removal by coastal blue carbon by 2100 should be around 25-30 Pg C [@Williamson2022-ud; @Gattuso2021-cr], that is the equivalent of 2.5-3 years of current anthropogenic emissions [@Friedlingstein2021-kc].
+The amount of carbon that is sequestered by the BCP mainly depends its strength and its efficiency. In this manuscript, the strength of the BCP is defined as "the magnitude of the particulate organic carbon (POC) flux at a reference export depth" [@Claustre2021-tx] and its efficiency (also known as transfer efficiency) is defined as the fraction of POC flux transported to some reference depth below the export depth [@Buesseler2020-sn; @Claustre2021-tx]. The latter is often set at 100 m but @Buesseler2020-sn strongly emphasized that carbon flux-related studies should use the base of the euphotic zone (EZ, where there is enough light for primary production) as the export depth to clearly differentiate the layer where POC is produced (i.e. via photosynthesis) and where POC is remineralized (or respired), that is organic matter converted back to inorganic forms (i.e. nutrients and DIC) by heterotrophic organisms [@Siegel2022-wd].
 
 In comparison, the recent work of @Nowicki2022-no suggests that the BCP exports on average 10.2 Pg C year$^{-1}$, sequesters \~1,300 Pg C with a mean sequestration time of 127 years and buries 0.4 Pg C year$^{-1}$ in the sediment that will remain sequestered for millions of years. Therefore, when talking about natural-based solutions for carbon sequestration, one should keep in mind that even though the BCP does not contribute to the absorption of anthropogenic $CO_{2}$ *per se*, it remains the main process that maintains the DIC gradient.
 
-However, climate change is most likely going to impact the biological (e.g. nutrients availability, shift in phytoplankton communities), physical (e.g. temperature) and chemical (e.g. acidification) drivers of the BCP [@Bopp2013-jx; @Passow2012-zh; @Riebesell2009-qj] whose long-term carbon sequestration capacity remains uncertain [@Passow2012-zh; @Turner2015-af; @Wilson2022-bf; @DeVries2022-of].
+::: {.blackbox data-latex=""}
+::: {.center data-latex=""}
+BCP and blue carbon
+:::
+
+The BCP is a natural-based solution for carbon sequestration by definition (@eq-photosynthesis). However, natural-based solutions for carbon sequestration are generally aligned with the concept of 'blue carbon' defined by @Ipcc2019-qc as "all biologically-driven carbon fluxes and storage in marine systems that are amenable to management" which usually encompasses only coastal ecosystems [@Ipcc2019-qc; @Lovelock2019-dr]. Coastal blue carbon ecosystems (e.g. mangroves, tidal marshes, seagrass meadows) are thought to store in their living biomass (years to decades) and sediment (millenia) more than 30 Pg C with an estimated absorption of \~0.3 Pg C year$^{-1}$ [@Macreadie2021-rb] though those numbers should be taken with caution because there are major uncertainties in the distribution of seagrass meadows and tidal marshes [@Macreadie2021-rb] as well as in carbon burial rates [@Williamson2022-ud]. In spite of that, the current expectation of additional carbon removal by coastal blue carbon by 2100 should be around 25-30 Pg C [@Gattuso2021-cr; @Williamson2022-ud], that is the equivalent of 2.5-3 years of current anthropogenic emissions [@Friedlingstein2022-XX].
+:::
+
+According to @Sarmiento2006-ec, the BCP would thus be responsible for the remaining 70% of the observed DIC gradient. However, it should be emphasized that in contrast to the solubility pump, the BCP is not responsible for the absorption of excess atmospheric $CO_{2}$, released by anthropogenic activities. First, as explained in @Sarmiento2006-ec, atmospheric $CO_{2}$ levels were stable for several thousand years before the industrial revolution started, therefore it is assumed that the BCP was operating at steady state. Second, photosynthesis is mostly controlled by light and nutrients availability, not by $CO_{2}$.
+
+However, climate change is most likely going to impact the biological (e.g. shift in phytoplankton communities), physical (e.g. temperature) and chemical (e.g. nutrients availability, acidification) drivers of the BCP [@Riebesell2009-qj; @Passow2012-zh; @Bopp2013-jx] whose long-term carbon sequestration capacity remains uncertain [@Passow2012-zh; @Turner2015-af; @DeVries2022-of; @Wilson2022-bf].
 
 #### Microbial pump {#sec-microbial-pump}
 
 Unlike the three previous carbon pumps, the microbial carbon pump (MCP) was only introduced recently by @Jiao2010-ax as "a conceptual framework to address the role of microbial generation of recalcitrant dissolved organic matter[^intro-1] and relevant carbon storage". Put simply, it is a suite of marine microbial mechanisms that produce longer-lived DOC such as semi-refractory, refractory and ultra-refractory DOC that have an average lifetime of respectively 205, 16,000 and 40,000 years [@Legendre2015-jc].
 
-[^intro-1]: i.e. dissolved organic matter resistant to microbial utilization that can persist in the ocean interior for thousand of years.
+[^intro-1]: i.e. dissolved organic matter resistant to microbial utilization that can persist in the ocean interior for thousands of years.
 
 The term 'pump' is attributed to the MCP because it maintains a gradient between DOC$_{<100~years}$ (14 Pg C) and DOC$_{>100~years}$ (non-bioavailable DOC, 636 Pg C) where 100 years has been chosen as the minimum time DOC needs to be stored away from the atmosphere to be considered as sequestered [@Ipcc2019-qc].
 
@@ -163,8 +171,6 @@ In contrast with the other pumps which are depth-dependent, the MCP sequesters c
 In order to fully understand the fate of DOC and DIC in the ocean, one would need to integrate both classic carbon pumps and the MCP. However, in this manuscript, I will only focus on the BCP, which was still considered as a single process until recently.
 
 ## A new paradigm for the BCP {#sec-a-new-paradigm-for-the-bcp}
-
-The amount of carbon that is stored for more than 100 years in the ocean (i.e. sequestered) mainly depends on the strength and the efficiency of the BCP. In this manuscript, the strength of the BCP is defined as "the magnitude of the particulate organic carbon (POC) flux at a reference export depth" [@Claustre2021-tx] and its efficiency (also known as transfer efficiency) is defined as the fraction of POC flux transported to some reference depth below the export depth [@Buesseler2020-sn; @Claustre2021-tx]. However, the export depth is not unique. It is often set at 100 m but @Buesseler2020-sn strongly emphasized that carbon flux-related studies should use the base of the euphotic zone (EZ, where there is enough light for primary production) as the export depth to clearly differentiate the layer where POC is produced (i.e. via photosynthesis) and where POC is degraded. This degradation occurs through the remineralization (i.e. respiration) where organic matter is converted back to inorganic forms (i.e. nutrients and DIC) by heterotrophic organisms [@Siegel2022-wd]. The bulk of respiration occurs in the mesopelagic zone between the export depth and 1000 m [@Martin1987-um].
 
 In the frame of the BCP, global carbon budgets have generally been imbalanced such that the exported POC was up to 2-3 orders of magnitude less abundant that it would need to be to sustain heterotrophic respiration in the mesopelagic zone and beyond [@Burd2010-hc; @Turner2015-af]. This imbalance raises one question: are we currently underestimating the export carbon flux or are we overestimating the heterotrophic respiration?
 
@@ -310,7 +316,7 @@ tbl-cap-location: top
 ---
 
 | Pump                   | POC export/injection depth range | DOC injection depth range | Sequestration time potential (years) |
-|------------------------|----------------------------------|---------------------------|--------------------------------------|
+|------------------|------------------|------------------|-------------------|
 | Gravitational          | export depth - sediment          | None                      | N/A (142)                            |
 | Mixed layer            | 200 - 1000 m                     | 200 - 1000m               | 25 - 100 (54$^{b}$)                  |
 | Eddy subduction        | 150 - 400 m                      | 150 - 400 m               | up to 150 (N/A)                      |

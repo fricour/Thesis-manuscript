@@ -831,15 +831,6 @@ get_jump_info <- function(data){
   # to plot subgroups
   part_slope_tmp <- part_slope |> mutate(dates = time, colour = 'slope')
   
-  # plot
-  # jump_plot <- plot_ly(tmp, x = ~dates, y = ~cp, type = 'scatter', mode = 'markers', color = ~colour, colors = c('#003366','#E31B23', '#FFC325')) |>
-  #   add_lines(data= part_slope_tmp, x = ~dates, y = ~cp, split = ~group, color = I('#DCEEF3'), showlegend = F) |>
-  #   layout(title= paste0('Drifting time: ', round(drifting_time,3), ' days\n',
-  #                        'Mean ATN slope (light blue): ', round(mean_slope,3), ' day-1\n',
-  #                        'POC flux (small particles): ', round(poc_flux,1), ' mg C m-2 day-1\n',
-  #                        'POC flux (big particles): ', round(big_part_poc_flux,1), ' mg C m-2 day-1'), yaxis = list(title = 'Cp (1/m)'), xaxis = list(title = 'Time'))
-  
-  
   # adapt script to return big and small flux
   df <- tibble('max_time' = max_time, 'min_time' = min_time, 'small_flux' = poc_flux, 'big_flux' = big_part_poc_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],
                cycle = data$cycle[1])
@@ -893,6 +884,125 @@ for (i in wmo){
 
 ```
 
+```{r, check total biovolume with slope value}
+
+uvp_drifting <- all_floats |> filter(PhaseName == 'PAR') |> select(juld, cycle, wmo, park_depth, all_of(lpm_class)) |> 
+  drop_na(NP_Size_102) |> mutate(date = as_date(juld)) 
+
+# DSE for computing biovolumes
+#DSE <- c(0.29042685,0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
+DSE_long <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685, 0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
+                1.16170742, 1.46365963, 1.84409558, 2.32341484) 
+
+# compute biovolume
+get_biovolume <- function(DSE){
+  r <- DSE/2
+  biovolume <- (4*pi/3)*r**3
+  return(biovolume)
+}
+
+# get biovolume for each DSE (equivalent to say for each size bin)
+biovolumes <- map_dbl(DSE_long, get_biovolume)  # unit = mm^3
+
+# compute biovolume and add them to the dataframe
+spectra_biovolume <- tibble(as.data.frame(t(t(uvp_drifting[,all_of(lpm_class)])*biovolumes)))
+colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('NP_Size', 'Biovolume')
+uvp_drifting <- cbind(uvp_drifting, spectra_biovolume) |> rowwise() |> mutate(total_biovolume = sum(across(all_of(biovolumes_names))))
+biovolumes_names <- colnames(spectra_biovolume)
+
+assign_time_group <- function(d_uvp, d_ost){
+  d_uvp$group <- NA
+  for (i in 1:nrow(d_ost)){
+    low_time <- d_ost$min_time[i]
+    high_time <- d_ost$max_time[i]
+    #print(c(low_time, high_time))
+    group <- d_ost$group[i]
+    time_index <- which(d_uvp$juld >= low_time & d_uvp$juld <= high_time)
+    d_uvp$group[time_index] <- group
+  }
+  return(d_uvp)
+}
+
+# loop for it
+# start loop for all data
+wmo <- c(4903634, 6904240, 6904241, 1902578)
+park_depth <- c('200 m', '500 m', '1000 m')
+
+test <- data.frame()
+for (i in wmo){
+  max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
+  for (j in park_depth){
+    for (k in seq(1:max_cycle)){
+      tmp_uvp <- filter(uvp_drifting, wmo == i, cycle == k, park_depth == j) |> arrange(juld) |> select(juld, cycle, wmo, park_depth, total_biovolume) #, biovolumes_names)
+      tmp_ost <- res_slope |> filter(wmo == i, cycle == k, park_depth == j)
+      tmp <- assign_time_group(tmp_uvp, tmp_ost)
+      #tmp2 <- tmp |> filter(!is.na(group)) |> group_by(group) |> mutate(uvp_points = n(), min_date = min(juld), max_date = max(juld), mean_date = mean(floor_date(juld))) # https://stackoverflow.com/questions/44814435/calculate-average-daily-value-from-large-data-set-with-r-standard-format-date-ti
+      tmp2 <- tmp |> filter(!is.na(group)) |> group_by(group) |> mutate(uvp_points = n(), mean_date = mean(floor_date(juld))) 
+      tmp3 <- merge(tmp2, tmp_ost) |> group_by(group, cycle, wmo, park_depth) |> summarize(mean_date = unique(mean_date), uvp_points = unique(uvp_points), ost_points = unique(nb_points), group_total_biovolume = sum(total_biovolume), slope = unique(slope), weighted_group_biovolume = group_total_biovolume/uvp_points)
+      test <- rbind(test, tmp3)
+    }
+  }
+}
+
+ggplot(test) + geom_line(aes(x = mean_date, y = weighted_group_biovolume)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4)
+ggplot(test) + geom_line(aes(x = mean_date, y = slope)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4)
+
+# check
+test2 <- test |> group_by(wmo, cycle) |> mutate(mean_mean_date = mean(floor_date(mean_date))) 
+
+ggplot(test2) +
+  geom_pointrange(aes(x = mean_mean_date, y = weighted_group_biovolume),
+                      stat = 'summary',
+                      fun.min = function(z) {quantile(z, 0.25)},
+                      fun.max = function(z) {quantile(z, 0.75)},
+                      fun = median, colour = 'black', size = .1) +
+    facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
+  
+ggplot(test2) +
+  geom_pointrange(aes(x = mean_mean_date, y = slope),
+                      stat = 'summary',
+                      fun.min = function(z) {quantile(z, 0.25)},
+                      fun.max = function(z) {quantile(z, 0.75)},
+                      fun = median, colour = 'black', size = .1) +
+    facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) 
+
+#ggplot(test) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth)
+
+
+# what about jump values with uvp measurements at jump
+uvp_drifting <- uvp_drifting |> mutate(num_date = as.numeric(juld))
+res_jumps <- res_jumps |> mutate(num_date = as.numeric(dates))
+
+assign_uvp_to_jump <- function(d_uvp, d_jump){
+  d_jump$biovolume <- NA
+  for (i in 1:nrow(d_jump)){
+    index_jump_for_uvp <- which.min(abs(tmp_uvp$num_date - tmp_ost_jump$num_date[i]))
+    d_jump$biovolume[i] <- tmp_uvp$total_biovolume[index_jump_for_uvp]
+  }
+  return(d_jump)
+}
+
+test_jump <- data.frame()
+for (i in wmo){
+  max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
+  for (j in park_depth){
+    for (k in seq(1:max_cycle)){
+      tmp_uvp <- filter(uvp_drifting, wmo == i, cycle == k, park_depth == j) |> arrange(juld) |> select(juld, cycle, wmo, park_depth, total_biovolume, num_date) 
+      tmp_ost_jump <- res_jumps |> filter(wmo == i, cycle == k, park_depth == j)
+      if(nrow(tmp_ost_jump) == 0 | nrow(tmp_uvp) == 0){
+        next
+      }else{
+        tmp <- assign_uvp_to_jump(tmp_uvp, tmp_ost_jump)
+      }
+      test_jump <- rbind(test_jump, tmp)
+    }
+  }
+}
+
+
+ggplot(test_jump) + geom_point(aes(diff_jump, biovolume))
+ggplot(test_jump) + geom_point(aes(log(diff_jump), log(biovolume)))
+```
 
 
 ```{r, model based on slope}
@@ -910,17 +1020,17 @@ for (i in wmo){
 #                 0.5860454935035602,0.738553273391974,0.9280422447589767,1.1705684285914486,
 #                 1.4795320531800742,1.8636618038457486,2.3449457391257185)
 
-DSE <- c(0.29042685,0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
+# DSE <- c(0.29042685,0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
+# 
+# # compute biovolume
+# get_biovolume <- function(DSE){
+#   r <- DSE/2
+#   biovolume <- (4*pi/3)*r**3
+#   return(biovolume)
+# }
 
-# compute biovolume
-get_biovolume <- function(DSE){
-  r <- DSE/2
-  biovolume <- (4*pi/3)*r**3
-  return(biovolume)
-}
-
-# get biovolume for each DSE (equivalent to say for each size bin)
-biovolumes <- map_dbl(DSE, get_biovolume)  # unit = m^3
+# # get biovolume for each DSE (equivalent to say for each size bin)
+# biovolumes <- map_dbl(DSE, get_biovolume)  # unit = mm^3
 
 # spectra at parking depth
 uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |>
