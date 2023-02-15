@@ -1,6 +1,10 @@
-# Observing the carbon cycle {#sec-observing-carbon-cycle}
+# Modelling and observing the BCP {#sec-modelling-observing-BCP}
 
-## How it started {#sec-how-it-started}
+## Models
+
+## Observation tools
+
+### Historical measurements
 
 In the 20th century, the downward POC flux was traditionally measured with sediment traps. Those instruments are composed of one or several collectors of sinking material whose design depends on its use and position in the water column (e.g. moored traps, surface tethered traps, drifting traps) [@Honjo2008-kn]. They were extensively used [@Honjo2008-kn] though their use has been steadily decreasing since 2004, reaching less than 500 measurements per year since 2010 (@fig-sediment-trap-thorium-yearly-distribution).
 
@@ -19,7 +23,7 @@ sub_trap$instrument_type <- 'Sediment trap'
 sub_thorium <- thorium |> dplyr::select(year, instrument_type)
 sub_thorium$instrument_type <- 'Thorium 234'
 combined <- rbind(sub_trap, sub_thorium)
-plot <- ggplot(combined, aes(x = year, fill = instrument_type)) + geom_bar() + scale_fill_manual(values = c('#003366', '#DCEEF3')) + # #57cc99 #80ed99
+plot <- ggplot(combined, aes(x = year, fill = instrument_type)) + geom_bar(colour = 'black') + scale_fill_manual(values = c('#003366', '#DCEEF3')) + # #57cc99 #80ed99
     #geom_vline(aes(xintercept = median(year)), color = "#d53e4f", linetype = "dashed") +
     labs(x = "Year", y = "N records") + 
     theme_bw() + 
@@ -34,92 +38,13 @@ plot <- ggplot(combined, aes(x = year, fill = instrument_type)) + geom_bar() + s
 plot
 ```
 
-```{=html}
-<!-- 
-![Examples of sediment traps. From left to right: (a) Neutrally buoyant, (b) Surface tethered and (c) Funnel-shaped drifting trap. Figure taken from @Baker-XX.](image/ObservingCarbonCycle/sed_traps_high_res.jpg){#fig-sed-traps}
--->
-```
-```{=html}
-<!-- #https://github.com/quarto-dev/quarto-cli/discussions/1042 -->
-<style type="text/css">
-caption, .table-caption {
-  text-align: left;
-}
-</style>
-```
-```{r, poc database from traps}
-#| label: tbl-poc-from-sediment-traps
-#| tbl-cap: Compilation of POC flux measurements from sediment traps. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne and Meike Vogt). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
-#| tbl-cap-location: bottom
-
-library(dplyr)
-library(knitr)
-library(kableExtra)
-library(purrr)
-
-# read data
-trap <- vroom::vroom('DATA/Trap_Thorium/TRAP_DATABASE.csv')
-#thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
-
-# clean a bit
-trap[trap$doi == 'https://doi.org/10.1007/s00227-018-3376-1',]$doi <- '10.1007/s00227-018-3376-1'
-trap[trap$doi == 'https://doi.org/10.1016/j.dsr.2016.08.015',]$doi <- '10.1016/j.dsr.2016.08.015'
-trap[trap$doi == 'Geochimica et Cosmochimica Acta, Vol. 66, No. 3, pp. 457–465, 2002',]$doi <- '10.1016/S0016-7037(01)00787-6'
-
-# some stats
-trap_resume <- trap |> group_by(doi) |> dplyr::summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
-  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
-
-# BASED ON : https://stackoverflow.com/questions/48506712/kable-kableextra-cells-with-hyperlinks
-# make url links
-make_link <- function(doi){
-  link <- paste0('https://doi.org/',doi)
-  return(link)
-}
-url <- map_chr(trap_resume$doi, make_link)
-
-# # put url in dataframe
-# trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, 'html', link = url)) |> select(doi_url, data_points) |>
-#   kable('html', escape = FALSE, col.names = c('Sources of data', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
-
-trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
-  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') 
-
-# make final table
-trap_resume
-```
-
-```{r, poc database from thorium}
-#| label: tbl-poc-from-thorium
-#| tbl-cap: Compilation of POC flux measurements derived from Thorium 234. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
-#| tbl-cap-location: bottom
-
-# read data
-thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
-
-# some stats
-thorium_resume <- thorium |> group_by(doi) |> summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
-  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
-thorium_resume$doi <- c('10.1594/PANGAEA.809717', '10.1029/2018GB00615', '10.1525/elementa.2020.030')
-
-# make url links
-url <- c('https://doi.org/10.1594/PANGAEA.809717', 'https://doi.org/10.1029/2018GB006158', 'https://doi.org/10.1525/elementa.2020.030')
-
-# put url in dataframe
-thorium_resume <- thorium_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
-  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
-
-# make final table
-thorium_resume
-```
-
 To estimate the downward POC flux, one therefore needs to quantify the amount of POC collected through a given area over a known time period at a given depth. However, the apparent sinking flux measured with sediment traps can be biased due to hydrodynamic issues that could result in over- or under-collection of particles (especially at the surface), swimmers (zooplankton, small fish) that could enter sediment traps and affect the collected material and solubilization of collected material (e.g. by bacteria) [@Buesseler2007-ql].
 
-Given the potential inaccuracy of flux measurements by sediment traps, independent approaches using radionuclide disequilibria have been used to assess the collection efficiency of the latter [@Buesseler1991-vo]. This method is based on the fact that $^{238}U$ is a conservative element in seawater (chemically inert with a half-life of 4.5 billion years) while its daughter nuclide $^{234}Th$ (half-life of 24.1 days) can be adsorbed onto particle surfaces and therefore be scavenged by sinking particles [@Savoye2006-gb]. Consequently, the deficiency of $^{234}Th$ relative to $^{238}U$ is used as a measure of removal of surface $^{234}Th$ through particle scavenging [@Buesseler1991-vo] that is then derived as a flux of exported $^{234}Th$ and subsequently a flux of exported POC by using a known (e.g. estimated from the material collected in sediment traps) POC/$^{234}Th$ ratio [@Buesseler2007-ql].
+Given some potential bias in the carbon fluxes estimated with sediment traps, independent approaches using radionuclide disequilibria have been used to assess the collection efficiency of the latter [@Buesseler1991-vo]. This method is based on the fact that $^{238}U$ is a conservative element in seawater (chemically inert with a half-life of 4.5 billion years) while its daughter nuclide $^{234}Th$ (half-life of 24.1 days) can be adsorbed onto particle surfaces and therefore be scavenged by sinking particles [@Savoye2006-gb]. Consequently, the deficiency of $^{234}Th$ relative to $^{238}U$ is used as a measure of removal of surface $^{234}Th$ through particle scavenging [@Buesseler1991-vo] that is then translated into a flux of exported $^{234}Th$ and subsequently a flux of exported POC by using a known (e.g. estimated from the material collected in sediment traps) POC/$^{234}Th$ ratio [@Buesseler2007-ql].
 
 While this method seems to cope with some of the issues observed in sediment traps, it also has its caveats, particularly a POC/$^{234}Th$ ratio that varies with particle size and the fact that it only works well in the upper 100-200 m [@Buesseler2007-ql].
 
-In all, POC fluxes derived from sediment traps and $^{234}Th$ have their own uncertainties and errors thus their estimations of downward POC fluxes should not be seen as ground truth. In addition, they are labor-intensive and require ship support. Their relative contribution to the estimation of POC fluxes is thus expected to keep decreasing (@fig-sediment-trap-thorium-yearly-distribution) with the advent of AUVs (see @sec-how-it-has-evolved).
+In all, POC fluxes derived from sediment traps and $^{234}Th$ have their own uncertainties and errors thus their estimations of downward POC fluxes should not be seen as ground truth. In addition, they are labor-intensive and require ship support. Their relative contribution to the estimation of POC fluxes is thus expected to keep decreasing (@fig-sediment-trap-thorium-yearly-distribution) with the advent of alternative new methods promoted by an increasing use of automated underwater vehicles (AUVs).
 
 ## How it has evolved {#sec-how-it-has-evolved}
 
