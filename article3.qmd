@@ -672,7 +672,23 @@ parking_data <- parking_data |> filter(PhaseName == 'PAR') |> drop_na(NP_Size_10
                                    park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 parking_spectra <- parking_data |> dplyr::select(NP_Size_256:NP_Size_1290)
 
-parking_data <- parking_data |> mutate(guidi_flux = compute_flux(12.5, 3.81, parking_spectra)) |> group_by(park_depth, cycle, wmo) 
+parking_data <- parking_data |> mutate(guidi_flux = compute_flux(12.5, 3.81, parking_spectra)) #|> group_by(park_depth, cycle, wmo) 
+
+# add rainer computation
+compute_flux_rainer <- function(A, b, PSD){
+  
+  # Rainer uses an ESD in cm ..
+  mid_ESD <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685,
+       0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
+       1.16170742, 1.46365963, 1.84409558, 2.32341484) / 10
+  exp <- A * mid_ESD ** b # because Rainer uses the units of particles/m3 and not particles/L
+  estimated_flux <- rowSums(t(t(PSD)*exp))
+  return(estimated_flux)
+}
+
+parking_spectra_rainer <- parking_data |> dplyr::select(lpm_class)
+parking_data <- parking_data |> mutate(rainer_flux = compute_flux_rainer(2.8649, 2.24, parking_spectra_rainer)) 
+parking_data <- parking_data |> mutate(iversen_flux = compute_flux(273, 4.27, parking_spectra)) 
 
 # plot it
 comparison_flux_ost_uvp <- merge(parking_data, cflux) |> mutate(total_flux = small_flux + big_flux)
@@ -907,8 +923,8 @@ biovolumes <- map_dbl(DSE_long, get_biovolume)  # unit = mm^3
 # compute biovolume and add them to the dataframe
 spectra_biovolume <- tibble(as.data.frame(t(t(uvp_drifting[,all_of(lpm_class)])*biovolumes)))
 colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('NP_Size', 'Biovolume')
-uvp_drifting <- cbind(uvp_drifting, spectra_biovolume) |> rowwise() |> mutate(total_biovolume = sum(across(all_of(biovolumes_names))))
 biovolumes_names <- colnames(spectra_biovolume)
+uvp_drifting <- cbind(uvp_drifting, spectra_biovolume) |> rowwise() |> mutate(total_biovolume = sum(across(all_of(biovolumes_names))))
 
 assign_time_group <- function(d_uvp, d_ost){
   d_uvp$group <- NA
@@ -944,7 +960,7 @@ for (i in wmo){
   }
 }
 
-ggplot(test) + geom_line(aes(x = mean_date, y = weighted_group_biovolume)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4)
+ggplot(test) + geom_line(aes(x = mean_date, y = weighted_group_biovolume)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
 ggplot(test) + geom_line(aes(x = mean_date, y = slope)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4)
 
 # check
@@ -966,7 +982,10 @@ ggplot(test2) +
                       fun = median, colour = 'black', size = .1) +
     facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) 
 
-#ggplot(test) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth)
+test2 |> group_by(wmo, park_depth) |> summarize(correl = cor(slope, weighted_group_biovolume))
+
+ggplot(test) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth)
+#ggplot(test) + geom_point(aes(x = slope, y = weighted_group_biovolume)) + facet_wrap(~park_depth)
 
 
 # what about jump values with uvp measurements at jump
@@ -1000,7 +1019,7 @@ for (i in wmo){
 }
 
 
-ggplot(test_jump) + geom_point(aes(diff_jump, biovolume))
+#ggplot(test_jump) + geom_point(aes(diff_jump, biovolume))
 ggplot(test_jump) + geom_point(aes(log(diff_jump), log(biovolume)))
 ```
 

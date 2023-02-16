@@ -352,18 +352,3 @@ A great majority of studies related to carbon sequestration by the BCP usually a
 
 So far, we have seen that significant incertitudes remain in the estimations of the carbon export as well as the sequestration time by the different export pathways composing the BCP. To address this issue, biogeochemical models and observation tools are continuously being improved to further our understanding of the BCP (see @sec-modelling-observing-BCP).
 
-## Research questions and objectives
-
-<!-- The quantification of the different carbon export pathways of the BCP and the fate of the exported carbon in the mesopelagic zone are among the hardest problems in modern oceanography [@Siegel2016-kh; @Le_Moigne2019-zl] but also the most pressuring issues in the context of climate change [@Martin2020-wa]. If the BCP is not responsible for the absorption of anthropogenic $CO_{2}$, any changes in its strength or efficiency could greatly impact atmospheric $CO_{2}$ concentrations [@Kwon2009-ir]. Thus, there is a need to better understand the biological and physical drivers of each component of the BCP, estimate the amount of carbon they export to the deep ocean and their sequestration potential. -->
-
-<!-- To this aim, a new observational framework has been proposed by @Claustre2021-tx to combine measurements from several observations platforms (i.e. research vessels, satellites, moorings and automated underwater vehicles (AUVs)). New sensors have been developed for AUVs (see section @sec-BGC-sensors) in order to better characterize the type of particles (e.g. zooplankton, fecal pellets, aggregates), their size and their mechanisms of transformation (e.g. fragmentation, aggregation). Combining independent measurements of specific biogeochemical variables will allow to tackle the double accounting problem, that is the issue of distinguishing particles associated with the BGP and a PIP, therefore potentially attributing the transport of a particle to more than one pump [@Boyd2019-ez]. This is of particular importance to better constrain the contribution of each PIP to carbon storage in the global ocean [@Boyd2019-ez]. -->
-
-<!-- In addition, the refinement of the contribution of each PIP would both help to close the ocean carbon budget [@Burd2010-hc] and improve estimates of carbon sequestration [@Boyd2019-ez; @Passow2012-zh] that will enhance the evaluation of the efficiency of carbon dioxide removal strategies [@Siegel2022-wd]. -->
-
-<!-- Based on that, the objectives of this work are threefold: -->
-
-1.  <!-- Contribute to the development of new sensors for AUVs, namely the development of the zooplankton embedded recognition algorithm for the Underwater Vision Profiler 6 [@Picheral2021-sx], an imaging system that will be used to characterize particles > 600 $\mu$m. -->
-
-2.  <!-- Exploit the synergy of instruments on fully-equipped profiling floats in a specific region (Labrador Sea) to shed a light on mesopelagic processes that affect the size and sinking speed of aggregates as well as characterizing the downward flux of small and big particles and its variability. -->
-
-3.  <!-- Reassess the global sequestration ($\geq$ 100 years) of the BCP and its components by using a continuous approach to carbon storage as opposed to the common view of long-term sequestration below a fixed reference depth. -->
