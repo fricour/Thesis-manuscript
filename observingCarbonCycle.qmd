@@ -1,8 +1,104 @@
-# Modelling and observing the BCP {#sec-modelling-observing-BCP}
+# Modeling and observing the BCP {#sec-modelling-observing-BCP}
 
-## Models
+## Biogeochemical models
 
-## Observation tools
+The study of the BCP is of paramount importance to answer the question of how much carbon is exported and how much of the exported carbon will be sequestered? In order to achieve this goal, ocean modelers have developed different kinds of biogeochemical models to better quantify the different export pathways of the BCP.
+
+![Top of the atmosphere (TOA) radiance is converted into remote sensing reflectance $R_{rs}(\lambda)$, which is the ratio of the solar radiation reflected from the surface of the ocean that penetrates the sea surface at a discrete wavelength $\lambda$. Using TOA and $R_{rs}(\lambda)$, primary products (yellow circles) can be derived (e.g. POC, inherent optical properties (IOP), chlorophyll (Chl) or sea surface temperature (SST). Those primary products can be used in numerical models (e.g. empirical relationships) to compute secondary products (orange and red circles) such as the phytoplankton commmunity composition (PCC), particle size spectra (PSS), phytoplankton carbon concentrations (C$_{phyto})$ and the NPP. Models (light blue circles) therefore incorporate primary and secondary products as well as ancillary data (red squares) either from satellite (e.g. SST), in situ data or model-based data (ocean circulation) to estimate carbon export and sequestration (dark blue circles). Figure taken from @Siegel2022-wd.](image/ObservingCarbonCycle/carbon_models.jpeg){#fig-bgc-models width="750" height="580"}
+
+Because measuring directly the POC export flux would be challenging, it is common to estimate it as the fraction of the total NPP that is exported (i.e. export efficiency) [@Henson2011-mt].
+
+::: {.blackbox data-latex=""}
+::: {#box-npp .center data-latex=""}
+A deeper look into net primary production
+:::
+
+Total net primary production includes new production (NP, mainly fueled from the upwelling of nitrogen from deeper water to the EZ) and regenerated production (RP, fueled with nitrogen recycled through the food web within the EZ) \[@Dugdale1967\].
+
+@Eppley1979 introduced the f-ratio as follows
+
+$$
+f-ratio = \frac{NP}{NP+RP}
+$$
+
+In a steady state system, new production equals export production therefore the $f-ratio$ should be equal to the ratio of export production (EP) to total NPP, referred to as the $e-ratio$ by @laws2000-XX.
+
+$$
+e-ratio = \frac{EP}{NPP}
+$$
+
+define steady state?
+:::
+
+@box-npp
+
+Empirical models likely represent the most straightforward option to estimate carbon export.
+
+combining satellite observations and in situ measurements
+
+Data-assimilated models
+
+These models can either target the estimations of carbon export
+
+These models (i.e. food-web, empirical and inverse models) incorporate satellite data (@sec-observation-tools), that can be defined as primary data product
+
+numerical models based on simple empirical relationships to derive primary and secondary data products
+
+As illustrated in @fig-bgc-models,
+
+One of the key variable to estimate carbon export is the NPP. It has been used to compute the f-ratio, e-ratio -\> rentrer un peu là-dedans
+
+The former
+
+Henson2010
+
+-   common approach = estimate fraction of total primary production that is exported (with f-ratio, Th234-ratio
+
+-   encadré sur le f-ratio? en lien avec laws2000 ry Dugdale and Goering 1967
+
+-   satellite data
+
+Dunne2007
+
+-   NPZD models (non exhaustive)
+
+-   empirical models: predictor variables
+
+-   empirical algorithm
+
+Henson2011
+
+-   Martin b : -0.86 (6 stations, in the NOrtheast Pacific), lack of data so b is generally assumed to be spatially constant and this b value has been applied in several biogeochemical models to describe the rate of particle reminrelaiation in the water column
+
+-   data-derived algorithms
+
+Siegel 2014
+
+-   food-web model (e.g. NPZD)
+
+-   estimation og floval exports by empirical extrapolations of field measurements or by using global coupled carboncyckle-pcean circualtion models but estimations of global export remain widely divergent
+
+-   mechanisticlly, it is the flux of sinking carbon leaving the EZ that is relevant
+
+-   e-ratio ? different du f-ratio?
+
+-   satellite-based approach for assessing carbon export (thank you kostadinov 2009 and 2010) -\> slope of the particle size spectrum
+
+-   mechanistic approach for estimating global carbon export using satellite observations and a food-web model
+
+-   a complete assessment of carbon export from the surfce ocean must accout for this and other additional pathways
+
+-   the BCP is more than just the export of carbon from the EZ. Understanding it, also requires the quantification of the vertical attenuation of the export flux below the EZ as well.
+
+-   aller absoilument checker siegel 2022
+
+Devries2017
+
+Note perso
+
+Ajouter Guidi 2015 pour une estimation de b regionale
+
+## Observation tools {#sec-observation-tools}
 
 ### Historical measurements
 
@@ -54,7 +150,7 @@ Remote sensing data acquired with ocean color satellites have been used for a lo
 
 Instrumented moorings have supplemented ship-based and remote sensing measurements by collecting high-resolution data at fixed locations [@Chai2020-uq]. Moorings can be equipped with many sensors (e.g. sediment traps or imaging systems to study the type of sinking particles (@sec-BGC-sensors)) to study carbon-related variables (see Table 1 in @Claustre2021-tx). They are therefore ideal platforms for long-term time series (e.g. Bermuda Atlantic Time-series Study (BATS) since 1988) with the disadvantage of limited spatial coverage and high maintenance costs [@Chai2020-uq].
 
-In order to fill the scarcity of data from research vessels and moorings as well as coping with surface-constrained satellite measurements, AUVs have been developed to take *in situ* measurements in all weathers and at all times, only being dependent on their battery life and ocean currents (for drifting AUVs).
+In order to fill the scarcity of data from research vessels and moorings as well as coping with surface-constrained satellite measurements, AUVs have been developed to take in situ measurements in all weathers and at all times, only being dependent on their battery life and ocean currents (for drifting AUVs).
 
 Biogeochemical Argo (BGC-Argo) profiling floats (@fig-bgc-float) are probably the most well known to address the BCP. They are cost-effective, able to monitor biogeochemical processes at a global scale throughout the year and under all weather conditions [@Chai2020-uq]. The goal of the BGC-Argo community is to develop an array of 1000 floats that measure 6 key biogeochemical and bio-optical variables: Chlorophyll a (Chla), particle backscatter ($b_{bp}$), oxygen, nitrate, pH and downwelling irradiance in addition to temperature and salinity [@Roemmich2019-pn]. Besides this objective, the BGC-Argo community is testing new sensors (see @sec-BGC-sensors) to explore specific topics related to the BCP [@Claustre2020-jo].
 
