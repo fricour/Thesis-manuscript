@@ -149,14 +149,14 @@ The sinking carbon that is not remineralized is said to be sequestered. The sequ
 The amount of carbon that is sequestered by the BCP mainly depends on its strength and its efficiency. In this manuscript, the strength of the BCP is defined as "the magnitude of the POC flux at a reference export depth" [@Claustre2021-tx] and its efficiency (also known as transfer efficiency) is defined as the fraction of POC flux transported to some reference depth below the export depth [@Buesseler2020-sn; @Claustre2021-tx].
 
 ::: {.blackbox data-latex=""}
-::: {.center data-latex=""}
-BCP and blue carbon
+::: {.flushleft data-latex=""}
+**Information Box 1.** **BCP and blue carbon**
 :::
 
 The BCP is a natural-based solution for carbon sequestration by definition (@eq-photosynthesis). However, natural-based solutions for carbon sequestration are generally aligned with the concept of 'blue carbon' defined by @Ipcc2019-qc as "all biologically-driven carbon fluxes and storage in marine systems that are amenable to management" which usually encompasses only coastal ecosystems [@Ipcc2019-qc; @Lovelock2019-dr]. Coastal blue carbon ecosystems (e.g. mangroves, tidal marshes, seagrass meadows) are thought to store in their living biomass (years to decades) and sediment (millenia) more than 30 Pg C with an estimated absorption of \~0.3 Pg C year$^{-1}$ [@Macreadie2021-rb] though those numbers should be taken with caution because there are major uncertainties in the distribution of seagrass meadows and tidal marshes [@Macreadie2021-rb] as well as in carbon burial rates [@Williamson2022-ud]. In spite of that, the current expectation of additional carbon removal by coastal blue carbon by 2100 should be around 25-30 Pg C [@Gattuso2021-cr; @Williamson2022-ud], that is the equivalent of 2.5-3 years of current anthropogenic emissions [@Friedlingstein2022-th].
 :::
 
-Estimates of global carbon export range between 5 and 12 Pg C year$^{-1}$ [@Laws2000-XX; @Dunne2007-mi; @Henson2011-mt; @Siegel2014-wg; @DeVries2017-wu; @Nowicki2022-no] with only 0.02-0.4 Pg C year$^{-1}$ reaching the sediment [@Dunne2007-mi; @Hayes2021-gg; @Nowicki2022-no] where carbon will be sequestered for millions of years. Almost all of the exported organic carbon will therefore be remineralized and sequestered away from the atmosphere on time scales ranging from months to millennia. [@Siegel2022-wd].
+Estimates of global carbon export range between 5 and 12 Pg C year$^{-1}$ [@Laws2000-jl; @Dunne2007-mi; @Henson2011-mt; @Siegel2014-wg; @DeVries2017-wu; @Nowicki2022-no] with only 0.02-0.4 Pg C year$^{-1}$ reaching the sediment [@Dunne2007-mi; @Hayes2021-gg; @Nowicki2022-no] where carbon will be sequestered for millions of years. Almost all of the exported organic carbon will therefore be remineralized and sequestered away from the atmosphere on time scales ranging from months to millennia. [@Siegel2022-wd].
 
 Nonetheless, it should be emphasized that in contrast to the solubility pump, the BCP is not responsible for the absorption of excess atmospheric $CO_{2}$, released by anthropogenic activities. First, as explained in @Sarmiento2006-ec, atmospheric $CO_{2}$ levels were stable for several thousand years before the industrial revolution started, therefore it is assumed that the BCP was operating at steady state. Second, photosynthesis is mostly controlled by light and nutrients availability, not by $CO_{2}$.
 
@@ -190,7 +190,7 @@ Regarding the latter, @Boyd2019-ez published a paper in which they review the BC
 
 ### Biological gravitational pump {#sec-BGP}
 
-The most well known pump is the gravitational carbon pump (BGP). It consists in the gravitational settling (i.e. sinking) of POC[^intro-3] to the deep ocean and it is the main contributor (60-70%) of the export flux [@Boyd2019-ez; @Nowicki2022-no]. Historically, the downward POC flux was directly measured using sediment traps [@Martin1987-um; @Honjo2008-kn] and indirectly measured using thorium-234 ($^{234}Th$) deficits as a POC flux proxy [e.g. @Buesseler2006-og]. More recently, the advent of underwater cameras such as the Underwater Vision Profiler 5 (UVP5) [@Picheral2010-to] allowed the direct measurement of particle size distributions (PSD) that could then be converted to carbon fluxes [e.g. @Guidi2008-vp].
+The most well known pump is the gravitational carbon pump (BGP). It consists in the gravitational settling (i.e. sinking) of POC[^intro-3] to the deep ocean and it is the main contributor (60-70%) of the export flux [@Boyd2019-ez; @Nowicki2022-no]. Historically, the downward POC flux was directly measured using sediment traps [@Martin1987-um; @Honjo2008-kn] and indirectly measured using thorium-234 ($^{234}Th$) deficits as a POC flux proxy [e.g. @Buesseler2006-og]. More recently, the advent of underwater cameras such as the Underwater Vision Profiler 5 (UVP5) [@Picheral2010-to] allowed the direct measurement of particle size distributions (PSD, also referred to in the literature as particle size spectra (PSS)) that could then be converted to carbon fluxes [e.g. @Guidi2008-vp].
 
 [^intro-3]: There obviously exists a gravitational settling of particulate inorganic carbon but in this manuscript, I focus on the BCP which was defined earlier as only focused on organic carbon as opposed to the carbonate pump.
 
