@@ -1,4 +1,4 @@
-# Case study in the Labrador Sea {#case-study-labrador-sea}
+# Case study in the Labrador Sea {#sec-case-study-labrador-sea}
 
 ## Introduction
 
@@ -726,9 +726,9 @@ gt(correlations) |> tab_spanner(label = "Small flux", columns = 2:4) |> tab_span
 
 ```
 
-Figure @fig-comparison-ost-uvp shows a comparison of carbon fluxes estimated with the OST ($F_{total} = F_{small} + F_{big}$) and the UVP6 (median of all UVP measurements while the float was drifting) at all drifting depths. Overall, carbon fluxes estimated with the coefficients ($A$, $b$) of @Guidi2008-vp, are lower than the ones measured by the OST. Without additional measurements (e.g. co-deployed sediment traps), it is however impossible to decipher which measurements is closest to the truth. Nonetheless, the trends measured by both instruments are very well correlated at all drifting depths for floats 6904240 and 6904241 with correlations comprised between `r min(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])` and `r max(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])`. @tbl-correlation also shows that the correlation between UVP-derived carbon fluxes and $F_{small}$ and $F_{big}$ is `r mean(as.vector(as.matrix(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,2:7])))` on average. We calculated lower correlations with the other two floats, especially the float 1902578 at 200 m, where correlations between the UVP-derived carbon fluxes and all fluxes (small, big and total) are close to 0. 
+Figure @fig-comparison-ost-uvp shows a comparison of carbon fluxes estimated with the OST ($F_{total} = F_{small} + F_{big}$) and the UVP6 (median of all UVP measurements while the float was drifting) at all drifting depths. Overall, carbon fluxes estimated with the coefficients ($A$, $b$) of @Guidi2008-vp, are lower than the ones measured by the OST. Without additional measurements (e.g. co-deployed sediment traps), it is however impossible to decipher which measurements is closest to the truth. Nonetheless, the trends measured by both instruments are very well correlated at all drifting depths for floats 6904240 and 6904241 with correlations comprised between `r min(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])` and `r max(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])`. @tbl-correlation also shows that the correlation between UVP-derived carbon fluxes and $F_{small}$ and $F_{big}$ is `r mean(as.vector(as.matrix(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,2:7])))` on average. We calculated lower correlations with the other two floats, especially the float 1902578 at 200 m, where correlations between the UVP-derived carbon fluxes and all fluxes (small, big and total) are close to 0.
 
-Floats equipped with both a transmissometer and a UVP6 represent an opportunity to look at the influence of parts of the size spectrum on $F_{small}$ and $F_{big}$. For this, we decided to build a regression model using XGBoost, a gradient boosting method [REF], using biovolumes measured by the UVP to predict the slope of $F_{small}$ and $F_{big}$ measured by the OST.
+Floats equipped with both a transmissometer and a UVP6 represent an opportunity to look at the influence of parts of the size spectrum on $F_{small}$ and $F_{big}$. For this, we decided to build a regression model using XGBoost, a gradient boosting method \[REF\], using biovolumes measured by the UVP to predict the slope of $F_{small}$ and $F_{big}$ measured by the OST.
 
 ```{r, get jump info}
 
@@ -1023,7 +1023,6 @@ for (i in wmo){
 ggplot(test_jump) + geom_point(aes(log(diff_jump), log(biovolume)))
 ```
 
-
 ```{r, model based on slope}
 
 # compute biovolumes for mid size bin (ESD)
@@ -1288,7 +1287,6 @@ p_small / p_big
 
 ```
 
-
 TODO :
 
 -   science: on voit le système latent, on a raté le bloom
@@ -1296,7 +1294,7 @@ TODO :
 -   rajouter dans les méthodes les produits satellites qu'on utilise
 -   différentes dynamiques post-bloom
 -   phénologie du bloom printanier
-- 
+-   
 
 ### Environmental conditions prior to bloom
 
@@ -1456,6 +1454,7 @@ down_part <- particles_bis |> filter(depth < 2000, size > 512) |>
 down_part
 
 ```
+
 ```{r, sinking speed values}
 
 gt(all_sinking_speed)
@@ -1491,7 +1490,6 @@ ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() 
 
 ```
 
-
 ### TS diagram
 
 -   Pour le drift à 200, 500 et 1000 m
@@ -1516,7 +1514,7 @@ ggplot(ts_data) + geom_point(aes(psal, temp, colour = depth)) + scale_color_viri
 
 ### Processes at play
 
-J'ai enlevé le truc du spectre inversé à 500 et 1000 m car difficile de conclure -> mais comme on est dans la meme masse d'eau, on pourrait le garder, why not
+J'ai enlevé le truc du spectre inversé à 500 et 1000 m car difficile de conclure -\> mais comme on est dans la meme masse d'eau, on pourrait le garder, why not
 
 ```{r, monthly anomaly between drifting at 500 and 1000 m}
 #| label: fig-processes-at-play
@@ -1721,7 +1719,6 @@ monthly_mean |> group_by(size) |> gt(rowname_col = 'depth')
 
 #### same plots mais par mois
 
-
 ```{r, monthly heatmap}
 
 # depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
@@ -1769,7 +1766,6 @@ monthly_mean |> group_by(size) |> gt(rowname_col = 'depth')
 #   facet_wrap(~month)
 
 ```
-
 
 ## Discussion2
 
