@@ -118,11 +118,13 @@ The solubility pump is responsible for the great majority of all the anthropogen
 
 #### Carbonate pump {#sec-carbonate-pump}
 
-Calcifying organisms such as coccolithophorids precipitate biogenic $CaCO_{3}$ (i.e. particulate inorganic carbon) either in the form of calcite or aragonite [@Sarmiento2006-ec] as shown in the equation below
+Calcifying organisms (mostly coccolithophores, foraminifera and pteropods) produce particulate inorganic carbon (PIC) by precipitating biogenic $CaCO_{3}$ [@Sarmiento2006-ec]
 
 $$
 Ca^{2+} + CO_{3}^{2-} \rightleftharpoons CaCO_{3}
 $$ {#eq-calcium_carbonate}
+
+to form calcite structures such as calcite platelets (coccoliths), calcite shells or spines [@Neukermans2023-vl].
 
 Combining @eq-calcium_carbonate, @eq-bicarbonate and @eq-carbonate, one can derive another formulation of calcification
 
@@ -130,7 +132,7 @@ $$
 Ca^{2+} + 2HCO_{3}^{-} \rightleftharpoons CaCO_{3} + CO_{2} + H_{2}O
 $$ {#eq-calcification}
 
-This calcification occurs in surface waters, releasing $CO_{2}$ in the surrounding waters and subsequently to the atmosphere. That is why this pump is sometimes also referred to as the carbonate counter pump [@Zeebe2012-zk]. Once calcifying organisms die, their shells sink to depth and finally dissolve. Therefore, @eq-calcification shows that the carbonate pump also contributes to the observed DIC gradient, with an estimated contribution of 20% [@Sarmiento2006-ec].
+This calcification occurs in surface waters, releasing $CO_{2}$ in the surrounding waters and subsequently to the atmosphere (0.26 - 1.19 Pg C year$^{-1}$ following @Neukermans2023-vl). That is why this pump is sometimes also referred to as the carbonate counter pump \[@Zeebe2012-zk\]. However, the dissolution of $CaCO_{3}$ mainly occurs at depth and thus increases the DIC concentration (@eq-calcification). In all, @Sarmiento2006-ec estimated that the carbonate pump contributes to 20% of the observed DIC gradient.
 
 #### Biological pump {#sec-biological-pump}
 
@@ -160,7 +162,7 @@ Estimates of global carbon export range between 5 and 12 Pg C year$^{-1}$ [@Laws
 
 Nonetheless, it should be emphasized that in contrast to the solubility pump, the BCP is not responsible for the absorption of excess atmospheric $CO_{2}$, released by anthropogenic activities. First, as explained in @Sarmiento2006-ec, atmospheric $CO_{2}$ levels were stable for several thousand years before the industrial revolution started, therefore it is assumed that the BCP was operating at steady state. Second, photosynthesis is mostly controlled by light and nutrients availability, not by $CO_{2}$.
 
-However, climate change is most likely going to impact the biological (e.g. shift in phytoplankton communities), physical (e.g. temperature) and chemical (e.g. nutrients availability, acidification) drivers of the BCP [@Riebesell2009-qj; @Passow2012-zh; @Bopp2013-jx] whose long-term carbon sequestration capacity remains uncertain [@Passow2012-zh; @Turner2015-af; @DeVries2022-of; @Wilson2022-bf].
+However, climate change is most likely going to impact the biological (e.g. shift in phytoplankton communities), physical (e.g. temperature) and chemical (e.g. nutrients availability, acidification) drivers of the BCP [@Riebesell2009-qj; @Passow2012-zh; @Bopp2013-jx] whose long-term carbon sequestration capacity remains uncertain [@Passow2012-zh; @Turner2015-af; @DeVries2022-of; @Henson2022-hg ; @Wilson2022-bf].
 
 #### Microbial pump {#sec-microbial-pump}
 
@@ -301,7 +303,7 @@ Taking this into consideration, several processes can impact the sinking speed o
 
 The driving factors of the sinking speed are nevertheless subject to caution. It would make sense that the quadratic dependence of $w$ to the aggregate size would favor $d$ as the main driver. However, aggregates are far from being perfect theoretical objects for @eq-sinking-speed and the excess density as the main driver is plebiscited by some authors such as @Iversen2020-kb.
 
-To the best of my knowledge, the most emblematic case of discussions around this question is the mineral ballast hypothesis [@De_La_Rocha2007-yi]. Mineral ballasting consists in the inclusion of biominerals such as opal (i.e. silicate) and calcite or lithogenic material such as dust that are thought to increase $\Delta\rho$ on the one hand and protect them from microbial degradation on the other hand [@Armstrong2001-rz; @Francois2002-uc; @Klaas2002-kn]. However, several studies argue otherwise. @Passow2004-re stipulates that biominerals could instead be collected (i.e. scavenged) and transported downwards by sinking aggregates. @Ploug2008-qk did not measure significant differences in microbial degradation of non ballasted vs. ballasted material. Finally, @Passow2006-hw developed an experiment to investigate the relationship between the incorporation of biominerals into aggregates and their sinking speed. They showed that this relationship was not straigthforward due to the fact that the inclusion of biominerals fragmented aggregates into smaller but denser particles which could either decrease (smaller size) or increase (denser particles) their sinking speed.
+To the best of my knowledge, the most emblematic case of discussions around this question is the mineral ballast hypothesis [@De_La_Rocha2007-yi]. Mineral ballasting consists in the inclusion of biominerals such as opal (i.e. silicate) and calcite or lithogenic material such as dust that are thought to increase $\Delta\rho$ on the one hand and protect them from microbial degradation on the other hand [@Armstrong2001-rz; @Francois2002-uc; @Klaas2002-kn]. However, several studies argue otherwise. @Passow2004-re stipulates that biominerals could instead be collected (i.e. scavenged) and transported downwards by sinking aggregates. @Ploug2008-qk did not measure significant differences in microbial degradation of non ballasted vs. ballasted material. Finally, @Passow2006-hw developed an experiment to investigate the relationship between the incorporation of biominerals into aggregates and their sinking speed. They showed that this relationship was not straigthforward due to the fact that the inclusion of biominerals fragmented aggregates into smaller but denser particles which could either decrease (smaller size) or increase (denser particles) their sinking speed. Other studies on the ballasting effect have been published since but even 20 years after its proposition, no global ballasting mechanism has been found [@Neukermans2023-vl].
 
 The size of aggregates was usually thought to be a key predictor of settling velocity [e.g. @Passow2006-hw] which is coherent with @eq-sinking-speed. However, @Iversen2020-kb did not find evidence for a size-sinking relationship therefore suggesting that excess density would be the main controlling factor. With all things considered, the sinking speed of particulate organic matter determines the time available for degradation in the water column. Thus, there is a need for direct measurements of the morphological characteristics (size, composition and density) of particles to better estimate their settling velocities [@Iversen2020-kb; @Iversen2022-qj]. <!-- This need could be partially filled with the multi-instrumentation approach described in @sec-observing-carbon-cycle. -->
 
