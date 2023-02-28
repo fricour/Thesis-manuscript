@@ -2,7 +2,7 @@
 
 ## The global carbon cycle {#sec-global_carbon_cycle}
 
-The global carbon cycle (@fig-global_carbon_cycle) consists of a series of exchanges of carbon in various organic and inorganic forms among four major reservoirs: the lithosphere, the hydrosphere, the atmosphere and the biosphere. These exchanges occur at different timescales, such that the carbon cycle can be roughly divided into a slow and a fast component. The former operates on geological timescales where carbon is hidden from the surface for millions of years (e.g. in hydrocarbon deposits such as petroleum or natural gas) before a part of it is released through volcanic activity while the latter operates on shorter timescales, from minutes to years (e.g. photosynthesis, air-sea fluxes) up to decades and millenia (e.g. ocean ventilation, changing ocean buffering capacity) [@Bertrand2021-nh; @Canadell2021-ds].
+The global carbon cycle (@fig-global_carbon_cycle) consists of a series of exchanges of carbon in various organic and inorganic forms among four major reservoirs: the lithosphere, the hydrosphere, the atmosphere and the biosphere. These exchanges occur at different time scales, such that the carbon cycle can be roughly divided into a slow and a fast component. The former operates on geological time scales where carbon is hidden from the surface for millions of years (e.g. in hydrocarbon deposits such as petroleum or natural gas) before a part of it is released through volcanic activity while the latter operates on shorter time scales, from minutes to years (e.g. photosynthesis, air-sea fluxes) up to decades and millenia (e.g. ocean ventilation, changing ocean buffering capacity) [@Bertrand2021-nh; @Canadell2021-ds].
 
 99% of the Earth's carbon is stored in rocks, holding about 100,000 times as much carbon as the atmosphere while the ocean contains about 60 times as much carbon as the atmosphere [@Sarmiento2006-ec; @Bertrand2021-nh; @DeVries2022-of] with roughly 37,000 Pg (i.e. 1 Pg = 10$^{15}$ g = 1 Gt) of dissolved inorganic carbon (DIC) and 700 Pg of dissolved organic carbon (DOC) [@Friedlingstein2022-th].
 
@@ -14,7 +14,7 @@ Thankfully, more than half of this anthropogenic $CO_{2}$ has been absorbed by t
 
 ## How is the ocean a $CO_{2}$ sink? {#sec-ocean_co2_sink}
 
-The ocean is known to play a key role in the fast carbon cycle due to its size and rapid exchange of $CO_{2}$ with the atmosphere, controlling atmospheric $CO_{2}$ levels on timescales of decades to millennia [@Sarmiento2006-ec; @DeVries2022-of]. Currently, the ocean absorbs \~2.5 Pg C year$^{-1}$, which represents about 25% of annual anthropogenic $CO_{2}$ emissions [@Canadell2021-ds; @Friedlingstein2022-th]. In order to understand how the ocean absorbs the latter, one must take a look at seawater carbonate chemistry.
+The ocean is known to play a key role in the fast carbon cycle due to its size and rapid exchange of $CO_{2}$ with the atmosphere, controlling atmospheric $CO_{2}$ levels on time scales of decades to millennia [@Sarmiento2006-ec; @DeVries2022-of]. Currently, the ocean absorbs \~2.5 Pg C year$^{-1}$, which represents about 25% of annual anthropogenic $CO_{2}$ emissions [@Canadell2021-ds; @Friedlingstein2022-th]. In order to understand how the ocean absorbs the latter, one must take a look at seawater carbonate chemistry.
 
 ### Inorganic carbonate chemistry {#sec-inorganic_carbonate_chemistry}
 
@@ -87,12 +87,6 @@ library(latex2exp)
 # load data 
 DIC_data <- vroom::vroom('./DATA/GLODAP/DIC_distribution.csv')
 
-#plot it
-# ggplot(DIC_data, aes(y = mids, x = mean_DIC)) + geom_path(size = 1) + scale_y_reverse() + labs(y = 'Depth [m]', x = "DIC [&mu;mol kg<sup>-1</sup>]") + theme_bw() + theme(
-#     axis.title.x = element_markdown(),
-#     axis.title.y = element_markdown()
-#   ) 
-
 # https://stackoverflow.com/questions/12514612/how-to-annotate-ggplot-with-latex
 ggplot(DIC_data, aes(y = mids, x = mean_DIC)) + geom_path(size = 1) + scale_y_reverse() + ylab('Depth (m)') + xlab(TeX('DIC ($\\mu$mol kg$^{-1}$)')) + theme_bw() 
 
@@ -132,7 +126,7 @@ $$
 Ca^{2+} + 2HCO_{3}^{-} \rightleftharpoons CaCO_{3} + CO_{2} + H_{2}O
 $$ {#eq-calcification}
 
-This calcification occurs in surface waters, releasing $CO_{2}$ in the surrounding waters and subsequently to the atmosphere (0.26 - 1.19 Pg C year$^{-1}$ following @Neukermans2023-vl). That is why this pump is sometimes also referred to as the carbonate counter pump \[@Zeebe2012-zk\]. However, the dissolution of $CaCO_{3}$ mainly occurs at depth and thus increases the DIC concentration (@eq-calcification). In all, @Sarmiento2006-ec estimated that the carbonate pump contributes to 20% of the observed DIC gradient.
+This calcification occurs in surface waters, releasing $CO_{2}$ in the surrounding waters and subsequently to the atmosphere (0.26-1.19 Pg C year$^{-1}$ according to @Neukermans2023-vl). That is why this pump is sometimes also referred to as the carbonate counter pump [@Zeebe2012-zk]. However, the dissolution of $CaCO_{3}$ that mainly occurs at depth increases the DIC concentration in contrast with the calcification (see @eq-calcification). In all, @Sarmiento2006-ec estimated that the carbonate pump contributes to 20% of the observed DIC gradient.
 
 #### Biological pump {#sec-biological-pump}
 
@@ -166,11 +160,11 @@ However, climate change is most likely going to impact the biological (e.g. shif
 
 #### Microbial pump {#sec-microbial-pump}
 
-Unlike the three previous carbon pumps, the microbial carbon pump (MCP) was only introduced recently by @Jiao2010-ax as "a conceptual framework to address the role of microbial generation of recalcitrant dissolved organic matter[^intro-1] and relevant carbon storage". Put simply, it is a suite of marine microbial mechanisms that produce longer-lived DOC such as semi-refractory, refractory and ultra-refractory DOC that have an average lifetime of respectively 205, 16,000 and 40,000 years [@Legendre2015-jc].
+Unlike the three previous carbon pumps, the microbial carbon pump (MCP) was only introduced recently by @Jiao2010-ax as "a conceptual framework to address the role of microbial generation of recalcitrant dissolved organic matter[^intro-1] and relevant carbon storage". In simple terms, it is a suite of marine microbial mechanisms that produce longer-lived DOC such as semi-refractory, refractory and ultra-refractory DOC that have an average lifetime of respectively 205, 16,000 and 40,000 years [@Legendre2015-jc].
 
 [^intro-1]: i.e. dissolved organic matter resistant to microbial utilization that can persist in the ocean interior for thousands of years.
 
-The term 'pump' is attributed to the MCP because it maintains a gradient between DOC$_{<100~years}$ (14 Pg C) and DOC$_{>100~years}$ (non-bioavailable DOC, 636 Pg C) where 100 years has been chosen as the minimum time DOC needs to be stored away from the atmosphere to be considered as sequestered [@Ipcc2019-qc].
+The term 'pump' is attributed to the MCP because it maintains a gradient between DOC$_{<100~years}$ (14 Pg C) and DOC$_{>100~years}$ (non-bioavailable DOC, 636 Pg C) where 100 years corresponds to the 100-year time horizon that I use to refer to carbon sequestration.
 
 In contrast with the other pumps which are depth-dependent, the MCP sequesters carbon by biochemically transforming DOC to non-bioavailable DOC. This process occurs at all depths, making the MCP depth-independent [@Legendre2015-jc].
 
@@ -178,11 +172,9 @@ In order to fully understand the fate of DOC and DIC in the ocean, one would nee
 
 ## A new paradigm for the BCP {#sec-a-new-paradigm-for-the-bcp}
 
-<!-- he recent work of @Nowicki2022-no suggests that the BCP exports on average 10.2 Pg C year$^{-1}$, sequesters ~1,300 Pg C with a mean sequestration time of 127 years and buries 0.4 Pg C year$^{-1}$ in the sediment that will remain sequestered for millions of years. Therefore, when talking about natural-based solutions for carbon sequestration, one should keep in mind that even though the BCP does not contribute to the absorption of anthropogenic $CO_{2}$ per se, it remains the main process that maintains the DIC gradient -->
-
 In the frame of the BCP, global carbon budgets have generally been imbalanced such that the exported POC was up to 2-3 orders of magnitude less abundant that it would need to be to sustain heterotrophic respiration in the mesopelagic zone and beyond [@Burd2010-hc; @Turner2015-af]. This imbalance raises one question: are we currently underestimating the export carbon flux or are we overestimating the heterotrophic respiration?
 
-The last part of the question is out of the scope of this manuscript but it should be said that a lot of uncertainties orbit around those carbon deficits, namely parameters used to estimate the metabolic activity of deep ocean organisms as well as deep food web dynamics and unquantified carbon sources such as the contribution of slowly settling particles and better estimation of POC fluxes [@Burd2010-hc].
+The last part of the question is out of the scope of this manuscript but it should be said that a lot of uncertainties orbit around those carbon deficits, namely parameters used to estimate the metabolic activity of deep ocean organisms as well as deep food web dynamics and unquantified carbon sources such as the contribution of slowly settling particles and better estimation of POC fluxes \[@Burd2010-hc; @Martin2020-wa\].
 
 Regarding the latter, @Boyd2019-ez published a paper in which they review the BCP by adding new biological and physical mechanisms[^intro-2] that inject suspended and sinking particles to depth (@fig-global_carbon_pumps). A better understanding of those mechanisms (see next subsections) could help to close the carbon budget.
 
@@ -198,31 +190,31 @@ The most well known pump is the gravitational carbon pump (BGP). It consists in 
 
 ### Physically mediated particle injection pump {#sec-MixingPump}
 
-The physically mediated particle injection pump (also referred to as the mixing pump) consists of three separate pumps: the mixed layer pump, the eddy subduction pump and the large-scale subduction pump [@Boyd2019-ez]. Contrarily to the BGP, all three pumps also transport DOC to depth where it is injected along with suspended (i.e. neutrally buoyant) and slow-sinking POC below the EZ on different spatial scales and timescales.
+The physically mediated particle injection pump (also referred to as the mixing pump in the literature) consists of three separate pumps: the mixed layer pump, the eddy subduction pump and the large-scale subduction pump [@Boyd2019-ez]. Contrarily to the BGP, all three pumps also transport DOC to depth where it is injected along with suspended (i.e. neutrally buoyant) and slow-sinking POC below the EZ on different spatial and time scales.
 
 The mixed layer pump can be defined as a 1D mechanism through which organic carbon is exported below the EZ when there is a deepening of the mixed layer followed by the formation of a new shallower mixed layer, isolating the exported carbon from the surface [@DallOlmo2016-ex]. This pump can occur at different time scales but it is mainly related to the building of the summer stratification in mid and high latitude regions where seasonal variations of the mixed layer are the strongest [@DallOlmo2016-ex; @Boyd2019-ez].
 
-The two other pumps are both 2D spatial mechanisms (i.e. they transport POC and DOC vertically and laterally). The eddy subduction pump is associated with fronts and eddies that create a strong vertical circulation that transport particles on timescales of days across horizontal spatial scales of 1-10 km [@Omand2015-mf; @Resplandy2019-nx]. The large-scale (100-1000 km) subduction pump corresponds to the slow advective transport of carbon associated with the meridional overturning circulation and Ekman pumping [@Levy2013-ro; @Claustre2021-tx; @Siegel2022-wd].
+The other two pumps are both 2D spatial mechanisms (i.e. they transport POC and DOC vertically and laterally). The eddy subduction pump is associated with fronts and eddies that create a strong vertical circulation that transport particles on time scales of days across horizontal spatial scales of 1-10 km [@Omand2015-mf; @Resplandy2019-nx]. The large-scale (100-1000 km) subduction pump corresponds to the slow advective transport of carbon associated with the meridional overturning circulation and Ekman pumping [@Levy2013-ro; @Claustre2021-tx; @Siegel2022-wd].
 
 In all, the mixing pump would represent at least 20% of the export flux according to @Nowicki2022-no although large uncertainties still remain (see Figure 2C in the paper of @Boyd2019-ez).
 
 ### Biologically mediated particle injection pump {#sec-MigrantPump}
 
-The biologically mediated particle injection pump is usually referred to as the vertical migration pump (VMP) [@Boyd2019-ez]. It consists on the vertical migration of zooplankton or fish [@Steinberg2017-ri; @Saba2021-ew] that directly inject POC (e.g. fecal pellets) below the EZ at the depth of their migration. This pump can act on daily as well as on seasonal timescales. In the case of the diel (i.e. daily) migration pump, animals feed at the surface at night and then migrate to depth during daytime to avoid visual predation [@Siegel2022-wd], metabolizing injected food at depth[^intro-4], by-passing the EZ directly [@Steinberg2017-ri]. In the case of the seasonal migration pump, carbon-rich lipids accumulated in the EZ during summer are catabolized by hibernating copepods at depth, between 600 m and 1,400 m, where they shunt carbon below the permanent pycnocline [@Jonasdottir2015-ob]. This pump is also referred to as the seasonal lipid pump [@Jonasdottir2015-ob].
+The biologically mediated particle injection pump is usually referred to as the vertical migration pump (VMP) [@Boyd2019-ez]. It consists on the vertical migration of zooplankton or fish [@Steinberg2017-ri; @Saba2021-ew] that directly inject POC (e.g. fecal pellets) below the EZ at the depth of their migration. This pump can act on daily as well as on seasonal time scales. In the case of the diel (i.e. daily) migration pump, animals feed at the surface at night and then migrate to depth during daytime to avoid visual predation [@Siegel2022-wd], metabolizing injected food at depth[^intro-4], by-passing the EZ directly [@Steinberg2017-ri]. In the case of the seasonal migration pump, carbon-rich lipids accumulated in the EZ during summer are catabolized by hibernating copepods at depth, between 600 m and 1,400 m, where they shunt carbon below the permanent pycnocline [@Jonasdottir2015-ob]. This pump is also referred to as the seasonal lipid pump [@Jonasdottir2015-ob].
 
 [^intro-4]: They can also die at depth during the day (or their overwintering in the case of the seasonal migration pump) which also contributes directly to the export of carbon at depth.
 
-In his model, @Nowicki2022-no estimates that the VMP accounts for approximately 10% of the total export flux, albeit large uncertainties remain on the number of migrating animals and their migration depth. The VMP would thus export less organic carbon than the mixing pump but its sequestration potential would be higher (@tbl-PumpDepthRange). In contrast to the mixing pump that mostly acts on DOC, migrating animals release rapid sinking fecal pellets that would reach depths such that subsequent remineralized DIC would be hidden from the surface for a longer period of time (@tbl-PumpDepthRange). As a result, it is estimated that the diel migration pump could potentially sequester 60% as much carbon as the BGP [@Boyd2019-ez].
+In his model, @Nowicki2022-no estimates that the VMP accounts for approximately 10% of the total export flux, albeit large uncertainties remain on the number of migrating animals and their migration depth. The VMP would thus export less organic carbon than the mixing pump but its sequestration potential would be higher (@tbl-PumpDepthRange). In contrast to the mixing pump that mostly acts on DOC, migrating animals release rapid sinking fecal pellets that would reach depths such that subsequent remineralized DIC would be hidden from the surface for longer time periods (@tbl-PumpDepthRange). As a result, it is estimated that the diel migration pump could potentially sequester 60% as much carbon as the BGP [@Boyd2019-ez].
 
 However, there are still many uncertainties regarding the magnitude of VMP [@Archibald2019-dj; @Aumont2018-wx; @Gorgues2019-qp] and its sequestration potential [@Boyd2019-ez; @Pinti2022-dc] thus its importance for a better understanding of the BCP.
 
 ## The fate of carbon {#sec-the-fate-of-carbon}
 
-### Biological processes at play {#sec-biological-processes-at-play}
+### Biological processes impacting the downward POC flux {#sec-biological-processes-at-play}
 
 Sinking particles are part of a pool of highly diversified materials combining fecal pellets, phytodetritus from sinking phytoplankton, dead zooplankton and organic aggregates referred to as marine snow (i.e. macroscopic organic aggregate \> 0.5 mm) [@Alldredge1988-wm; @Turner2015-af; @Steinberg2017-ri]. Settling velocities for such particles range from 10-100 m day$^{-1}$ up to 1 km day$^{-1}$ for large salp fecal pellets [@Steinberg2017-ri; @Iversen2022-qj].
 
-Marine snow is paramount for both the BCP (see @sec-a-new-paradigm-for-the-bcp) and the support of marine life within the mesopelagic domain [@Burd2010-hc]. The remineralization of organic matter by heterotrophic organisms releases $CO_{2}$ in the water column that will then be released back to the atmosphere in a time frame depending both on its geographical location and depth (see @sec-will-it-be-sequestered). Therefore, understanding how biological processes interact with the downward POC flux and where the bulk of the remineralization occurs is important to better understand the efficiency of the BCP.
+Marine snow is paramount for both the BCP (see @sec-a-new-paradigm-for-the-bcp) and the support of marine life within the mesopelagic domain [@Burd2010-hc]. The remineralization of organic matter by heterotrophic organisms releases $CO_{2}$ in the water column that will be released back to the atmosphere in a time frame depending both on its geographical location and depth (see @sec-will-it-be-sequestered). Therefore, understanding how biological processes interact with the downward POC flux and where the bulk of the remineralization occurs is important to better understand the efficiency of the BCP.
 
 The Martin curve [@Martin1987-um] is probably the most well known POC flux attenuation curve (@eq-Martin-Curve and @fig-Martin-Curve). It is a power-law function described as follow
 
@@ -230,11 +222,11 @@ $$
 F_{z} = F_{z_{export}} \left(\frac{z}{z_{export}}\right)^{-b}
 $$ {#eq-Martin-Curve}
 
-where $F_{z}$, $z_{export}$ and $b$ are, respectively, the estimated POC flux at a depth $z$, the depth of the export flux and the remineralization factor. The latter is adimensional and often set at 0.86 [@Martin1987-um] although it is well known that the magnitude of flux attenuation varies regionally (and temporally) due to the variability in food web structures beneath the EZ [@Passow2012-zh]. Geographically variable [@Henson2012-ck] and regionalized [@Guidi2015-sj] $b$ values have been proposed to take that into account.
+where $F_{z}$, $z_{export}$ and $b$ are, respectively, the estimated POC flux at a depth $z$, the depth of the export flux and the remineralization factor. The latter is adimensional and often set at 0.86 [@Martin1987-um] although it is well known that the magnitude of flux attenuation varies regionally (and temporally) due to the variability in food web structures beneath the EZ [@Passow2012-zh]. Geographically variable [@Henson2012-ck] and regionalized [@Guidi2015-sj] estimations of $b$ were proposed to account for non-uniform remineralization at global scale.
 
 ```{r, Martin Curve}
 #| label: fig-Martin-Curve
-#| fig-cap: Typical attenuation curve of the POC flux obtained with @eq-Martin-Curve. The colour-coded layers represent regions with carbon-specific degradation rate, decreasing with depth. Figure inspired from @Iversen2022-qj.
+#| fig-cap: Typical attenuation curve of the POC flux obtained with @eq-Martin-Curve. The color-coded layers represent regions with carbon-specific degradation rate, decreasing with depth. Figure inspired from @Iversen2022-qj.
 
 library(scales)
 
@@ -253,61 +245,43 @@ fluxes <- F_martin(depth)
 df <- data.frame(z = depth, flux = fluxes)
 opacity <- 1
 
-ggplot(df, aes(x = fluxes, y = depth)) + #geom_path() + 
-  # geom_hline(yintercept = 1000, linetype = 'dotted') + 
-  # geom_hline(yintercept = 100, linetype = 'dotted') +
-  #geom_hline(yintercept = 100, linetype = 'dotted', colour = 'black') +
-  # annotate("rect", ymin = 100, ymax = 300, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#22577a") +
-  # #geom_hline(yintercept = 300, linetype = 'dotted') +
-  # annotate("rect", ymin = 300, ymax = 500, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#38a3a5") + 
-  # #geom_hline(yintercept = 500, linetype = 'dotted') +
-  # annotate("rect", ymin = 500, ymax = 1000, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#57cc99") +
-  # #geom_hline(yintercept = 1000, linetype = 'dotted') +
-  # annotate("rect", ymin = 1000, ymax = 3000, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#80ed99") +
+ggplot(df, aes(x = fluxes, y = depth)) + 
   annotate("rect", ymin = 100, ymax = 300, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#edf8b1") +
   annotate("rect", ymin = 300, ymax = 500, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#7fcdbb") + 
   annotate("rect", ymin = 500, ymax = 1000, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#1d91c0") +
   annotate("rect", ymin = 1000, ymax = 3000, xmin = -Inf, xmax = Inf, alpha = opacity, fill = "#225ea8") +
-  #scale_y_continuous(trans = c('log10', 'reverse')) +
   scale_y_continuous(trans = c('reverse')) + geom_path(size = 1.5) +
-  #scale_y_reverse() + 
   theme_bw() +
   labs(x = 'POC flux (mg C m<sup>-2</sup> day<sup>-1</sup>)', y = 'Depth (m)') + theme(
     axis.title.x = element_markdown(),
     axis.title.y = element_markdown()) 
-
-# viscosity <- function(T){
-#   visc <- 0.00042844 + 1/(0.157*((T+64.993)**2)-91.296)
-#   return(visc)
-# }
-# 
-# viscosity(0)
-
 ```
 
-Based on the Martin curve, @Iversen2022-qj divided the water column in 4 layers (@fig-Martin-Curve): the upper mesopelagic layer (export depth - 300 m) where there is a rapid attenuation of the downward POC flux, the mid-mesopelagic layer (300 - 500 m) and the lower mesopelagic layer (500 - 1,000 m) where both layers show two levels of intermediate attenuation and the bathypelagic layer (1,000 m - seafloor) where the attenuation is relatively uniform. For each layer, @Iversen2022-qj estimated a carbon-specific degradation rate in order to better understand the processes responsible of this attenuation. As a result, @Iversen2022-qj suggests that the POC attenuation in the upper mesopelagic layer is the combined action of microbial degradation and zooplankton that graze on settling aggregates. In the upper mesopelagic, zooplankton are the main responsible for the attenuation whereas in the mid- and lower mesopelagic layer, the microbial degradation takes over due to the decrease in zooplankton abundance. Finally, the relatively constant degradation occurring below 1,000 m in the bathypelagic zone could be explained by the increasing pressure and decreasing temperatures on microbial communities.
+Based on the Martin curve, @Iversen2022-qj divided the water column in 4 layers (@fig-Martin-Curve): the upper mesopelagic layer (export depth - 300 m) where there is a rapid attenuation of the downward POC flux, the mid-mesopelagic layer (300 - 500 m) and the lower mesopelagic layer (500 - 1,000 m) where both layers show two levels of intermediate attenuation and the bathypelagic layer (1,000 m - seafloor) where the attenuation is relatively uniform. For each layer, @Iversen2022-qj estimated a carbon-specific degradation rate in order to better understand the processes responsible of this attenuation. As a result, @Iversen2022-qj suggests that the POC attenuation in the upper mesopelagic layer is the combined action of microbial degradation and zooplankton that graze on settling aggregates. Here, zooplankton are the main responsible for the attenuation whereas in the middle and lower mesopelagic layers, microbial degradation takes over due to the decrease in zooplankton abundance. Finally, the relatively constant degradation occurring below 1,000 m in the bathypelagic zone could be explained by the increasing pressure and decreasing temperatures on microbial communities.
 
 The impact on the downward POC flux of zooplankton feeding on aggregates are numerous [@Turner2015-af; @Iversen2022-qj]. On the one hand, aggregate feeding, filter-feeding, direct ingestion of fecal pellets (i.e. coprophagy) and fragmentation of large aggregates to small slower-sinking particles will likely decrease the downward POC flux. On the other hand, the ingestion of slow-sinking cells to defecation of large and compact (i.e. fast-settling) fecal pellets will increase it. The remaining organic matter (\~15% according to @Turner2015-af) will then be degraded by microbial communities. In the end, only a small fraction of the exported carbon will reach the sediment where it will be stored for millions of years.
 
-### The importance of the sinking speed {#sec-sinking-speed}
+### Physical properties influencing the downward POC flux {#sec-sinking-speed}
 
-The settling speed $w$ is the most important physical parameter controlling the remineralization depth of aggregates and fecal pellets. Using Stokes' Law for spherical aggregates at low Reynold's number, one can derive [see for e.g. @Johnson1996-ys]
+The settling speed $w$ is the most important physical parameter controlling the remineralization depth (@fig-sinking-speed) of aggregates and fecal pellets [@Laurenceau-Cornec2015-pm]. Using Stokes' Law for a spherical particle at low Reynolds number, the sinking speed can be expressed as
 
 $$
-w = (1-p)~\frac{g(\rho-\rho_{0})d^{2}}{18\nu\rho_{0}}
+w = \frac{g}{18\mu} (\rho_{p}-\rho_{w})d^{2}
 $$ {#eq-sinking-speed}
 
-where $p$, $g$, $\rho$, $\rho_{0}$, $\nu$ and $d$ are, respectively, the porosity of the aggregate, the gravitational acceleration, the average density of the particles composing the aggregate, the density of the surrounding fluid (i.e. seawater), the fluid kinematic viscosity and the aggregate diameter. If one assume that changes in dynamic viscosity are negligible [@De_La_Rocha2007-yi] compared to changes from the remaining parameters (i.e. this assumption is reasonable based on the fact that $\nu$ can roughly vary by a factor 2 [@Sharqawy2010-ig]), then $w$ should mostly be proportional to the excess density $\Delta\rho$ (i.e. $\rho -\rho_{0}$), the porosity and the diameter of sinking aggregates. It is however a simplification of reality because most aggregates are not spherical and have fractal geometries [@Logan1990-gy; @Logan1995-id; @Laurenceau-Cornec2020-zc].
+where $g$ is the gravitational acceleration, $\mu$ is the dynamic viscosity of seawater, $\rho_{p}$ and $\rho_{w}$ are the particle and seawater densities and $d$ is the particle diameter. If one assumes that changes in dynamic viscosity are negligible [@De_La_Rocha2007-yi] compared to changes from the remaining parameters (i.e. this assumption is reasonable based on the fact that $\mu$ can roughly vary by a factor 2 [@Sharqawy2010-ig]), then $w$ should mostly be proportional to the excess density $\Delta\rho$ (i.e. $\rho_{p} -\rho_{w}$) and $d$. It is however a simplification of reality because most aggregates are not spherical and have fractal geometries [@Logan1990-gy; @Logan1995-id; @Laurenceau-Cornec2020-zc].
 
 Taking this into consideration, several processes can impact the sinking speed of POC such as aggregation (e.g. physical coagulation, incorporation of small particles into fecal pellets (i.e. repackaging)), disaggregation or fragmentation (either physically (e.g. fluid shear) or biologically by microbial degradation and zooplankton feeding), solubilization to DOC by bacteria and mineral ballasting [@Turner2015-af].
 
 The driving factors of the sinking speed are nevertheless subject to caution. It would make sense that the quadratic dependence of $w$ to the aggregate size would favor $d$ as the main driver. However, aggregates are far from being perfect theoretical objects for @eq-sinking-speed and the excess density as the main driver is plebiscited by some authors such as @Iversen2020-kb.
 
-To the best of my knowledge, the most emblematic case of discussions around this question is the mineral ballast hypothesis [@De_La_Rocha2007-yi]. Mineral ballasting consists in the inclusion of biominerals such as opal (i.e. silicate) and calcite or lithogenic material such as dust that are thought to increase $\Delta\rho$ on the one hand and protect them from microbial degradation on the other hand [@Armstrong2001-rz; @Francois2002-uc; @Klaas2002-kn]. However, several studies argue otherwise. @Passow2004-re stipulates that biominerals could instead be collected (i.e. scavenged) and transported downwards by sinking aggregates. @Ploug2008-qk did not measure significant differences in microbial degradation of non ballasted vs. ballasted material. Finally, @Passow2006-hw developed an experiment to investigate the relationship between the incorporation of biominerals into aggregates and their sinking speed. They showed that this relationship was not straigthforward due to the fact that the inclusion of biominerals fragmented aggregates into smaller but denser particles which could either decrease (smaller size) or increase (denser particles) their sinking speed. Other studies on the ballasting effect have been published since but even 20 years after its proposition, no global ballasting mechanism has been found [@Neukermans2023-vl].
+To the best of my knowledge, the most emblematic case of discussions around this question is the mineral ballast hypothesis [@De_La_Rocha2007-yi]. Mineral ballasting consists in the inclusion of biominerals such as opal (i.e. silicate) and calcite or lithogenic material such as dust that are thought to increase $\Delta\rho$ on the one hand and protect them from microbial degradation on the other hand [@Armstrong2001-rz; @Francois2002-uc; @Klaas2002-kn]. However, several studies argued otherwise. @Passow2004-re stipulated that biominerals could instead be collected (i.e. scavenged) and transported downwards by sinking aggregates. @Ploug2008-qk did not measure significant differences in microbial degradation of non ballasted vs. ballasted material. Finally, @Passow2006-hw developed an experiment to investigate the relationship between the incorporation of biominerals into aggregates and their sinking speed. They showed that this relationship was not straigthforward due to the fact that the inclusion of biominerals fragmented aggregates into smaller but denser particles which could either decrease (smaller size) or increase (denser particles) their sinking speed. Other studies on the ballasting effect have been published since but even 20 years after its proposition, no global ballasting mechanism has been found [@Neukermans2023-vl].
 
-The size of aggregates was usually thought to be a key predictor of settling velocity [e.g. @Passow2006-hw] which is coherent with @eq-sinking-speed. However, @Iversen2020-kb did not find evidence for a size-sinking relationship therefore suggesting that excess density would be the main controlling factor. With all things considered, the sinking speed of particulate organic matter determines the time available for degradation in the water column. Thus, there is a need for direct measurements of the morphological characteristics (size, composition and density) of particles to better estimate their settling velocities [@Iversen2020-kb; @Iversen2022-qj]. <!-- This need could be partially filled with the multi-instrumentation approach described in @sec-observing-carbon-cycle. -->
+The size of aggregates was usually thought to be a key predictor of settling velocity \[e.g. @Passow2006-hw\] which is coherent with @eq-sinking-speed. However, @Iversen2020-kb did not find evidence for a size-sinking relationship therefore suggesting that excess density would be the main controlling factor. Because the sinking speed determines the time available for degradation in the water column, it also directly impacts the potential for carbon sequestration. With all things considered, there is a thus need for direct measurements of morphological characteristics (size, composition, porosity and density) of particles to better estimate their settling velocities \[@Iversen2020-kb; @Giering2020-zk; @Iversen2022-qj; @Williams2022-xx\].
 
-### Will it be sequestered? {#sec-will-it-be-sequestered}
+![Illustration of the main factors influencing the sinking velocity following Stokes' Law and hypothetical attenuation fluxes (in % of export flux) with depth (vertical axis) for slow and fast sinking particles. The latter shows that slow sinking particles experience higher rates of flux attenuation due to increased duration of exposure to remineralization hence contributing less to carbon sequestration. Figure taken from @Williams2022-xx.](image/intro/sinking_speed.jpeg){#fig-sinking-speed}
+
+### Sequestration potential {#sec-will-it-be-sequestered}
 
 Once injected in the ocean interior (@tbl-PumpDepthRange), the POC flux originating from the five particle injection pumps is merged back with the BGP. How long is this carbon going to be sequestered from the atmosphere is one of the key questions of carbon cycle studies [@Claustre2021-tx].
 
@@ -324,7 +298,7 @@ tbl-cap-location: top
 ---
 
 | Pump                   | POC export/injection depth range | DOC injection depth range | Sequestration time potential (years) |
-|------------------|------------------|------------------|-------------------|
+|-----------------|------------------|-----------------|--------------------|
 | Gravitational          | export depth - sediment          | None                      | N/A (142)                            |
 | Mixed layer            | 200 - 1,000 m                    | 200 - 1,000 m             | 25 - 100 (54$^{b}$)                  |
 | Eddy subduction        | 150 - 400 m                      | 150 - 400 m               | up to 150 (N/A)                      |
@@ -350,6 +324,6 @@ tbl-cap-location: top
 
 ```
 
-A great majority of studies related to carbon sequestration by the BCP usually assumed that the part of the exported carbon reaching 1,000 m was sequestered [e.g. @Lampitt2008-kq; @Passow2012-zh]. However, @Siegel2021-oz revises this common assumption by proposing that carbon sequestration can occur on the entire water column, with varying efficiencies (i.e. sequestration times). To come to this conclusion, @Siegel2021-oz used an inverse ocean circulation model to assess the time over which injected $CO_{2}$ (direct injections at different depths) remains sequestered from the atmosphere. For this, they computed a factor $f_{\tau}$ corresponding to the fraction of $CO_{2}$ that will be stored away from the atmosphere for a given time $\tau$. Their results show that $f_{\tau}$ increases with depth and varies geographically. They also show that for a time horizon of 100 years (i.e. $\tau = 100$) and an injection depth at 1,000 m, there is a non negligible leakage of $CO_{2}$ back to the atmosphere with strong regional disparities (e.g. high leakage in the Northwest Atlantic compared to virtually no leakage in the Central Eastern Pacific).
+A great majority of studies related to carbon sequestration by the BCP usually assumed that the part of the exported carbon reaching 1,000 m was sequestered [e.g. @Lampitt2008-kq; @Passow2012-zh]. However, @Siegel2021-oz revises this common assumption by proposing that carbon sequestration can occur on the entire water column, with varying efficiencies (i.e. sequestration times). To come to this conclusion, @Siegel2021-oz used an ocean inverse circulation model to assess the time over which injected $CO_{2}$ (direct injections at different depths) remains sequestered from the atmosphere. For this, they computed a factor $f_{\tau}$ corresponding to the fraction of injected $CO_{2}$ that will be stored away from the atmosphere for a given time $\tau$. Their results show that $f_{\tau}$ increases with depth and varies geographically. They also show that for a time horizon of 100 years (i.e. $\tau = 100$) and an injection depth at 1,000 m, there is a non negligible leakage of $CO_{2}$ back to the atmosphere with strong regional disparities (e.g. high leakage in the Northwest Atlantic compared to virtually no leakage in the Central Eastern Pacific).
 
-So far, we have seen that significant incertitudes remain in the estimations of carbon export as well as the sequestration time by the different export pathways composing the BCP. To address this issue, biogeochemical models and observation tools are continuously being improved to further our understanding of the BCP (see @sec-modelling-observing-BCP).
+So far, we have seen that significant incertitudes remain in the estimations of carbon export as well as the sequestration time by the different export pathways of the BCP. To address this issue, biogeochemical models and observation tools are continuously being improved to further our understanding of the BCP (see @sec-modelling-observing-BCP).
