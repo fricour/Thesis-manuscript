@@ -8,8 +8,8 @@ book:
   chapters:
     - index.qmd
     - summary.qmd
-    - intro.qmd
-    - observingCarbonCycle.qmd
+    #- intro.qmd
+    #- observingCarbonCycle.qmd
     - uvp6_part.qmd
     #- article3.qmd
     - references.qmd
