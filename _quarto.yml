@@ -12,6 +12,7 @@ book:
     #- observingCarbonCycle.qmd
     - uvp6_part.qmd
     #- article3.qmd
+    - discussion.qmd
     - references.qmd
     - annexes.qmd
 
