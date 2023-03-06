@@ -1,0 +1,98 @@
+# General discussion and perspectives
+
+## UVP6 classification model: From start to finish
+
+The development of the UVP6 classification model started without a data set of labeled UVP6 images. Therefore, a significant part of my work was to test and prepare a fully functional data preparation and model training pipeline for the upcoming UVP6 data set using UVP5 images. In the following sections, I will describe a brief historic of what has been done prior to the acquisition and human labeling of UVP6 images.
+
+### Classification metric
+
+<!-- https://datascience.stackexchange.com/questions/61761/how-does-xgboost-use-softmax-as-an-objective-function -->
+
+In multiclass classification task, the goal is to predict the label (i.e. class) of a given input among a defined number of labels. In @sec-uvp6, I explained that XGBoost minimizes a regularized objective function $L$ (see @eq-objective-function-xgboost) during model training. The XGBoost library proposes two choices of objective functions for multiclass classification problems: `multi:softmax` and `multi:softprob` (https://xgboost.readthedocs.io/en/latest/parameter.html, last accessed: 03/03/2023). Both functions are based on the softmax normalization which normalizes the classification score of each class using an exponential function (@eq-softmax). `multi:softmax` returns the class of highest probability whereas `multi:softprob` outputs a class probability array, that allows the computation of custom objective functions.
+
+$$
+\sigma(x_{i}) = \frac{e^{x_{i}}}{\sum_{j=1}^{N}e^{x_{j}}}, i = 1,...,N
+$$ {#eq-softmax}
+
+where $x_{i}$ and $N$ are, respectively, the classification score of the $i^{th}$ class and the number of classes.
+
+By definition, `multi:softmax` amplifies the difference between classification scores. Here is a simple illustration of this effect. Let A, B and C, three classes of zooplankton whose classification scores are $(1,7,8)$. Using @eq-softmax, the output probabilities are $(0.0006, 0.26, 0.73)$. Therefore, a unit difference in the classification scores of class B and class C results in a probability three times higher for class C than class B.
+
+This lead us to define what we called a trust index, that is a metric whose score indicates the degree of confidence in the classification score. In other words, we looked for the best error estimator (@fig-trust-index). To this end, we trained a first classification model with classes from the UVP5 data set using a `multi:softprob` objective function. Then, we used the model to make a prediction on a test set that returned a matrix $(M \times N)$ of $M$ images and $N$ classes. Afterwards, we computed four metrics on each row of the probability matrix: the maximum probability ($max$, equivalent to `multi:softmax`), the softmax of the probability array ($softmax$, equivalent to a double `multi:softmax`), the difference between the highest and the second highest probability ($diff_{max}$) and the difference between the highest and second highest probability of the softmax array ($diff_{softmax}$). We compared those metrics for each class of the test set in @fig-trust-index which clearly shows that all metrics were very similar and that they captured the errors at the same speed. Thus, it meant that we could keep using XGBoost as we initially did, that is using `multi:softprob` as the objective function. @fig-trust-index also shows that some classes kept accumulating errors in the prediction with increasing rank (e.g. *Copepoda*, darksphere and fiber\<detritus). In their case, an increasing rank is not a trustworthy indicator of increasing confidence.
+
+```{r, trust index, dpi = 300}
+#| label: fig-trust-index
+#| fig-cap: Percentage of error captured as a function of rank for four metrics (max, softmax, diff$_{max}$ and diff$_{softmax}$) on six UVP5 classes (4 biological, 2 non biological). The number of objects predicted in each class is provided in the title of each subplot.
+
+library(gridExtra)
+library(grid)
+library(jpeg)
+
+path <- paste0(getwd(), '/image/uvp6/trust_index')
+
+grid.arrange(
+  rasterGrob(as.raster(readJPEG(paste0(path, "/Aulacanthidae.jpeg")))),
+  rasterGrob(as.raster(readJPEG(paste0(path, "/Aulosphaeridae.jpeg")))),
+  rasterGrob(as.raster(readJPEG(paste0(path, "/Copepoda.jpeg")))),
+  rasterGrob(as.raster(readJPEG(paste0(path, "/darksphere.jpeg")))),
+  rasterGrob(as.raster(readJPEG(paste0(path, "/detritus.jpeg")))),
+  rasterGrob(as.raster(readJPEG(paste0(path, "/fiber_detritus.jpeg")))),
+  ncol = 3
+)
+```
+
+### Technical constraints on the classification model
+
+Because the UVP6-LP is designed to work on AUVs, several constraints were imposed on the model to fulfill technical and energy requirements. The UVP6 data treatment at sea shown in @fig-uvp-pipeline briefly describes the steps from the image acquisition to the prediction. The two most energy consuming steps are the image segmentation (median execution time of 650 ms) and the loading of the classification model whose execution time was capped at 700 ms. This limitation imposed a direct constraint on the prediction quality of the model because it implied a limitation on the choice of values for hyperparameters of the model (learning rate, tree depth) and the number of boosting rounds.
+
+The second critical aspect of the model was its limitation at 40 classes. In the UVP5 SD data set, the most detailed classification at a taxonomic level by a human was roughly 150 classes (referred to as $level_{0}$). It was therefore necessary to merge classes based on morphological and ecological attributes to decrease that number in order to get to $level_{1}$ that had 38 classes. From $level_{1}$, we thus experimented a lot of different prediction models with a hyperparameters gridsearch in order to find both the right set of parameters and the right number of classes. There were indeed some classes that had very low precision and recall because they were confused with some specific taxonomic groups. They were merged accordingly with those groups. This trial-error approach was necessary to create the final aggregation level ($level_{2}$) used for the final UVP5 model. The same work had to be done later with the UVP6 data because the taxonomic groups were not identical.
+
+The last technical limitation was the number of features (see table XX). Before I started my PhD, 55 features (basically geometry and gray levels) were defined. I was not allowed (though, I asked!) to do some feature engineering, that is either doing feature selection (selecting the most useful features) either doing feature combination (combining existing features to create new ones) or creating new features by collecting new data [@Geron2019-is]. Why was this proposition refused? Again, those 55 selected features had been tested earlier and they were compliant with the energy balance. Therefore, adding more features was not a possibility (we would have needed to redo tests and energy budget that were not possible at the time) and because they were computed quickly, they were not consuming too much energy hence there was no need to remove some of them. At worse, some features would have been redundant, without impacting the classification quality.
+
+Nonetheless, when we compare the results from a featured-based model and a CNN (see SECTION XX), perhaps the results would have been closer if we would have done some feature engineering to add other kinds of features.
+
+```{r, mean and median abundances in a typical vertical profile}
+#| label: tbl-stats-uvp6
+#| tbl-cap: Mean and median concentrations and number of segmented objects whose size is above 0.6 mm(referred to as "vignettes" in french) expected from a standard vertical profile taken by a BGC-Argo float equipped with a UVP6 in different parts of the water column.
+
+library(gt)
+library(gtsummary)
+library(gtExtras)
+library(tibble)
+library(tidyverse)
+library(latex2exp)
+
+stats_uvp6 <- tibble(mean_conc = c(119, 457, 110, 76)/1000, 
+                     median_conc = c(85, 332, 59, 38)/1000, 
+                     mean_nb =  c(426,146,143,137),
+                     median_nb = c(305,106,77,75),
+                     layer = c('0-2000', '0-100', '100-500', '500-2000'),
+                     water_volume = c(3.57, 0.32, 1.3, 1.95)*1000)
+
+stats_uvp6 |> gt() |> cols_label(mean_conc = 'Mean',
+                                 median_conc = 'Median',
+                                 mean_nb = 'Mean',
+                                 median_nb = 'Median',
+                                 layer = 'Depth range (m)',
+                                 water_volume = 'Sampled volume (L)') |>
+  tab_spanner(label = 'Concentration (#/L)',
+              columns = c(mean_conc, median_conc)) |>
+   tab_spanner(label = 'Number',
+              columns = c(mean_nb, median_nb))
+```
+
+feature engineering, citer le bouquin là
+
+### 
+
+### Features
+
+### Bilan énergique
+
+### detritus case + imbalanced
+
+### future embedded low energy models
+
+### time series, get the UVP6 data back (intéret de les mettre sur les flotteurs)
+
+volume échantillonnée vraiment faible, les trucs petits sont importants donc il faudrait l'uVP6 micro qui est on the way

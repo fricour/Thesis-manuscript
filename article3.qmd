@@ -17,9 +17,9 @@ All 4 floats used in this study are PROVOR Jumbo floats (NKE Instrumentation, Fr
 All 4 floats have been configured to drift at 3 distinct parking depths (respectively, 200 m, 500 m and 1000 m for approximately 1, 3 and 5 days) to study the downward carbon flux. During these drift phases, measurements of particles abundance (14 size classes, between 0.1 mm and 2.5 mm) are taken every 20 minutes at 200 m and every 2h at 500 m and 1000 m whereas $c_{p}$ measurements are taken every 30 minutes at all depths. This configuration can be adjusted during the mission of the float via two-way Iridium communication.
 
 ```{r, load libraries}
+library(tidyverse)
 library(akima)
 library(broom)
-library(tidyverse)
 library(cmocean)
 library(lubridate)
 library(scales)
@@ -42,8 +42,9 @@ library(vroom)
 library(castr)
 library(reactablefmtr)
 library(gt)
-library(gtExtras)
+#library(gtExtras)
 library(spatialrisk)
+library(ggOceanMaps)
 ```
 
 ```{r, map of 4 floats}
@@ -60,33 +61,48 @@ float_1902578 <- vroom('/home/flo/dox/ArgoShine/1902578_FromNetCDF.csv')
 all_floats <- rbind(float_6904240, float_6904241, float_4903634, float_1902578)
 
 # add levels for some field
-all_floats <- all_floats |> mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)),
+all_floats <- all_floats |> dplyr::mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)),
                                    park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 
 # summarize localization of floats
-argo_map <- all_floats |> select(WMO = wmo, cycle, lat, lon) |> drop_na(lat) |> dplyr::group_by(WMO, cycle) |> mutate(WMO = factor(WMO)) |>
+argo_map <- all_floats |> select(WMO = wmo, cycle, lat, lon) |> drop_na(lat) |> dplyr::group_by(WMO, cycle) |> dplyr::mutate(WMO = factor(WMO)) |>
   dplyr::summarise(lat = mean(lat), lon = mean(lon))
 
 argo_map_first <- argo_map |> filter(cycle == 1)
 argo_map_last <- argo_map |> filter(cycle == max(cycle))
 
-# map positions of floats
-world_data <- map_data("world")
-w <- list(geom_polygon(aes(long, lat, group=group), data=world_data, fill="grey70"), coord_quickmap())
+# # map positions of floats
+# world_data <- map_data("world")
+# w <- list(geom_polygon(aes(long, lat, group=group), data=world_data, fill="grey70"), coord_quickmap())
+# 
+# ggplot(argo_map) + w + geom_path(aes(lon, lat, colour = WMO), size = 1) +
+#   geom_point(aes(lon, lat, colour = WMO), size = 1.5) +
+#   scale_color_brewer(palette = 'Dark2') +
+#   theme_bw() +
+#   #scale_colour_manual(values = c('#a6cee3', '#33a02c', '#b2df8a', '#1f78b4')) +
+#   coord_cartesian(xlim = c(-55, -40), ylim = c(55,65)) + geom_point(data = argo_map_first, aes(lon, lat), shape = 17, size = 3) +
+#   geom_point(data = argo_map_last, aes(lon, lat, colour = WMO), size = 3) +
+#   geom_point(data = argo_map_last, aes(lon, lat, fill = WMO), size = 3, shape = 1) +
+#   labs(x = 'longitude', y = 'latitude') +
+#   #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/#suppress-aesthetics-from-part-of-the-legend
+#   guides(color = guide_legend(override.aes = list(size = c(1.5,1.5,1.5,1.5),
+#                                                   shape = c(NA, NA, NA, NA))))
 
-ggplot(argo_map) + w + geom_path(aes(lon, lat, colour = WMO), size = 1) +
-  geom_point(aes(lon, lat, colour = WMO), size = 1.5) +
-  scale_color_brewer(palette = 'Dark2') +
-  theme_bw() +
-  #scale_colour_manual(values = c('#a6cee3', '#33a02c', '#b2df8a', '#1f78b4')) +
-  coord_cartesian(xlim = c(-55, -40), ylim = c(55,65)) + geom_point(data = argo_map_first, aes(lon, lat), shape = 17, size = 3) +
-  geom_point(data = argo_map_last, aes(lon, lat, colour = WMO), size = 3) +
-  geom_point(data = argo_map_last, aes(lon, lat, fill = WMO), size = 3, shape = 1) +
-  labs(x = 'longitude', y = 'latitude') +
+# prepare data for geomapping, see https://mikkovihtakari.github.io/ggOceanMaps/
+argo_map_geo <- transform_coord(argo_map) |> dplyr::mutate(cycle = argo_map$cycle, WMO = as.factor(argo_map$WMO))
+argo_map_last_geo <- transform_coord(argo_map_last) |> mutate(WMO = as.factor(argo_map_last$WMO))
+
+basemap(limits = c(-55,-40,55,65), bathymetry = T) +
+  geom_path(data = argo_map_geo, aes(lon, lat, colour = WMO), size = 1.5) + 
+  geom_point(data = argo_map_geo, aes(x= lon, y = lat, colour = WMO), size = 3) +
+  scale_color_brewer(palette = 'Dark2') + theme_bw() +
+  geom_point(data = transform_coord(argo_map_first), aes(lon, lat), shape = 17, size = 3) +
+  geom_point(data = argo_map_last_geo, aes(lon, lat, colour = WMO), size = 6) +
+  geom_point(data = argo_map_last_geo, aes(lon, lat), fill = 'black', size = 6, shape = 1) +
   #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/#suppress-aesthetics-from-part-of-the-legend
   guides(color = guide_legend(override.aes = list(size = c(1.5,1.5,1.5,1.5),
                                                   shape = c(NA, NA, NA, NA))))
-  
+
 ```
 
 ### Data processing
@@ -111,7 +127,7 @@ First, the drifting $c_{p}$ signal was cleaned from spikes (hypothesized as tran
 
 Contrarily to previous works [@Estapa2013-gw; @Estapa2017-jr], we chose an empirical statistical approach instead of fixed thresholds to detect jumps. Therefore, we firstly computed the slope between each $c_{p}$ observation for each drifting phase and computed the z-score (i.e. standard score) of each of them. The detection of jumps therefore consisted in spotting outliers in the z-score distribution. For this, we computed the interquartile range ($IQR$) between the first ($Q_{1}$) and third ($Q_{3}$) quartiles. Positive and negative jumps were defined as, respectively, a z-score above $Q_{3} + 1.5 \times IQR$ and below $Q_{1} - 1.5 \times IQR$. We found that this method better detected outliers than the one used to despike the $c_{p}$ signal.
 
-In order to compute $F_{small}$, we firstly computed the slope of each group of observations between jumps (positive and negative, see @fig-estapa-method_article). Undefined slopes (a single point between two jumps) were removed as well as any negative slope assuming that either the so-called fit failed (leading to undetected jumps) either the transmissometer window was perturbed by something else than the pump cleaning the optical window. Afterwards, we computed the weighted average slope ($slope_{w}$) using the previously computed slopes of each remaining group in order to derive the small particles flux using the relationship of @Estapa2022
+In order to compute $F_{small}$, we firstly computed the slope of each group of observations between jumps (positive and negative, see @fig-estapa-method_article). Undefined slopes (a single point between two jumps) were removed as well as any negative slope assuming that either the so-called fit failed (leading to undetected jumps) either the transmissometer window was perturbed by something else than the pump cleaning the optical window. Afterwards, we computed the weighted average slope ($slope_{w}$) using the previously computed slopes of each remaining group in order to derive the small particles flux using the linear relationship between the beam attenuance flux and the POC flux (see first panel of Figure 2 in @Estapa2023-oz).
 
 $$
 F_{small} = 633(0.25~slope_{w})^{0.77}
@@ -125,6 +141,8 @@ We used the same relationship to compute $F_{big}$ by replacing $slope_{w}$ as t
 #| label: fig-estapa-method_article
 #| fig-cap: Application of the method of @Estapa2017-jr on a drifting transmissometer to divide the $c_{p}$ signal into a continuous (dark blue) component and a discontinuous (positive jumps, red) component. Slopes for each group are depicted in light blue. A negative jump was also detected (yellow). Data from BGC-ARGO float WMO 6904240, drifting at 1000 m during its 21$^{st}$ cycle.
 clean_cp_data <- function(data, moving_median_order){
+  
+  data <- data |> arrange(dates)
   
   if(nrow(data) == 0){ # no cp data
     return(data)
@@ -218,11 +236,11 @@ check_colour <- unique(tmp3$colour)
 if(length(check_colour) == 3){
   index_neg_jump <- which(tmp3$colour == 'negative jump')
   tmp3 <- tmp3[-c(index_neg_jump, index_neg_jump+1),]
-  tmp3 <- tmp3 |> mutate(diff_jump = cp - lag(cp))
+  tmp3 <- tmp3 |> dplyr::mutate(diff_jump = cp - lag(cp))
   even_indexes <- seq(2,nrow(tmp3),2)
   tmp3 <- tmp3[even_indexes,]
 }else if(length(check_colour) == 2){
-  tmp3 <- tmp3 |> mutate(diff_jump = cp - lag(cp))
+  tmp3 <- tmp3 |> dplyr::mutate(diff_jump = cp - lag(cp))
   even_indexes <- seq(2,nrow(tmp3),2)
   tmp3 <- tmp3[even_indexes,]
 }else{ # NO jump
@@ -297,7 +315,7 @@ plot_jumps <- function(data){
   tmp$slope <- delta_y/delta_x
   
   # compute a Z score (assuming a normal distribution of the slopes) on the slopes
-  tmp <- tmp |> mutate(zscore = (slope - mean(slope, na.rm = T))/sd(slope, na.rm = T))
+  tmp <- tmp |> dplyr::mutate(zscore = (slope - mean(slope, na.rm = T))/sd(slope, na.rm = T))
   
   # spot outliers on the Z score signal
   # interquartile range between Q25 and Q75 -> had to used that and not the despike function because slopes are often close (or equal) to 0 so it can miss clear jumps. Q25 and Q75 are more trustworthy in this case than the despike function of Jean-Olivier (see package castr on his github: https://github.com/jiho/castr)
@@ -365,18 +383,18 @@ plot_jumps <- function(data){
   # if(length(check_colour) == 3){ # there is at least a negative jump
   #   index_neg_jump <- which(tmp2$colour == 'negative jump')
   #   tmp2 <- tmp2[-c(index_neg_jump, index_neg_jump+1),]
-  #   tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
+  #   tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
   #   even_indexes <- seq(2,nrow(tmp2),2)
   #   tmp2 <- tmp2[even_indexes,]
   # }else if(length(check_colour) == 2){ # only positive jumps
-  #   tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
+  #   tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
   #   even_indexes <- seq(2,nrow(tmp2),2)
   #   tmp2 <- tmp2[even_indexes,]
   # }else{ # No jump
   #   tmp2 <- NULL
   # }
   if(length(check_colour) >= 2){ # there is a least a jump (positive or negative)
-    tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
+    tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
     even_indexes <- seq(2,nrow(tmp2),2)
     tmp2 <- tmp2[even_indexes,]
   }else{ # No jump
@@ -406,7 +424,7 @@ plot_jumps <- function(data){
   drifting_time <- as.numeric(difftime(max_time, min_time, units = 'days'))
   
   # to plot subgroups
-  part_slope_tmp <- part_slope |> mutate(dates = time, colour = 'slope')
+  part_slope_tmp <- part_slope |> dplyr::mutate(dates = time, colour = 'slope')
   
   # plot
   jump_plot <- plot_ly(tmp, x = ~dates, y = ~cp, type = 'scatter', mode = 'markers', color = ~colour, colors = c('#003366','#E31B23', '#FFC325')) |>
@@ -416,7 +434,6 @@ plot_jumps <- function(data){
                          'POC flux (small particles): ', round(poc_flux,1), ' mg C m-2 day-1\n',
                          'POC flux (big particles): ', round(big_part_poc_flux,1), ' mg C m-2 day-1'), yaxis = list(title = 'Cp (1/m)'), xaxis = list(title = 'Time'))
   
-  
   #return(jump_plot)
   #return(list('jump_plot' = jump_plot, 'jump_table' = tmp3))
   
@@ -425,8 +442,12 @@ plot_jumps <- function(data){
                cycle = data$cycle[1])
   
   return(df)
+  #return(jump_plot)
   
 }
+
+# tmp <- all_floats_slope |> filter(wmo == 6904240, park_depth == '1000 m', cycle == 21)
+# plot_jumps(tmp)
 ```
 
 ```{r, compute Fsmall and F big}
@@ -436,7 +457,7 @@ float_6904241_slope <- float_6904241 |> filter(cycle < 20)
 # create dataframe for all drifting data (for all floats)
 all_floats_slope <- rbind(float_4903634, float_6904240, float_6904241_slope, float_1902578)
 all_floats_slope <- all_floats_slope |> filter(PhaseName == 'PAR') |> drop_na(cp) |> select(depth = pres, cp, dates = juld, park_depth, wmo, cycle) |>
-   mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)),
+   dplyr::mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)),
           park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 
 # start loop for all data
@@ -462,7 +483,7 @@ for (i in wmo){
 }
 
 # keep the good fluxes
-cflux <- res |> mutate(drifting_time = difftime(max_time, min_time, units = 'days'), WMO = factor(wmo))
+cflux <- res |> dplyr::mutate(drifting_time = difftime(max_time, min_time, units = 'days'), WMO = factor(wmo))
 
 cflux_info_table <- cflux |> dplyr::group_by(park_depth) |> summarize(min_smallf = min(small_flux, na.rm=T), max_smallf = max(small_flux, na.rm=T),
                                                                 mean_smallf = mean(small_flux, na.rm=T), median_smallf = median(small_flux, na.rm=T),
@@ -521,13 +542,13 @@ lpm_class <- c("NP_Size_102", "NP_Size_128", "NP_Size_161",
                          "NP_Size_813", "NP_Size_1020", "NP_Size_1290",
                         "NP_Size_1630", "NP_Size_2050")
 
-uvp_data <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date, cycle, wmo, park_depth, all_of(lpm_class)) |> 
-  drop_na(NP_Size_102) |> mutate(juld = as_date(juld), WMO = factor(wmo))
+uvp_data <- all_floats |> filter(PhaseName == 'PAR') |> dplyr::mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date, cycle, wmo, park_depth, all_of(lpm_class)) |> 
+  drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld), WMO = factor(wmo))
 
-uvp_data <- uvp_data |> pivot_longer(cols = lpm_class, names_to = 'size', values_to = 'conc') |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric())
+uvp_data <- uvp_data |> pivot_longer(cols = lpm_class, names_to = 'size', values_to = 'conc') |> dplyr::mutate(size = size |> str_remove('NP_Size_') |> as.numeric())
 
 # compute daily mean chla for each float at each cycle and at each drifting depth
-mean_uvp_data <- uvp_data |> group_by(cycle, WMO, size, park_depth, juld) |> summarize(mean_conc = mean(conc, na.rm=T))
+mean_uvp_data <- uvp_data |> dplyr::group_by(cycle, WMO, size, park_depth, juld) |> dplyr::summarize(mean_conc = mean(conc, na.rm=T))
 ```
 
 In this study, we focus on 14 size classes, from 102 $\mu$m to 2.5 mm. In @fig-uvp-200m, @fig-uvp-500m and @fig-uvp-1000m, we show the daily averaged concentrations of particles in each class size for each float at their respective drifting depth. At 200 m, it can be observed that particles concentrations in the 102 - 512 $\mu$m range are relatively uniform between June and October before decreasing sharply towards January. Between 512 $\mu$m and 1.29 mm, concentrations are steadily decreasing from June. Above 1.29 mm, the abundance of particles is already very low (\< 0.1 particle/L) in June and keeps decreasing over time.
@@ -547,7 +568,7 @@ p200m <- mean_uvp_data |> filter(park_depth == '200 m') |> ggplot() + geom_point
 
 tmp200m <- ggplot_build(p200m)
 
-test <- tmp200m$data[[2]] |> filter(is.finite(y)) |> group_by(PANEL) |> summarize(index_max = which.max(y), max_date = x[index_max]) |> mutate(date_max = as_date(max_date, origin = "1970-01-01"))
+test <- tmp200m$data[[2]] |> filter(is.finite(y)) |> group_by(PANEL) |> dplyr::summarize(index_max = which.max(y), max_date = x[index_max]) |> dplyr::mutate(date_max = as_date(max_date, origin = "1970-01-01"))
 test$size <- unique(uvp_data$size)
 
 p200m <- mean_uvp_data |> filter(park_depth == '200 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
@@ -579,7 +600,7 @@ p500m <- mean_uvp_data |> filter(park_depth == '500 m') |> ggplot() + geom_point
 
 tmp500m <- ggplot_build(p500m)
 
-test <- tmp500m$data[[2]] |> filter(is.finite(y)) |> group_by(PANEL) |> summarize(index_max = which.max(y), max_date = x[index_max]) |> mutate(date_max = as_date(max_date, origin = "1970-01-01"))
+test <- tmp500m$data[[2]] |> filter(is.finite(y)) |> group_by(PANEL) |> dplyr::summarize(index_max = which.max(y), max_date = x[index_max]) |> dplyr::mutate(date_max = as_date(max_date, origin = "1970-01-01"))
 test$size <- unique(uvp_data$size)
 
 p500m <- mean_uvp_data |> filter(park_depth == '500 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
@@ -614,7 +635,7 @@ p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_poi
 
 tmp1000m <- ggplot_build(p1000m)
 
-test <- tmp1000m$data[[2]] |> filter(is.finite(y)) |> group_by(PANEL) |> summarize(index_max = which.max(y), max_date = x[index_max]) |> mutate(date_max = as_date(max_date, origin = "1970-01-01"))
+test <- tmp1000m$data[[2]] |> filter(is.finite(y)) |> group_by(PANEL) |> dplyr::summarize(index_max = which.max(y), max_date = x[index_max]) |> dplyr::mutate(date_max = as_date(max_date, origin = "1970-01-01"))
 test$size <- unique(uvp_data$size)
 
 p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
@@ -668,11 +689,11 @@ compute_flux <- function(A, b, PSD){ # PSD = Particle Size Distribution
 }
 
 parking_data <- rbind(float_4903634, float_6904240, float_6904241_slope, float_1902578)
-parking_data <- parking_data |> filter(PhaseName == 'PAR') |> drop_na(NP_Size_102) |> select(park_depth, all_of(lpm_class), dates = juld, park_depth, wmo, cycle) |> mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)),
+parking_data <- parking_data |> filter(PhaseName == 'PAR') |> drop_na(NP_Size_102) |> select(park_depth, all_of(lpm_class), dates = juld, park_depth, wmo, cycle) |> dplyr::mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)),
                                    park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 parking_spectra <- parking_data |> dplyr::select(NP_Size_256:NP_Size_1290)
 
-parking_data <- parking_data |> mutate(guidi_flux = compute_flux(12.5, 3.81, parking_spectra)) #|> group_by(park_depth, cycle, wmo) 
+parking_data <- parking_data |> dplyr::mutate(guidi_flux = compute_flux(12.5, 3.81, parking_spectra)) #|> group_by(park_depth, cycle, wmo) 
 
 # add rainer computation
 compute_flux_rainer <- function(A, b, PSD){
@@ -687,11 +708,27 @@ compute_flux_rainer <- function(A, b, PSD){
 }
 
 parking_spectra_rainer <- parking_data |> dplyr::select(lpm_class)
-parking_data <- parking_data |> mutate(rainer_flux = compute_flux_rainer(2.8649, 2.24, parking_spectra_rainer)) 
-parking_data <- parking_data |> mutate(iversen_flux = compute_flux(273, 4.27, parking_spectra)) 
+parking_data <- parking_data |> dplyr::mutate(rainer_flux = compute_flux_rainer(2.8649, 2.24, parking_spectra_rainer)) 
+parking_data <- parking_data |> dplyr::mutate(iversen_flux = compute_flux(273, 4.27, parking_spectra)) 
 
 # plot it
-comparison_flux_ost_uvp <- merge(parking_data, cflux) |> mutate(total_flux = small_flux + big_flux)
+comparison_flux_ost_uvp <- merge(parking_data, cflux) |> dplyr::mutate(total_flux = small_flux + big_flux)
+
+# add guidi flux obtained with fminsearch
+# mean_d <- c(0.29042685, 0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
+# comparison_flux_ost_uvp <-  comparison_flux_ost_uvp[-c(bad_index),]
+# ost_flux <- comparison_flux_ost_uvp$total_flux
+# spectra <- comparison_flux_ost_uvp |> select(NP_Size_256:NP_Size_1290)
+# # some spectra gives 0 for all classes - makes a buggy fminsearch -> remove those lines
+# bad_index <- which((rowSums(t(t(spectra)))) == 0)
+# spectra <- spectra[-c(bad_index),]
+# compute_flux <- function(x) sum((log10(rowSums(t(t(spectra)*x[1]*mean_d ** x[2]))) - log10(ost_flux))**2)
+# x0 <- c(12.5, 2.2)
+# fminsearch(compute_flux, x0 = x0)
+# fmincon(x0 = x0, compute_flux, lb = c(1, 1.5), ub = c(1000, 3))
+
+# add guidi flux using fminsearch using the optimize function of scipy in python (see a paper of someoe who did it, see Giering 2020 ou willimaoson et giering 2022)
+comparison_flux_ost_uvp <- comparison_flux_ost_uvp |> dplyr::mutate(guidi_flux_fminsearch = compute_flux(21.98, 1.18, parking_spectra))
 
 # https://stackoverflow.com/questions/41077199/how-to-use-r-ggplot-stat-summary-to-plot-median-and-quartiles
 ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
@@ -699,17 +736,28 @@ ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux)) + fac
                       stat = 'summary',
                       fun.min = function(z) {quantile(z, 0.25)},
                       fun.max = function(z) {quantile(z, 0.75)},
-                      fun = median, colour = 'red', width = 5) +
-  geom_line(aes(x = date, y = guidi_flux),
+                      fun = median, colour = '#E31B23', width = 5) +
+    geom_line(aes(x = date, y = guidi_flux),
                       stat = 'summary',
-                      fun = median, colour = 'red') + scale_y_continuous(trans = 'log10') + theme_bw()
+                      fun = median, colour = '#E31B23') +
+    geom_errorbar(aes(x = date, y = iversen_flux),
+                      stat = 'summary',
+                      fun.min = function(z) {quantile(z, 0.25)},
+                      fun.max = function(z) {quantile(z, 0.75)},
+                      fun = median, colour = '#003366', width = 5) +
+    geom_line(aes(x = date, y = iversen_flux),
+                      stat = 'summary',
+                      fun = median, colour = '#003366') + 
+  scale_y_continuous(trans = 'log10') + theme_bw() + labs(x = 'Month', y = TeX('$F_{total}$ (mg C m$^{-2}$ day$^{-1}$)'))
 
 ```
+
+ici je compare finalement un système ultra productif (iversen) et un système pas produtif (lionel) -> on se situerait entre les deux. Après je peux fournir els valeurs que j'ai trouvées avec le fminsearch avec la fonctiono optimize depython (21.98 et 1.18. Mais bon, cela assumerait que 'lon pourrait prendre l'OST comme référence, ce qui est un peu too much..)
 
 ```{r, correlations between OST and UVP carbon fluxes}
 #| label: tbl-correlation
 #| tbl-cap: TODO
-correlations <- comparison_flux_ost_uvp |> select(park_depth, wmo, cycle, guidi_flux, small_flux, big_flux, date, total_flux) |> group_by(wmo, park_depth, cycle) |> mutate(median_guidi_flux = median(guidi_flux)) |> group_by(park_depth, wmo) |> summarise(cor_small = round(cor(median_guidi_flux, small_flux),2), cor_big = round(cor(median_guidi_flux, big_flux),2), cor_total = round(cor(median_guidi_flux, total_flux),2))
+correlations <- comparison_flux_ost_uvp |> dplyr::select(park_depth, wmo, cycle, guidi_flux, small_flux, big_flux, date, total_flux) |> dplyr::group_by(wmo, park_depth, cycle) |> dplyr::mutate(median_guidi_flux = median(guidi_flux)) |> dplyr::group_by(park_depth, wmo) |> dplyr::summarize(cor_small = round(cor(median_guidi_flux, small_flux),2), cor_big = round(cor(median_guidi_flux, big_flux),2), cor_total = round(cor(median_guidi_flux, total_flux),2))
 
 correlations <- correlations |> pivot_wider(names_from = park_depth, values_from = c(cor_small, cor_big, cor_total))
 
@@ -749,7 +797,7 @@ get_jump_info <- function(data){
   tmp$slope <- delta_y/delta_x
   
   # compute a Z score (assuming a normal distribution of the slopes) on the slopes
-  tmp <- tmp |> mutate(zscore = (slope - mean(slope, na.rm = T))/sd(slope, na.rm = T))
+  tmp <- tmp |> dplyr::mutate(zscore = (slope - mean(slope, na.rm = T))/sd(slope, na.rm = T))
   
   # spot outliers on the Z score signal
   # interquartile range between Q25 and Q75 -> had to used that and not the despike function because slopes are often close (or equal) to 0 so it can miss clear jumps. Q25 and Q75 are more trustworthy in this case than the despike function of Jean-Olivier (see package castr on his github: https://github.com/jiho/castr)
@@ -801,7 +849,7 @@ get_jump_info <- function(data){
   poc_flux <- 633*(mean_slope**0.77) # /!\ slope computed for ATN on y axis (delta_y *0.25 because ATN = cp*0.25) -> should be OK
   
   # build dataframe to plot each subgroup
-  part1 <- slope_df |> select(group, time = min_time, cp = first_cp)
+  part1 <- slope_df |> dplyr::select(group, time = min_time, cp = first_cp)
   part2 <- slope_df |> select(group, time = max_time, cp = last_cp)
   part_slope <- rbind(part1, part2)
   
@@ -815,7 +863,7 @@ get_jump_info <- function(data){
   # remove negative jumps, if any
   check_colour <- unique(tmp2$colour)
   if(length(check_colour) >= 2){ # there is a least a jump (positive or negative)
-    tmp2 <- tmp2 |> mutate(diff_jump = cp - lag(cp)) 
+    tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
     even_indexes <- seq(2,nrow(tmp2),2)
     tmp2 <- tmp2[even_indexes,]
   }else{ # No jump
@@ -845,18 +893,18 @@ get_jump_info <- function(data){
   drifting_time <- as.numeric(difftime(max_time, min_time, units = 'days'))
   
   # to plot subgroups
-  part_slope_tmp <- part_slope |> mutate(dates = time, colour = 'slope')
+  part_slope_tmp <- part_slope |> dplyr::mutate(dates = time, colour = 'slope')
   
   # adapt script to return big and small flux
   df <- tibble('max_time' = max_time, 'min_time' = min_time, 'small_flux' = poc_flux, 'big_flux' = big_part_poc_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],
                cycle = data$cycle[1])
   
   # clean data to send
-  slope_df <- slope_df |> arrange(min_time) |> mutate(min_drifting_time = df$min_time, max_drifting_time = df$max_time, small_flux = df$small_flux, big_flux = df$big_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1])
+  slope_df <- slope_df |> arrange(min_time) |> dplyr::mutate(min_drifting_time = df$min_time, max_drifting_time = df$max_time, small_flux = df$small_flux, big_flux = df$big_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1])
   if(is.null(tmp3)){
     big_jump <- tmp3
   }else{
-     big_jump <- tmp3 |> mutate(park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1]) 
+     big_jump <- tmp3 |> dplyr::mutate(park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1]) 
   }
   
   return(list(slope_info = slope_df, jump_info = big_jump))
@@ -903,12 +951,12 @@ for (i in wmo){
 ```{r, check total biovolume with slope value}
 
 uvp_drifting <- all_floats |> filter(PhaseName == 'PAR') |> select(juld, cycle, wmo, park_depth, all_of(lpm_class)) |> 
-  drop_na(NP_Size_102) |> mutate(date = as_date(juld)) 
+  drop_na(NP_Size_102) |> dplyr::mutate(date = as_date(juld))
 
 # DSE for computing biovolumes
 #DSE <- c(0.29042685,0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
 DSE_long <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685, 0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
-                1.16170742, 1.46365963, 1.84409558, 2.32341484) 
+                1.16170742, 1.46365963, 1.84409558, 2.32341484)
 
 # compute biovolume
 get_biovolume <- function(DSE){
@@ -924,7 +972,7 @@ biovolumes <- map_dbl(DSE_long, get_biovolume)  # unit = mm^3
 spectra_biovolume <- tibble(as.data.frame(t(t(uvp_drifting[,all_of(lpm_class)])*biovolumes)))
 colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('NP_Size', 'Biovolume')
 biovolumes_names <- colnames(spectra_biovolume)
-uvp_drifting <- cbind(uvp_drifting, spectra_biovolume) |> rowwise() |> mutate(total_biovolume = sum(across(all_of(biovolumes_names))))
+uvp_drifting <- cbind(uvp_drifting, spectra_biovolume) |> rowwise() |> dplyr::mutate(total_biovolume = sum(across(all_of(biovolumes_names))))
 
 assign_time_group <- function(d_uvp, d_ost){
   d_uvp$group <- NA
@@ -944,53 +992,64 @@ assign_time_group <- function(d_uvp, d_ost){
 wmo <- c(4903634, 6904240, 6904241, 1902578)
 park_depth <- c('200 m', '500 m', '1000 m')
 
-test <- data.frame()
-for (i in wmo){
-  max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
-  for (j in park_depth){
-    for (k in seq(1:max_cycle)){
-      tmp_uvp <- filter(uvp_drifting, wmo == i, cycle == k, park_depth == j) |> arrange(juld) |> select(juld, cycle, wmo, park_depth, total_biovolume) #, biovolumes_names)
-      tmp_ost <- res_slope |> filter(wmo == i, cycle == k, park_depth == j)
-      tmp <- assign_time_group(tmp_uvp, tmp_ost)
-      #tmp2 <- tmp |> filter(!is.na(group)) |> group_by(group) |> mutate(uvp_points = n(), min_date = min(juld), max_date = max(juld), mean_date = mean(floor_date(juld))) # https://stackoverflow.com/questions/44814435/calculate-average-daily-value-from-large-data-set-with-r-standard-format-date-ti
-      tmp2 <- tmp |> filter(!is.na(group)) |> group_by(group) |> mutate(uvp_points = n(), mean_date = mean(floor_date(juld))) 
-      tmp3 <- merge(tmp2, tmp_ost) |> group_by(group, cycle, wmo, park_depth) |> summarize(mean_date = unique(mean_date), uvp_points = unique(uvp_points), ost_points = unique(nb_points), group_total_biovolume = sum(total_biovolume), slope = unique(slope), weighted_group_biovolume = group_total_biovolume/uvp_points)
-      test <- rbind(test, tmp3)
-    }
-  }
-}
+# test <- data.frame()
+# for (i in wmo){
+#   max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
+#   for (j in park_depth){
+#     for (k in seq(1:max_cycle)){
+#       tmp_uvp <- filter(uvp_drifting, wmo == i, cycle == k, park_depth == j) |> arrange(juld) |> select(juld, cycle, wmo, park_depth, total_biovolume) 
+#       tmp_ost <- res_slope |> filter(wmo == i, cycle == k, park_depth == j)
+#       if(nrow(tmp_uvp) == 0 | nrow(tmp_ost) == 0){
+#         next
+#       }else{
+#       tmp <- assign_time_group(tmp_uvp, tmp_ost)
+#       #tmp2 <- tmp |> filter(!is.na(group)) |> dplyr::group_by(group) |> dplyr::mutate(uvp_points = n(), min_date = min(juld), max_date = max(juld), mean_date = mean(floor_date(juld))) # https://stackoverflow.com/questions/44814435/calculate-average-daily-value-from-large-data-set-with-r-standard-format-date-ti
+#       tmp2 <- tmp |> filter(!is.na(group)) |> group_by(group) |> dplyr::mutate(uvp_points = n(), mean_date = mean(floor_date(juld)))
+#       tmp3 <- merge(tmp2, tmp_ost) |> dplyr::group_by(group, cycle, wmo, park_depth) |> dplyr::summarize(mean_date = unique(mean_date), uvp_points = unique(uvp_points), ost_points = unique(nb_points), group_total_biovolume = sum(total_biovolume), slope = unique(slope), weighted_group_biovolume = group_total_biovolume/uvp_points)
+#       test <- rbind(test, tmp3)
+#       }
+#     }
+#   }
+# }
 
-ggplot(test) + geom_line(aes(x = mean_date, y = weighted_group_biovolume)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
-ggplot(test) + geom_line(aes(x = mean_date, y = slope)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4)
+# write data because it's long
+# vroom_write(test, file = '/home/flo/dox/THESIS/DATA/ARGO/slope_vs_biovolume.csv')
+
+# load data computed with the above commented code
+slope_vs_biovolume <- vroom::vroom('DATA/ARGO/slope_vs_biovolume.csv')
+slope_vs_biovolume <- slope_vs_biovolume |> mutate(park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
+
+# ggplot(test) + geom_line(aes(x = mean_date, y = weighted_group_biovolume)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
+# ggplot(test) + geom_line(aes(x = mean_date, y = slope)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4)
 
 # check
-test2 <- test |> group_by(wmo, cycle) |> mutate(mean_mean_date = mean(floor_date(mean_date))) 
+# test2 <- test |> group_by(wmo, cycle) |> dplyr::mutate(mean_mean_date = mean(floor_date(mean_date))) 
+# 
+# ggplot(test2) +
+#   geom_pointrange(aes(x = mean_mean_date, y = weighted_group_biovolume),
+#                       stat = 'summary',
+#                       fun.min = function(z) {quantile(z, 0.25)},
+#                       fun.max = function(z) {quantile(z, 0.75)},
+#                       fun = median, colour = 'black', size = .1) +
+#     facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
+#   
+# ggplot(test2) +
+#   geom_pointrange(aes(x = mean_mean_date, y = slope),
+#                       stat = 'summary',
+#                       fun.min = function(z) {quantile(z, 0.25)},
+#                       fun.max = function(z) {quantile(z, 0.75)},
+#                       fun = median, colour = 'black', size = .1) +
+#     facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) 
+# 
+# test2 |> group_by(wmo, park_depth) |> summarize(correl = cor(slope, weighted_group_biovolume))
 
-ggplot(test2) +
-  geom_pointrange(aes(x = mean_mean_date, y = weighted_group_biovolume),
-                      stat = 'summary',
-                      fun.min = function(z) {quantile(z, 0.25)},
-                      fun.max = function(z) {quantile(z, 0.75)},
-                      fun = median, colour = 'black', size = .1) +
-    facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
-  
-ggplot(test2) +
-  geom_pointrange(aes(x = mean_mean_date, y = slope),
-                      stat = 'summary',
-                      fun.min = function(z) {quantile(z, 0.25)},
-                      fun.max = function(z) {quantile(z, 0.75)},
-                      fun = median, colour = 'black', size = .1) +
-    facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) 
-
-test2 |> group_by(wmo, park_depth) |> summarize(correl = cor(slope, weighted_group_biovolume))
-
-ggplot(test) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth)
+ggplot(slope_vs_biovolume) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST slope [UNITS]', y = 'UVP biovolume [UNITS]') #+ theme(axis.title.x = element_blank())
 #ggplot(test) + geom_point(aes(x = slope, y = weighted_group_biovolume)) + facet_wrap(~park_depth)
 
 
 # what about jump values with uvp measurements at jump
-uvp_drifting <- uvp_drifting |> mutate(num_date = as.numeric(juld))
-res_jumps <- res_jumps |> mutate(num_date = as.numeric(dates))
+uvp_drifting <- uvp_drifting |> dplyr::mutate(num_date = as.numeric(juld))
+res_jumps <- res_jumps |> dplyr::mutate(num_date = as.numeric(dates))
 
 assign_uvp_to_jump <- function(d_uvp, d_jump){
   d_jump$biovolume <- NA
@@ -1001,289 +1060,32 @@ assign_uvp_to_jump <- function(d_uvp, d_jump){
   return(d_jump)
 }
 
-test_jump <- data.frame()
-for (i in wmo){
-  max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
-  for (j in park_depth){
-    for (k in seq(1:max_cycle)){
-      tmp_uvp <- filter(uvp_drifting, wmo == i, cycle == k, park_depth == j) |> arrange(juld) |> select(juld, cycle, wmo, park_depth, total_biovolume, num_date) 
-      tmp_ost_jump <- res_jumps |> filter(wmo == i, cycle == k, park_depth == j)
-      if(nrow(tmp_ost_jump) == 0 | nrow(tmp_uvp) == 0){
-        next
-      }else{
-        tmp <- assign_uvp_to_jump(tmp_uvp, tmp_ost_jump)
-      }
-      test_jump <- rbind(test_jump, tmp)
-    }
-  }
-}
+# test_jump <- data.frame()
+# for (i in wmo){
+#   max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
+#   for (j in park_depth){
+#     for (k in seq(1:max_cycle)){
+#       tmp_uvp <- filter(uvp_drifting, wmo == i, cycle == k, park_depth == j) |> arrange(juld) |> select(juld, cycle, wmo, park_depth, total_biovolume, num_date) 
+#       tmp_ost_jump <- res_jumps |> filter(wmo == i, cycle == k, park_depth == j)
+#       if(nrow(tmp_ost_jump) == 0 | nrow(tmp_uvp) == 0){
+#         next
+#       }else{
+#         tmp <- assign_uvp_to_jump(tmp_uvp, tmp_ost_jump)
+#       }
+#       test_jump <- rbind(test_jump, tmp)
+#     }
+#   }
+# }
 
+#vroom_write(test_jump, file = '/home/flo/dox/THESIS/DATA/ARGO/diff_jump_vs_biovolume.csv')
+
+# load data computed with the above commented code
+diff_jump_vs_biovolume <- vroom::vroom('DATA/ARGO/diff_jump_vs_biovolume.csv')
+diff_jump_vs_biovolume <- diff_jump_vs_biovolume|> mutate(park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 
 #ggplot(test_jump) + geom_point(aes(diff_jump, biovolume))
-ggplot(test_jump) + geom_point(aes(log(diff_jump), log(biovolume)))
-```
+ggplot(diff_jump_vs_biovolume) + geom_point(aes(log(diff_jump), log(biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST jump difference [UNITS]', y = 'UVP biovolume [UNITS]')
 
-```{r, model based on slope}
-
-# compute biovolumes for mid size bin (ESD)
-# DSE from 102 microns to 2.05 mm (this class to goes to 2.58 mm) (values obtained from Guidi's Matlab code converted on python)
-
-# DSE <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685,
-#               0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
-#               1.16170742, 1.46365963, 1.84409558, 2.32341484)
-# 
-# # DSE obtained with Rainer's code
-# DSE_Rainer <- c(0.11645117591608793,0.14636003747903648,0.18439151433041295,
-#                 0.23251999827981656,0.2933257316240555,0.36916500651202966,0.4650399965596331,
-#                 0.5860454935035602,0.738553273391974,0.9280422447589767,1.1705684285914486,
-#                 1.4795320531800742,1.8636618038457486,2.3449457391257185)
-
-# DSE <- c(0.29042685,0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
-# 
-# # compute biovolume
-# get_biovolume <- function(DSE){
-#   r <- DSE/2
-#   biovolume <- (4*pi/3)*r**3
-#   return(biovolume)
-# }
-
-# # get biovolume for each DSE (equivalent to say for each size bin)
-# biovolumes <- map_dbl(DSE, get_biovolume)  # unit = mm^3
-
-# spectra at parking depth
-uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |>
-  drop_na(NP_Size_102) |> mutate(juld = as_date(juld), WMO = factor(wmo))
-
-# convert abundance to biovolume
-spectra_biovolume <- tibble(as.data.frame(t(t(uvp_spectra[,all_of(lpm_class)])*biovolumes)))
-colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('Size', 'Biovolume')
-
-# add data to initial abundance spectra
-uvp_spectra <- cbind(uvp_spectra, spectra_biovolume)
-
-# recompute slope based on Estapa's formula
-cflux <- cflux |> mutate(small_slope = (small_flux/633)**(1/0.77), big_slope = (big_flux/633)**(1/0.77))
-
-## build model
-flux_model <- function(boosting_rounds, which_slope){
-    
-  # select which flux to build the model
-  if(which_slope == 'small'){
-    cflux2 <- cflux |> mutate(flux = log(small_slope)) |> filter(is.finite(flux))
-  }else{
-    cflux2 <- cflux |> mutate(flux = log(big_slope)) |> filter(is.finite(flux)) # because log(0) creates non finite value -> bug
-  }
-    
-  # merge data for training
-  data_model <- merge(cflux2, uvp_spectra) |> mutate(depth = if_else(park_depth == '1000 m', 1000, if_else(park_depth == '500 m', 500, 200))) |> select(-park_depth)
-    
-  # training data
-  tmp <- data_model |> select(flux, all_of(colnames(spectra_biovolume)))
-  
-  set.seed(101)
-  # model
-  model <- gbm(flux ~ ., data=tmp, distribution="gaussian",
-  cv.folds=5,
-  n.trees=boosting_rounds, shrinkage=0.005, interaction.depth=6,
-  bag.fraction=0.5,
-  n.cores=1
-  )
-   
-  # get best model and thus best round number
-  best <- gbm.perf(model)
-  #print(best)
-  
-  # get features importance
-  features_importance <- summary(model, n.trees=best, plotit = FALSE)
-  
-  return(list(features_importance = features_importance, model = model, best_tree = best))
-}
-
-# small_model <- flux_model(3000, 'small')
-# big_model <- flux_model(3000, 'big')
-# save(small_model, big_model, file = '/home/flo/dox/THESIS/DATA/MODEL/model_xgboost_data_slope')
-  
-load(file = 'DATA/MODEL/model_xgboost_data_slope')
-
-# # get spectra
-# uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |> 
-#   drop_na(NP_Size_102) |> mutate(juld = as_date(juld), WMO = factor(wmo))
-# 
-# flux_model <- function(boosting_rounds, which_flux){
-#     
-#     # select which flux to build the model
-#     if(which_flux == 'small'){
-#       cflux2 <- cflux |> mutate(flux = small_flux) 
-#     }else if(which_flux == 'big'){
-#       cflux2 <- cflux |> mutate(flux = big_flux)
-#     }else{
-#       cflux2 <- cflux |> mutate(flux = small_flux + big_flux)
-#     }
-#     
-#     # merge data for training
-#     data_model <- merge(cflux2, uvp_spectra) |> mutate(depth = if_else(park_depth == '1000 m', 1000, if_else(park_depth == '500 m', 500, 200))) |> select(-park_depth)
-#     
-#   # training data
-#   tmp <- data_model |> select(flux, all_of(lpm_class))
-#   
-#   set.seed(101)
-#   # model
-#   model <- gbm(flux ~ ., data=tmp, distribution="gaussian",
-#   cv.folds=5,
-#   n.trees=boosting_rounds, shrinkage=0.005, interaction.depth=6,
-#   bag.fraction=0.5,
-#   n.cores=1
-#   )
-#    
-#   # get best model and thus best round number
-#   best <- gbm.perf(model)
-#   #print(best)
-#   
-#   # get features importance
-#   features_importance <- summary(model, n.trees=best, plotit = FALSE)
-#   
-#   
-#   return(list(features_importance = features_importance, model = model, best_tree = best))
-#    
-# }
-#   
-# # small_model <- flux_model(3000, 'small')
-# # big_model <- flux_model(3000, 'big')
-# # total_model <- flux_model(3000, 'total')
-# # 
-# # save(small_model, big_model, total_model, file = '/home/flo/dox/THESIS/DATA/MODEL/model_xgboost_data') 
-#   
-# load(file = 'DATA/MODEL/model_xgboost_data')
-
-```
-
-```{r, model predictions}
-
-model_predict <- function(which_slope, mod, best_tree_number){
-
-    # get spectra
-    uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |>
-  drop_na(NP_Size_102) |> mutate(juld = as_date(juld), WMO = factor(wmo))
-
-    # convert abundance to biovolume
-    spectra_biovolume <- tibble(as.data.frame(t(t(uvp_spectra[,all_of(lpm_class)])*biovolumes)))
-    colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('Size', 'Biovolume')
-
-    # add data to initial abundance spectra
-    uvp_spectra <- cbind(uvp_spectra, spectra_biovolume)
-
-    # select which flux to build the model
-    if(which_slope == 'small'){
-      cflux2 <- cflux |> mutate(flux = small_slope)
-    }else{
-      cflux2 <- cflux |> mutate(flux = big_slope)
-    }
-
-    # merge data for training
-    data_model <- merge(cflux2, uvp_spectra) |> mutate(depth = if_else(park_depth == '1000 m', 1000, if_else(park_depth == '500 m', 500, 200))) |> select(-park_depth)
-
-    # # training data
-    # tmp <- data_model |> select(flux, all_of(colnames(spectra_biovolume)))
-
-    # predictions on mean spectra values
-    uvp_spectra_average <- data_model |> dplyr::group_by(wmo, cycle, depth) |> dplyr::summarize(depth = unique(depth), true_flux = log(unique(flux)),
-                                                                                   NP_Biovolume_102 = mean(NP_Biovolume_102),
-                                                                                   NP_Biovolume_128 = mean(NP_Biovolume_128),
-                                                                                   NP_Biovolume_161 = mean(NP_Biovolume_161),
-                                                                                   NP_Biovolume_203 = mean(NP_Biovolume_203),
-                                                                                   NP_Biovolume_256 = mean(NP_Biovolume_256),
-                                                                                   NP_Biovolume_323 = mean(NP_Biovolume_323),
-                                                                                   NP_Biovolume_406 = mean(NP_Biovolume_406),
-                                                                                   NP_Biovolume_512 = mean(NP_Biovolume_512),
-                                                                                   NP_Biovolume_645 = mean(NP_Biovolume_645),
-                                                                                   NP_Biovolume_813 = mean(NP_Biovolume_813),
-                                                                                   NP_Biovolume_1020 = mean(NP_Biovolume_1020),
-                                                                                   NP_Biovolume_1290 = mean(NP_Biovolume_1290),
-                                                                                   NP_Biovolume_1630 = mean(NP_Biovolume_1630),
-                                                                                   NP_Biovolume_2050 = mean(NP_Biovolume_2050)) |> ungroup()
-
-  # prediction
-  pred_flux <- predict(mod, newdata = uvp_spectra_average, n.trees = best_tree_number)
-
-  uvp_spectra_average$pred_flux <- pred_flux
-
-  return(uvp_spectra_average)
-}
-
-# predictions
-# pred_small <- model_predict('small', small_model$model, small_model$best_tree) |> select(wmo, cycle, depth, true_small = true_flux, pred_small = pred_flux)
-# pred_big <- model_predict('big', big_model$model, big_model$best_tree) |> select(true_big = true_flux, pred_big = pred_flux) 
-# all_predictions <- cbind(pred_small, pred_big)
-# vroom::vroom_write(all_predictions, file = '/home/flo/dox/THESIS/DATA/MODEL/all_predictions_slopes.csv')
-all_predictions <- vroom('DATA/MODEL/all_predictions_slopes.csv') 
-
-# model_predict <- function(which_flux, mod, best_tree_number){
-# 
-#     # get spectra
-#     uvp_spectra <- all_floats |> filter(PhaseName == 'PAR') |> mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date,  cycle, wmo, park_depth, all_of(lpm_class)) |>
-#   drop_na(NP_Size_102) |> mutate(juld = as_date(juld), WMO = factor(wmo))
-# 
-#     # select which flux to build the model
-#     if(which_flux == 'small'){
-#       cflux2 <- cflux |> mutate(flux = small_flux)
-#     }else if(which_flux == 'big'){
-#       cflux2 <- cflux |> mutate(flux = big_flux)
-#     }else{
-#       cflux2 <- cflux |> mutate(flux = small_flux + big_flux)
-#     }
-# 
-#     # merge data for training
-#     data_model <- merge(cflux2, uvp_spectra) |> mutate(depth = if_else(park_depth == '1000 m', 1000, if_else(park_depth == '500 m', 500, 200))) |> select(-park_depth)
-# 
-#   # predictions on mean spectra values
-#   uvp_spectra_average <- data_model |> dplyr::group_by(wmo, cycle, depth) |> dplyr::summarize(depth = unique(depth), true_flux = unique(flux),
-#                                                                                    NP_Size_102 = mean(NP_Size_102),
-#                                                                                    NP_Size_128 = mean(NP_Size_128),
-#                                                                                    NP_Size_161 = mean(NP_Size_161),
-#                                                                                    NP_Size_203 = mean(NP_Size_203),
-#                                                                                    NP_Size_256 = mean(NP_Size_256),
-#                                                                                    NP_Size_323 = mean(NP_Size_323),
-#                                                                                    NP_Size_406 = mean(NP_Size_406),
-#                                                                                    NP_Size_512 = mean(NP_Size_512),
-#                                                                                    NP_Size_645 = mean(NP_Size_645),
-#                                                                                    NP_Size_813 = mean(NP_Size_813),
-#                                                                                    NP_Size_1020 = mean(NP_Size_1020),
-#                                                                                    NP_Size_1290 = mean(NP_Size_1290),
-#                                                                                    NP_Size_1630 = mean(NP_Size_1630),
-#                                                                                    NP_Size_2050 = mean(NP_Size_2050)) |> ungroup()
-# 
-# 
-#   # prediction at 1000 m
-#   #spectra <- uvp_spectra_average |> select(true_flux, all_of(lpm_class[]))
-# 
-#   # prediction
-#   pred_flux <- predict(mod, newdata = uvp_spectra_average, n.trees = best_tree_number)
-# 
-#   uvp_spectra_average$pred_flux <- pred_flux
-# 
-#   return(uvp_spectra_average)
-# }
-# 
-# # pred_small <- model_predict('small', small_model$model, small_model$best_tree) |> select(wmo, cycle, depth, true_small = true_flux, pred_small = pred_flux)
-# # pred_big <- model_predict('big', big_model$model, big_model$best_tree) |> select(true_big = true_flux, pred_big = pred_flux)
-# # pred_total <- model_predict('total', total_model$model, total_model$best_tree) |> select(true_total = true_flux, pred_total = pred_flux)
-# #
-# # all_predictions <- cbind(pred_small, pred_big, pred_total) |> mutate(pred_total2 = pred_small + pred_big, anom = pred_total - pred_total2)
-# #
-# # vroom::vroom_write(all_predictions, file = '/home/flo/dox/THESIS/DATA/MODEL/all_predictions.csv')
-# all_predictions <- vroom('DATA/MODEL/all_predictions.csv')
-
-```
-
-```{r, plot model predictions}
-
-p_small <- ggplot(all_predictions) + geom_point(aes(true_small, pred_small)) + theme_bw() 
-round(R2_Score(y_true = all_predictions$true_small, y_pred = all_predictions$pred_small), 2)
-
-p_big <- ggplot(all_predictions |> filter(is.finite(true_big))) + geom_point(aes(true_big, pred_big)) + theme_bw()
-all_predictions |> filter(is.finite(true_big)) |> summarize(round(R2_Score(true_big, pred_big)), 2)
-
-p_small / p_big
 
 ```
 
@@ -1294,7 +1096,8 @@ TODO :
 -   rajouter dans les méthodes les produits satellites qu'on utilise
 -   différentes dynamiques post-bloom
 -   phénologie du bloom printanier
--   
+-   qinking speed -> trouver un truc à dire et estimer l'incertitude (en lien avec le graphique ou le DZ augmente)   + expliquer la méthode vite fait (Léo Lacour, personal communication)
+- on se trouve dans un sytème producitve entre guidi 2008 et iversen (très productif)
 
 ### Environmental conditions prior to bloom
 
@@ -1306,9 +1109,9 @@ TODO :
 npq_data <- vroom('DATA/ARGO/npq_corrected_data.csv')  
 
 # clean and smoothed chla data
-d <- npq_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> mutate(date = as_date(juld))
+d <- npq_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> dplyr::mutate(date = as_date(juld))
 d <- d |> group_by(date, wmo, pres, cycle) |> summarize(mean_chla = mean(chla_npq, na.rm=T), mld = unique(MLD))
-d <- d |> mutate(smoothed_chla = smooth(mean_chla)/2.15, smoothed_chla_up = smooth(mean_chla)/(2.15-0.37), smoothed_chla_down = smooth(mean_chla)/(2.15+0.37)) # 2.15 = Roesler factor in the Labrador Sea
+d <- d |> dplyr::mutate(smoothed_chla = smooth(mean_chla)/2.15, smoothed_chla_up = smooth(mean_chla)/(2.15-0.37), smoothed_chla_down = smooth(mean_chla)/(2.15+0.37)) # 2.15 = Roesler factor in the Labrador Sea
 
 #d$wmo <- factor(d$wmo, levels = c(6904240,4903634,6904241,1902578))
 
@@ -1333,7 +1136,7 @@ d_chla <- d |> group_by(wmo, date) |> summarize(chla_0_100m = integrate(smoothed
 #ggplot(d_chla) + geom_point(aes(date, chla_0_mld)) + facet_wrap(~wmo, scales = 'free')
 
 # add couple info
-d_chla <- d_chla |> mutate(group = if_else(wmo %in% c(6904240,4903634), '6904240 - 4903634', '6904241 - 1902578'))
+d_chla <- d_chla |> dplyr::mutate(group = if_else(wmo %in% c(6904240,4903634), '6904240 - 4903634', '6904241 - 1902578'))
 
 ```
 
@@ -1341,14 +1144,14 @@ d_chla <- d_chla |> mutate(group = if_else(wmo %in% c(6904240,4903634), '6904240
 
 #chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_with_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
 chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_without_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
-mld_sat <- arrow::read_feather('DATA/SATELLITE/mld_sat.feather') |> mutate(longitude = longitude - 360) |> select(time, lat = latitude, lon = longitude, mld = mlotst)
+mld_sat <- arrow::read_feather('DATA/SATELLITE/mld_sat.feather') |> dplyr::mutate(longitude = longitude - 360) |> select(time, lat = latitude, lon = longitude, mld = mlotst)
   
 # CHLA
 chla_cover_deployment1 <- points_in_circle(chla_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
-chla_cover_deployment1 <- chla_cover_deployment1 |> mutate(date = as_date(time), group = '6904240 - 4903634') |> mutate(deploy = as_date('2022-05-22'))
+chla_cover_deployment1 <- chla_cover_deployment1 |> dplyr::mutate(date = as_date(time), group = '6904240 - 4903634') |> dplyr::mutate(deploy = as_date('2022-05-22'))
 
 chla_cover_deployment2 <- points_in_circle(chla_sat, lon_center = -52.3, lat_center = 56.7, radius = 10000) # 50 km around center
-chla_cover_deployment2 <- chla_cover_deployment2 |> mutate(date = as_date(time), group = '6904241 - 1902578') |> mutate(deploy = as_date('2022-05-30'))
+chla_cover_deployment2 <- chla_cover_deployment2 |> dplyr::mutate(date = as_date(time), group = '6904241 - 1902578') |> dplyr::mutate(deploy = as_date('2022-05-30'))
 
 # all deploy
 chla_cover <- rbind(chla_cover_deployment1, chla_cover_deployment2)
@@ -1364,10 +1167,10 @@ chla_plot <- ggplot(chla_cover |> filter(date > '2022-04-01')) + geom_errorbar(a
                 
 # MLD
 mld_cover_deployment1 <- points_in_circle(mld_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
-mld_cover_deployment1 <- mld_cover_deployment1 |> mutate(date = as_date(time), group = '6904240 - 4903634') |> mutate(deploy = as_date('2022-05-22'))
+mld_cover_deployment1 <- mld_cover_deployment1 |> dplyr::mutate(date = as_date(time), group = '6904240 - 4903634') |> dplyr::mutate(deploy = as_date('2022-05-22'))
 
 mld_cover_deployment2 <- points_in_circle(mld_sat, lon_center = -52.3, lat_center = 56.7, radius = 100000) # 50 km around center
-mld_cover_deployment2 <- mld_cover_deployment2 |> mutate(date = as_date(time), group = '6904241 - 1902578') |> mutate(deploy = as_date('2022-05-30'))
+mld_cover_deployment2 <- mld_cover_deployment2 |> dplyr::mutate(date = as_date(time), group = '6904241 - 1902578') |> dplyr::mutate(deploy = as_date('2022-05-30'))
 
 mld_cover <- rbind(mld_cover_deployment1, mld_cover_deployment2)
 
@@ -1378,7 +1181,7 @@ mld_plot <- ggplot(mld_cover |> filter(date > '2022-04-01')) + geom_errorbar(aes
                       fun = median, colour = 'black', width = 5) +
   labs(x = 'Time', y = 'MLD (m)') + facet_wrap(~group) + theme_bw() +
   geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "black", linetype = 'dashed') +
-  geom_point(data = d_chla |> filter(date < '2022-08-01') |> mutate(week = week(date), DOY = yday(date)) |> group_by(week, group) |> summarize(median_mld = median(mld), mean_date = as_date(mean(DOY), origin = '2022-01-01')), aes(mean_date, median_mld), colour = "red")
+  geom_point(data = d_chla |> filter(date < '2022-08-01') |> dplyr::mutate(week = week(date), DOY = yday(date)) |> group_by(week, group) |> summarize(median_mld = median(mld), mean_date = as_date(mean(DOY), origin = '2022-01-01')), aes(mean_date, median_mld), colour = "red")
 
 chla_plot / mld_plot
 
@@ -1389,10 +1192,12 @@ with a radius of 100 km around both deployment positions
 ### Sinking speed
 
 -   Montrer que les sinking speed observées ne sont pas compatibles avec des valeurs de bloom (càd rapides pour les grosses particules à minima)
+- rajouter dans les méthodes le calcul de cette sinking speed.
 
 ```{r, sinking speed plot}
 
-sinking_fit <- vroom('DATA/ARGO/gaussian_fit_sinking_speed_full.csv') |> mutate(size = size_class |> str_remove('NP_Size_') |> as.numeric(), date = as_date(date))
+# NOTE : pas besoin d'updater ici vu que l'on regarde par rapport au 'bloom' de fin mai/juin
+sinking_fit <- vroom('DATA/ARGO/gaussian_fit_sinking_speed_full_before_06032023.csv') |> dplyr::mutate(size = size_class |> str_remove('NP_Size_') |> as.numeric(), date = as_date(date))
 
 estimate_sinking_speed <- function(siz, data, threshold){
   
@@ -1421,13 +1226,16 @@ all_sinking_speed <- rbind(sinking_1902578, sinking_4903634, sinking_6904240, si
 
 ```{r, vertical plots + sinking speed}
 
-particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld))
+particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld))
 
-particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric())
+particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> dplyr::mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) 
 #particles_bis$size <- factor(particles_bis$size, levels = lpm_class)
 
+# remove buggy data from float 4903634 (negative depth for some reason)
+particles_bis <- particles_bis |> filter(depth >= 0)
+
 # rel_conc
-particles_bis <- particles_bis |> group_by(wmo, size) |> mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
+particles_bis <- particles_bis |> dplyr::group_by(wmo, size) |> dplyr::mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
 
 up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
   #group_by(size) |>
@@ -1459,6 +1267,8 @@ down_part
 
 gt(all_sinking_speed)
 
+all_sinking_speed |> ggplot() + geom_point(aes(y = sinking_speed_below_threshold, x = size))
+
 ```
 
 ```{r, check gaussian profiles}
@@ -1485,30 +1295,32 @@ tmp <- sinking_fit |> filter(wmo == 6904240, size == 645)
 
 test <- return_fitted(tmp)
 
-ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() + theme_bw() #+ ylim(c(0,.2)) 
+ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() + 
+  scale_color_viridis_d() +
+  theme_bw() 
 
 
 ```
 
 ### TS diagram
 
--   Pour le drift à 200, 500 et 1000 m
+-   Pour le drift à 200, 500 et 1000 m -> interpète ce graph -> va checker les masses d'eau de la region... attention on est en PARKING DEPTH -> mettre la couleur de la parking depth dans le truc, ça permettrait de voir si on peut comparer les processus (style ratio 500/1000m) dans les couches qui sont dans la meme masse d'eau.
 
 ```{r, TS diagram}
+#ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26, park_depth != '200 m') |> dplyr::mutate(date = as_date(date))
+ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26) |> 
+  dplyr::mutate(date = as_date(date), colour = if_else(park_depth == '200 m', '#E31B23', if_else(park_depth == '500 m', '#FFC325', 'black')))
 
-#ts_data <- all_floats |> filter(PhaseName == 'NPAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26) |> mutate(date = as_date(date))
+ts_data <- all_floats |> filter(PhaseName == 'NPAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26) |> 
+  dplyr::mutate(date = as_date(date))
 
-ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26, park_depth != '200 m') |> mutate(date = as_date(date))
-#ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26) |> mutate(date = as_date(date))
-ggplot(ts_data) + geom_point(aes(psal, temp, colour = factor(park_depth))) + theme_bw()
+# https://dankelley.github.io/oce/reference/plotTS.html
+# https://dankelley.github.io/oce/reference/argo-class.html
+test <- as.argo(time = ts_data$date, longitude = ts_data$lon, latitude = ts_data$lat, salinity = ts_data$psal, temperature = ts_data$temp, pressure = ts_data$depth,
+        id = ts_data$wmo) 
 
-# ggplot(ts_data) + geom_point(aes(psal, temp, colour = wmo))
+plotTS(test, inSitu = T, type = 'p', xlab = 'Salinity [PSU]')
 
-ts_data <- all_floats |> filter(PhaseName == 'NPAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth) |> drop_na(temp) |> filter(sigma > 26) |> mutate(date = as_date(date))
-
-# add contour
-# breaks_sigma <- seq(min(round(ts_data$sigma*2)/2), max(round(ts_data$sigma*2)/2), by = 1)
-ggplot(ts_data) + geom_point(aes(psal, temp, colour = depth)) + scale_color_viridis_c(option = 'A') + theme_bw()
 
 ```
 
@@ -1520,27 +1332,27 @@ J'ai enlevé le truc du spectre inversé à 500 et 1000 m car difficile de concl
 #| label: fig-processes-at-play
 #| fig-cap: Ratio of monthly mean particles concentrations during drifting (1000 m over 500 m) for size classes below 1.63 mm. 
 
-# tmp <- uvp_data |> filter(park_depth != '200 m') |> group_by(wmo, size, month, park_depth) |> 
-#   summarize(monthly_mean_conc = mean(conc), monthly_median_conc = median(conc)) |>
-#   # compute concentration anomaly at 500 and 1000 m
-#   mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
-#   select(wmo, size, month, diff_anomaly, div_anomaly) |> mutate(month = month.abb[month]) |> 
-#   mutate(size = as.character(size)) |>
-#   mutate(rev_div_anomaly = 1/div_anomaly) |> 
-#   #filter(is.finite(rev_div_anomaly)) |>
-#   mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1), div_anomaly = round(div_anomaly, 1)) |>
-#   ungroup()
+tmp <- uvp_data |> filter(park_depth != '200 m') |> group_by(wmo, size, month, park_depth) |>
+  summarize(monthly_mean_conc = mean(conc), monthly_median_conc = median(conc)) |>
+  # compute concentration anomaly at 500 and 1000 m
+  dplyr::mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
+  select(wmo, size, month, diff_anomaly, div_anomaly) |> dplyr::mutate(month = month.abb[month]) |>
+  dplyr::mutate(size = as.character(size)) |>
+  dplyr::mutate(rev_div_anomaly = 1/div_anomaly) |>
+  #filter(is.finite(rev_div_anomaly)) |>
+  dplyr::mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1), div_anomaly = round(div_anomaly, 1)) |>
+  ungroup()
 
 # test en weekly
 # tmp <- uvp_data |> filter(park_depth != '200 m', month != 5) |> group_by(wmo, size, week, park_depth) |> 
 #   summarize(monthly_mean_conc = mean(conc), monthly_median_conc = median(conc)) |>
 #   # compute concentration anomaly at 500 and 1000 m
-#   mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
+#   dplyr::mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
 #   select(wmo, size, week, diff_anomaly, div_anomaly) |> 
-#   mutate(size = as.character(size)) |>
-#   mutate(rev_div_anomaly = 1/div_anomaly) |> 
+#   dplyr::mutate(size = as.character(size)) |>
+#   dplyr::mutate(rev_div_anomaly = 1/div_anomaly) |> 
 #   #filter(is.finite(rev_div_anomaly)) |>
-#   mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1)) |>
+#   dplyr::mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1)) |>
 #   ungroup()
 # 
 # create_data_for_heatmap <- function(float){
@@ -1586,14 +1398,14 @@ create_data_for_heatmap <- function(float, df){
 # vroom_write(dd, 'heatmap_data.csv')
 
 # reload + redo some annoying stuff that were lost during the writing of the csv
-dd <- vroom('heatmap_data.csv') |> mutate(Y = as.character(Y)) 
-dd$X <- factor(dd$X, levels = c('May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'))
+dd <- vroom('heatmap_data.csv') |> dplyr::mutate(Y = as.character(Y)) 
+dd$X <- factor(dd$X, levels = c('May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'))
 dd$Y <- factor(dd$Y, levels = c('102', '128', '161', '203', '256', '323', '406', '512', '645', '813', '1020', '1290'))
 dd$Y <- factor(dd$Y, levels = c('1290', '1020', '813', '645', '512', '406', '323', '256', '203', '161', '128', '102'))
 # dd$wmo <- factor(dd$wmo, levels = c(6904240,4903634,6904241,1902578))
 
-#dd <- dd |> mutate(Z_binned = cut(Z, breaks = c(0,1,1.5,2.5,max(Z))))
-dd <- dd |> mutate(Z_binned = cut(Z, breaks = c(0,.5,1,1.5,2,max(Z))))
+#dd <- dd |> dplyr::mutate(Z_binned = cut(Z, breaks = c(0,1,1.5,2.5,max(Z))))
+dd <- dd |> dplyr::mutate(Z_binned = cut(Z, breaks = c(0,.5,1,1.5,2,max(Z))))
 
 # ggplot(dd) +
 #   geom_tile(aes(X, Y, fill = Z), alpha = 0.75) + scale_fill_viridis() + theme_bw() + labs(x = 'Month', y = 'Size class') +
@@ -1606,166 +1418,9 @@ ggplot(dd) +
 
 ```
 
-```{r, test gt table}
 
-monthly_mean <- uvp_data |> mutate(month = month.abb[month(juld)]) |> group_by(size, park_depth, month) |> summarize(mean_conc = round(mean(conc, na.rm=T), 2)) |> ungroup()
 
-# pivot wider
-monthly_mean <- monthly_mean |> pivot_wider(names_from = month, values_from = mean_conc) |> select(size, depth = park_depth, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec, Jan, Feb) 
 
-monthly_mean |> group_by(size) |> gt(rowname_col = 'depth')
-
-#monthly_mean |> gt(rowname_col = c('size')) |> tab_stubhead(label = 'Class') 
-
-```
-
-#### Features importance
-
-```{r, features importance}
-# 
-# features <- small_model$features_importance |> select(size = var, importance = rel.inf) |> mutate(model = 'small') |>
-#   bind_rows(big_model$features_importance |> select(size = var, importance = rel.inf) |> mutate(model = 'big')) |>
-#   bind_rows(total_model$features_importance |> select(size = var, importance = rel.inf) |> mutate(model = 'total'))
-# 
-# rownames(features) <- NULL
-# 
-# features <- features |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric())
-# 
-# ggplot(features) + geom_point(aes(x = as.factor(size), y = importance, colour = model), size = 5) + labs(x = 'Size', y = 'Features importance')
-
-```
-
-#### Predictions
-
-```{r, plot predictions}
-
-# p_small <- ggplot(all_predictions) + geom_point(aes(true_small, pred_small)) + xlim(c(0,25)) + ylim(c(0,25)) + theme_bw() +
-# 
-#   annotate("text", x = 3, y = 23, label = paste0('R² = ' , round(R2_Score(all_predictions$true_small, all_predictions$pred_small), 2)))
-# 
-# p_big <- ggplot(all_predictions) + geom_point(aes(true_big, pred_big)) + xlim(c(0,50)) + ylim(c(0,50)) + theme_bw() +
-# 
-#   annotate("text", x = 5, y = 45, label = paste0('R² = ' , round(R2_Score(all_predictions$true_big, all_predictions$pred_big), 2)))
-# 
-# p_total <- ggplot(all_predictions) + geom_point(aes(true_total, pred_total)) + xlim(c(0,100)) + ylim(c(0,100)) + theme_bw() +
-# 
-#   annotate("text", x = 3, y = 80, label = paste0('R² = ' , round(R2_Score(all_predictions$true_total, all_predictions$pred_total), 2)))
-# 
-# (p_small + p_big) / p_total
-
-# plot(test$true_flux, y=test$pred_flux, asp=1)
-
-# print(R2_Score(test$pred_flux, test$true_flux))
-
-```
-
-#### same plot mais pour les classes de tailles
-
-```{r, TEST }
-
-# depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
-# 
-# part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, NP_Size_256) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |>
-# 
-#   mutate(month = month.abb[month(juld)]) |> ungroup()
-# 
-# tmp <- part_distrib |> group_by(wmo, depth_bin, month) |> summarize(mean_part = log10(mean(NP_Size_256))) |>
-# 
-#   mutate(cut_part = cut(mean_part, breaks = c(seq(0,100,20),+Inf))) |> ungroup()
-# 
-# create_data_for_heatmap_bis <- function(float, df){
-# 
-#   df <- df |> filter(wmo == float) |> select(mean_part, depth_bin, month)
-# 
-#   y <- unique(df$depth_bin)
-# 
-#   df <- df|> pivot_wider(names_from = depth_bin, values_from = mean_part)
-# 
-#   x <- unique(df$month)
-# 
-#   data <- expand.grid(X=x, Y=y)
-# 
-#   data$Z <- as.vector(as.matrix(df |> select(-month)))
-# 
-#   data$wmo <- float
-# 
-#   return(data)
-# 
-# }
-# 
-# d1 <- create_data_for_heatmap_bis(6904241, tmp)
-# 
-# d2 <- create_data_for_heatmap_bis(1902578, tmp)
-# 
-# d3 <- create_data_for_heatmap_bis(4903634, tmp)
-# 
-# d4 <- create_data_for_heatmap_bis(6904240, tmp)
-# 
-# dd <- rbind(d1, d2, d3, d4) |> mutate(X = factor(X, levels = c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'))) |>
-# 
-#   mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T))) |>
-# 
-#   mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578))) #|>
-# 
-#   #mutate(Z = factor(Z, levels = levels(tmp$cut_part)))
-# 
-# ggplot(dd) +
-# 
-#   geom_tile(aes(X, Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + labs(fill = 'Log10(abundance) #/L', x = 'Month', y = 'Depth bin', title = 'NP_Size_256') +
-# 
-#   facet_wrap(~wmo) + scale_fill_viridis(option = 'A')
-
-```
-
-#### same plots mais par mois
-
-```{r, monthly heatmap}
-
-# depth_bin <- c(seq(0,500,50), seq(600, 1000, 100), seq(1250, 2000, 250))
-# 
-# part_distrib <- vertical_profiles |> filter(depth < 2000) |> select(juld, depth, wmo, all_of(lpm_class)) |> mutate(depth_bin = cut(depth, breaks = depth_bin)) |> mutate(month = month.abb[month(juld)]) |> ungroup() |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration')
-# 
-# tmp <- part_distrib |> group_by(depth_bin, size, month) |> summarize(mean_part = mean(concentration)) |> mutate(rel_mean_conc = (mean_part-min(mean_part))/(max(mean_part) - min(mean_part))) |> ungroup()
-# 
-# plot_heat_month <- function(m){
-# 
-#   # transform data for heatmap
-# 
-#   #m <- 'May'
-# 
-#   tmp2 <- tmp |> filter(month == m) |> mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) |> select(-c(month, mean_part))
-# 
-#   y <- unique(tmp2$depth_bin)
-# 
-#   x <- unique(tmp2$size)
-# 
-#   test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = rel_mean_conc)
-# 
-#   #test <- tmp2 |> pivot_wider(names_from = depth_bin, values_from = mean_part)
-# 
-#   data <- expand.grid(X=x, Y=y)
-# 
-#   data$Z <- as.vector(as.matrix(test |> select(-size)))
-# 
-#   data$month <- m
-# 
-#   return(data)
-# 
-# }
-# 
-# m_data <- map_dfr(c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'), plot_heat_month)
-# 
-# m_data <- m_data |> mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T)),
-# 
-#                    month = factor(month, levels = c('May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan')))
-# 
-# ggplot(m_data |> mutate(Y = factor(Y, levels = sort(unique(Y), decreasing = T)))) +
-# 
-#   geom_tile(aes(as.factor(X), Y, fill = Z), colour = 'black', alpha = 1) + theme_bw() + scale_fill_viridis(option = 'A') +
-# 
-#   facet_wrap(~month)
-
-```
 
 ## Discussion2
 
