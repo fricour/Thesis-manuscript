@@ -298,7 +298,7 @@ tbl-cap-location: top
 ---
 
 | Pump                   | POC export/injection depth range | DOC injection depth range | Sequestration time potential (years) |
-|-----------------|-------------------|-----------------|---------------------|
+|------------------------|----------------------------------|---------------------------|--------------------------------------|
 | Gravitational          | export depth - sediment          | None                      | N/A (142)                            |
 | Mixed layer            | 200 - 1,000 m                    | 200 - 1,000 m             | 25 - 100 (54$^{b}$)                  |
 | Eddy subduction        | 150 - 400 m                      | 150 - 400 m               | up to 150 (N/A)                      |

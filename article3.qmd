@@ -5,6 +5,14 @@
 introduire la notion de cycle de flotteurs BGC-Argo etc (+ parking depth)
 
 -   dire que le but du papier est de faire une comparaison OST UVP qui sont deux instruments qui permettent de mesurer la meme chose (le flux des particules, l'abondance de particules) et donc le flux de carbone de manière indirecte papier GRL Lacour de 2015
+-   introduire le POC ici et introduire la BCP vite fait (classique)
+-   dire que Chla = proxy pour phyto biomass
+-   BGC-Argo floats are pseudo-lagrangian platforms
+-   si on peut prouver que le diagramme ST, les massses d'eau sont les memes, alors on peut peut-être parler des ratios entre particlues à 500 et 1000 m
+-   définir la méthode de calcul de la MLD
+-   plotter la MLD sur les profils verticaux de
+
+Two pairs of Biogeochemical-Argo (BGC) floats were planned to be deployed at the time of the annual spring bloom in the Labrador Sea (LS). The latter is characterized by two bioregions with distinct phytoplankton bloom phelonogies on both side of the 60°N parallel [@Lacour2015-da]. The northern part is characterized by a short spring bloom in late April whereas the bloom in the southern part starts in April-May and slowly develops to reach its maximum in June [@Lacour2015-da]. In this study, two pairs of floats were deployed south of the 60°N parallel with a first couple (WMO 6904240 and 4903634) deployed closely to it (58.9°N) in late May 2022.
 
 ## Methods
 
@@ -47,7 +55,7 @@ library(spatialrisk)
 library(ggOceanMaps)
 ```
 
-```{r, map of 4 floats}
+```{r, map of 4 floats, fig.height=6, fig.width=6}
 #| label: fig-float-position
 #| fig-cap: Route of each float since their deployment (black triangles). Dots represent ascending profiles. The profile that concludes the time series for each float is highlighted by a black contour.
 
@@ -92,22 +100,25 @@ argo_map_last <- argo_map |> filter(cycle == max(cycle))
 argo_map_geo <- transform_coord(argo_map) |> dplyr::mutate(cycle = argo_map$cycle, WMO = as.factor(argo_map$WMO))
 argo_map_last_geo <- transform_coord(argo_map_last) |> mutate(WMO = as.factor(argo_map_last$WMO))
 
-basemap(limits = c(-55,-40,55,65), bathymetry = T) +
-  geom_path(data = argo_map_geo, aes(lon, lat, colour = WMO), size = 1.5) + 
-  geom_point(data = argo_map_geo, aes(x= lon, y = lat, colour = WMO), size = 3) +
+basemap(limits = c(-55,-40,55,65), bathymetry = T, lat.interval = 2.5, bathy.style = 'poly_blues',
+        grid.col = 'black') +
+  geom_path(data = argo_map_geo, aes(lon, lat, colour = WMO), linewidth = 1) + 
+  geom_point(data = argo_map_geo, aes(x= lon, y = lat, colour = WMO), size = 2) +
   scale_color_brewer(palette = 'Dark2') + theme_bw() +
   geom_point(data = transform_coord(argo_map_first), aes(lon, lat), shape = 17, size = 3) +
-  geom_point(data = argo_map_last_geo, aes(lon, lat, colour = WMO), size = 6) +
-  geom_point(data = argo_map_last_geo, aes(lon, lat), fill = 'black', size = 6, shape = 1) +
+  geom_point(data = argo_map_last_geo, aes(lon, lat, colour = WMO), size = 4) +
+  geom_point(data = argo_map_last_geo, aes(lon, lat), fill = 'black', size = 4, shape = 1) +
   #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/#suppress-aesthetics-from-part-of-the-legend
   guides(color = guide_legend(override.aes = list(size = c(1.5,1.5,1.5,1.5),
-                                                  shape = c(NA, NA, NA, NA))))
+                                                  shape = c(NA, NA, NA, NA)))) #+
+  # basemap(limits = c(-55,-40,55,65), bathymetry = F, lat.interval = 2.5,
+  #       grid.col = 'black')
 
 ```
 
 ### Data processing
 
-Data were downloaded from the Coriolis data center (biogeochemical data at ftp://ftp.ifremer.fr/ifremer/argo/dac/coriolis/ and UVP6 data at ftp://ftp.ifremer.fr/ifremer/argo/aux/coriolis/, last access: MONTH DAY, 2023). Chla data were quality controlled for Non-Photochemical Quenching (NPQ), a photoprotective mechanism that decreases the apparent fluorescence per unit of Chla following the method implemented by @Terrats2020 who modified the method of @Xing2018 for shallow-mixing cases. $c_{p}$ data were converted from counts to physical units (m$^{-1}$) using the following relationship
+Data were downloaded from the Coriolis data center (*ftp://ftp.ifremer.fr/ifremer/argo/*, with biogeochemical data at *dac/coriolis/* and UVP6 data at *aux/coriolis/*, last accessed: March 6, 2023). Chla data were quality controlled for Non-Photochemical Quenching (NPQ), a photoprotective mechanism that decreases the apparent fluorescence per unit of Chla following the method implemented by @Terrats2020-ef who modified the method of @Xing2018-pn for shallow-mixing cases. Chla data were also divided by a slope factor of 2.15 following the recommendation of @Roesler2017-me for obtaining unbiased Chla estimates from in situ WETLabs ECO fluorometer. $c_{p}$ data were converted from counts to physical units (m$^{-1}$) using the following relationship
 
 $$
 c_{p}~[m^{-1}] = -\frac{1}{x}~log \left(~ \frac{c_{p}~[counts]-CSC_{dark}}{CSC_{cal}-CSC_{dark}} \right)
@@ -115,19 +126,19 @@ $$
 
 where $x$, $CSC_{dark}$ and $CSC_{cal}$ are respectively the transmissometer pathlength (0.25 m), the sensor output when the beam is blocked (i.e. offset, 0 for each c-Rover of this study) and the sensor output with clean water in the path (12998, 13598, 13115 and 12855 for, respectively, float 4903634, 6904240, 6904241 and 1902578). The latter were obtained from the calibration sheets of each c-Rover.
 
-UVP6 data and in particular the averaged number of particles per size class (i.e. particle size distribution hereafter referred to as PSD) was divided by the number of images at each depth and the water volume imaged by the UVP (0.7L) to obtain particle concentrations (units: #/L). Note that in an impending update by Coriolis, it will not be necessary to divide by the number of images anymore.
+UVP6 data and in particular the averaged number of particles per size class (i.e. particle size distribution hereafter referred to as PSD) was divided by the number of images at each depth and the water volume imaged by the UVP (0.7L) to obtain particle concentrations (units: #/L). Note that in an impending update by the Coriolis data center, it should not be necessary to divide by the number of images anymore.
 
-All data were divided into vertical profiles and drifting data using time stamps for drift. Finally, data were checked for instrumental anomalies. As a result, $c_{p}$ values from float 6904241 cannot be used from its 20$^{th}$ cycle onwards (\> November 17) due to a likely failure of the pump cleaning the optical window of the transmissometer.
+All data were divided into vertical profiles and drifting data using time stamps for profiling and drifting acquisition periods. Finally, data were checked for instrumental anomalies. As a result, $c_{p}$ values from float 6904241 cannot be used from its 20$^{th}$ cycle onwards (\> November 17) due to a likely failure of the pump cleaning the optical window of the transmissometer. In total, the data coverage of this study spans a period of 9 months (end of May 2022 to early March 2023).
 
 ### Derivation of carbon fluxes from OST
 
 We applied a similar approach to @Estapa2013-gw and @Estapa2017-jr to derive the continuous component (i.e. continuous deposition of small particles on the upward-facing window of the transmissometer) and discontinuous (i.e. deposition of stochastic big particles) components of the downward POC flux, hereafter referred to as, respectively, $F_{small}$ and $F_{big}$.
 
-First, the drifting $c_{p}$ signal was cleaned from spikes (hypothesized as transient particles not landing on the window or active swimmers [@Estapa2013-gw]). For this, we computed a 7-point moving median and a 7-point moving median absolute deviation (MAD). Then, we computed the anomaly to the moving median as the difference between the drifting $c_{p}$ signal and the moving median. We considered that a $c_{p}$ measurement was a spike when the anomaly was above $5.2 \times MAD$ following @Leys2013. Despiked $c_{p}$ data were then smoothed with a 7-point moving median filter.
+First, the drifting $c_{p}$ signal was cleaned from spikes (hypothesized as transient particles not landing on the window or active swimmers [@Estapa2013-gw]). For this, we computed a 7-point moving median and a 7-point moving median absolute deviation (MAD). Then, we computed the anomaly to the moving median as the difference between the drifting $c_{p}$ signal and the moving median. We considered that a $c_{p}$ measurement was a spike when the anomaly was above $5.2 \times MAD$ following @Leys2013-eu. Despiked $c_{p}$ data were then smoothed with a 7-point moving median filter.
 
-Contrarily to previous works [@Estapa2013-gw; @Estapa2017-jr], we chose an empirical statistical approach instead of fixed thresholds to detect jumps. Therefore, we firstly computed the slope between each $c_{p}$ observation for each drifting phase and computed the z-score (i.e. standard score) of each of them. The detection of jumps therefore consisted in spotting outliers in the z-score distribution. For this, we computed the interquartile range ($IQR$) between the first ($Q_{1}$) and third ($Q_{3}$) quartiles. Positive and negative jumps were defined as, respectively, a z-score above $Q_{3} + 1.5 \times IQR$ and below $Q_{1} - 1.5 \times IQR$. We found that this method better detected outliers than the one used to despike the $c_{p}$ signal.
+Contrarily to previous works [@Estapa2013-gw; @Estapa2017-jr; @Estapa2023-oz], we chose an empirical statistical approach instead of fixed thresholds to detect jumps. Therefore, we firstly computed the slope between each $c_{p}$ observation for each drifting phase and computed the z-score (i.e. standard score) of each of them. The detection of jumps therefore consisted in spotting outliers in the z-score distribution. For this, we computed the interquartile range ($IQR$) between the first ($Q_{1}$) and third ($Q_{3}$) quartiles. Positive and negative jumps were defined as, respectively, a z-score above $Q_{3} + 1.5 \times IQR$ and below $Q_{1} - 1.5 \times IQR$. We found that this method better detected outliers than the one used to despike the $c_{p}$ signal.
 
-In order to compute $F_{small}$, we firstly computed the slope of each group of observations between jumps (positive and negative, see @fig-estapa-method_article). Undefined slopes (a single point between two jumps) were removed as well as any negative slope assuming that either the so-called fit failed (leading to undetected jumps) either the transmissometer window was perturbed by something else than the pump cleaning the optical window. Afterwards, we computed the weighted average slope ($slope_{w}$) using the previously computed slopes of each remaining group in order to derive the small particles flux using the linear relationship between the beam attenuance flux and the POC flux (see first panel of Figure 2 in @Estapa2023-oz).
+In order to compute $F_{small}$, we firstly computed the slope of each group of observations between jumps (positive and negative, see @fig-estapa-method_article). Undefined slopes (a single point between two jumps) were removed as well as any negative slope assuming that either the so-called fit failed (leading to undetected jumps) either the transmissometer window was perturbed by something else than the pump cleaning the optical window (e.g. turbulence ou zooplankton consumption of accumulated material). Afterwards, we computed the weighted average slope ($slope_{w}$) using the previously computed slopes of each remaining group in order to derive the small particles flux using the linear relationship between the beam attenuance flux and the POC flux (see first panel of Figure 2 in @Estapa2023-oz).
 
 $$
 F_{small} = 633(0.25~slope_{w})^{0.77}
@@ -291,6 +302,10 @@ ggplot(tmp2, aes(x = dates, y = cp, colour = colour)) + geom_point(size = 3) +
   #       legend.title = element_blank())
     theme(legend.position = 'none')
 ```
+
+### Satellite data
+
+Satellite Chla data were downloaded from a daily-merged cloud free GlobColour product (doi: [10.48670/moi-00281](https://doi.org/10.48670/moi-00281)) with a spatial resolution of 4 km. Mixed layer depth (MLD) derived from satellite observations were downloaded from near-real-time weekly data from the ARMOR3D product (doi: [10.48670/moi-00052](https://doi.org/10.48670/moi-00052)).
 
 ## Results
 
@@ -495,11 +510,11 @@ cflux_info_table <- cflux |> dplyr::group_by(park_depth) |> summarize(min_smallf
 cflux$date <- as_date(cflux$min_time)
 ```
 
-$F_{small}$ and $F_{big}$ were computed at each drifting depth for all floats (@fig-OST-flux). At 200 m, $F_{small}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ (average $\pm$ standard deviation). At 500 m, $F_{small}$ is comprised between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_smallf, 1)` mg C m$^{2}$ day$^{-1}$. For both drifting depths, the trend shows a decrease of $F_{small}$ from June to January. At 1000 m, all floats measured an increase of $F_{small}$ from late May to mid-July followed by a steady decrease towards January, with $F_{small}$ ranging between `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ on average.
+$F_{small}$ and $F_{big}$ were computed at each drifting depth for all floats (@fig-OST-flux). At 200 m, $F_{small}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ (average $\pm$ standard deviation). At 500 m, $F_{small}$ is comprised between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_smallf, 1)` mg C m$^{2}$ day$^{-1}$. For both drifting depths, the trend shows a decrease of $F_{small}$ from June to, respectively, January and February. Note that the drifting configuration of all 4 floats was adapted to the deepening of the MLD (Fig. XX) hence drifting at 200 m and 500 m was stopped at this period to avoid measurements bias due to turbulence. At 1000 m, all floats measured an increase of $F_{small}$ from late May to mid/end of July followed by a steady decrease towards March, with $F_{small}$ ranging between `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ on average.
 
-```{r, plot Fsmall and Fbig}
+```{r, plot Fsmall and Fbig, fig.width=8, fig.height=6}
 #| label: fig-OST-flux
-#| fig-cap: OST-derived small (top) and big (bottom) particles flux for all floats at each drifting depth. Black lines and shaded areas represent, respectively, the monthly mean flux and the 95% confidence interval around the mean. 
+#| fig-cap: OST-derived small (top) and big (bottom) particles carbon flux for all floats at each drifting depth. Black lines and shaded areas represent, respectively, the monthly mean flux and the 95% confidence interval around the mean. 
 
 up <- cflux |> ggplot(aes(x = date, y = small_flux)) +
     geom_point(data = cflux, aes(x = date, y = small_flux, colour = WMO, shape = WMO)) +
@@ -528,9 +543,9 @@ up / down
 
 ```
 
-$F_{big}$ was estimated at 200 m between 0 (no deposition of big particles on the transmissometer window) and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$. High fluxes (\> 100 mg C m$^{-2}$ day$^{-1}$) were measured by 3 out of 4 floats at the end of May before a sharp decrease towards July. At 500 m, $F_{big}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$, decreasing from September to January. At 1000 m, $F_{big}$ shows a similar pattern than the one observed for $F_{small}$ with an increase from June to mid-July, followed by a decrease towards January, with values ranging from 0 to `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$.
+$F_{big}$ was estimated at 200 m between 0 (no deposition of big particles on the transmissometer window) and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$. High fluxes (\> 100 mg C m$^{-2}$ day$^{-1}$) were measured by 3 out of 4 floats at the end of May before a sharp decrease towards July. At 500 m, $F_{big}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$, decreasing from September to February. At 1000 m, $F_{big}$ shows a similar pattern than the one observed for $F_{small}$ with an increase from June to mid-July, followed by a decrease towards March, with values ranging from 0 to `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$.
 
-### UVP6 particle abundances
+### UVP6 particle abundance
 
 #### On drifting mode
 
@@ -551,11 +566,11 @@ uvp_data <- uvp_data |> pivot_longer(cols = lpm_class, names_to = 'size', values
 mean_uvp_data <- uvp_data |> dplyr::group_by(cycle, WMO, size, park_depth, juld) |> dplyr::summarize(mean_conc = mean(conc, na.rm=T))
 ```
 
-In this study, we focus on 14 size classes, from 102 $\mu$m to 2.5 mm. In @fig-uvp-200m, @fig-uvp-500m and @fig-uvp-1000m, we show the daily averaged concentrations of particles in each class size for each float at their respective drifting depth. At 200 m, it can be observed that particles concentrations in the 102 - 512 $\mu$m range are relatively uniform between June and October before decreasing sharply towards January. Between 512 $\mu$m and 1.29 mm, concentrations are steadily decreasing from June. Above 1.29 mm, the abundance of particles is already very low (\< 0.1 particle/L) in June and keeps decreasing over time.
+In this study, we focus on 14 size classes, from 102 $\mu$m to 2.5 mm. In @fig-uvp-200m, @fig-uvp-500m and @fig-uvp-1000m, we show the daily averaged concentrations of particles in each size class for each float at their respective drifting depth. At 200 m, it can be observed that particle concentration in the 102 - 512 $\mu$m range are relatively uniform between June and October before decreasing sharply towards January. Between 512 $\mu$m and 1.63 mm, concentrations are steadily decreasing from June. Above 1.63 mm, the particle abundance is already very low (\< 0.1 particle/L) in June but keeps decreasing until September when they are practically absent (\< 0.01 particle/L).
 
-```{r, uvp data at 200 m}
+```{r, uvp data at 200 m, fig.height=8, fig.width=8}
 #| label: fig-uvp-200m
-#| fig-cap: Daily averaged concentrations of particles abundance in 14 size classes measured by the UVP6 for each float at 200 m. Black lines and shaded areas represent, respectively, the daily mean particles abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particles abundance is maximum.
+#| fig-cap: Daily averaged concentrations of particle abundance in 14 size classes measured by the UVP6 for each float at 200 m. Black lines and shaded areas represent, respectively, the daily mean particle abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particle abundance is maximum.
 
 p200m <- mean_uvp_data |> filter(park_depth == '200 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
@@ -583,11 +598,11 @@ p200m <- mean_uvp_data |> filter(park_depth == '200 m') |> ggplot() + geom_point
 p200m
 ```
 
-At 500 m, particles concentrations in the 102 - 645 $\mu$ range slowly decrease from July to September with a sharp decrease starting in October. Above 645 $\mu$m, the trend shows a maximum between the end of July and the first half of August though the concentrations of particles in those classes are very low (\< 0.5 particle/L) on the entire timeserie.
+At 500 m, particle concentrations in the 102 - 645 $\mu$m range slowly decrease from July to September with a sharp decrease starting in October. Above 645 $\mu$m, the trend shows a maximum between the end of July and the first half of August though the concentrations of particles in those classes are very low (\< 0.5 particle/L) on the entire timeserie.
 
-```{r, uvp data at 500 m}
+```{r, uvp data at 500 m, fig.width=8, fig.height=8}
 #| label: fig-uvp-500m
-#| fig-cap: Daily averaged concentrations of particles abundance in 14 size classes measured by the UVP6 for each float at 500 m. Black lines and shaded areas represent, respectively, the daily mean particles abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particles abundance is maximum.
+#| fig-cap: Daily averaged concentrations of particle abundance in 14 size classes measured by the UVP6 for each float at 500 m. Black lines and shaded areas represent, respectively, the daily mean particle abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particle abundance is maximum.
 
 p500m <- mean_uvp_data |> filter(park_depth == '500 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
@@ -615,11 +630,11 @@ p500m <- mean_uvp_data |> filter(park_depth == '500 m') |> ggplot() + geom_point
 p500m
 ```
 
-At 1000 m, all 4 floats measured a clear maximum in particles abundance in the 102 - 645 $\mu$m in the second half of July. Above 645 $\mu$m, the same trend can still be observed with concentrations of less than 1 particle/L.
+At 1000 m, all 4 floats measured a clear maximum in particle abundance in the 102 - 645 $\mu$m in the second half of July. Above 645 $\mu$m, the same trend can still be observed with concentrations of less than 1 particle/L.
 
-```{r, uvp data at 1000 m}
+```{r, uvp data at 1000 m, fig.width=8, fig.height=8}
 #| label: fig-uvp-1000m
-#| fig-cap: Daily averaged concentrations of particles abundance in 14 size classes measured by the UVP6 for each float at 1000 m. Black lines and shaded areas represent, respectively, the daily mean particles abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particles abundance is maximum.
+#| fig-cap: Daily averaged concentrations of particle abundance in 14 size classes measured by the UVP6 for each float at 1000 m. Black lines and shaded areas represent, respectively, the daily mean particle abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particle abundance is maximum.
 #| fig-dpi: 96
 
 #{r, uvp data at 1000 m, out.width="900px", out.height="800px"}
@@ -650,9 +665,164 @@ p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_poi
 p1000m
 ```
 
-TODO : It should be noted that all floats measure the same trend -\> logique si on parle de la dynamique du bruit de fond de la zone et pas de la dynamique évènementielle qui serait différentes en fonction des flotteurs vu qu'ils dérivent chacun dans le parcours respectifs. Ça devrait renforcer cet aspect.
+#### On profiling mode
+
+Vertical profiles of particle concentration in the lower (102 - 512 $\mu$m) and upper (0.512 - 2.5 mm) size range of the UVP6 shows similar patterns across all floats. In the lower part of the size spectrum, @fig-uvp6-profiling-102-406 shows the rapid emptying of the water column in November. This process occurred on the entire water column (e.g. size class 406, float 4903634) but also started with more intensity from below the surface (e.g. size class 102, float 6904240). All floats also measured a local particle abundance maximum around 800 - 1000 m whose origin could be due to a previous particle export or remineralization of bigger particles.
+
+```{r, UVP6 profiling mode without sinking speed small classes, fig.height=8, fig.width=8}
+#| label: fig-uvp6-profiling-102-406
+#| fig-cap: Vertical profiles of UVP6 particle concentration for size classes in the 102 - 512 $\mu$m size range. Concentrations were normalized for each size class. The colorbar is in log$_{10}$ scale.
+
+particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld))
+
+particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> dplyr::mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) 
+
+# remove buggy data from float 4903634 (negative depth for some reason)
+particles_bis <- particles_bis |> filter(depth >= 0)
+
+# rel_conc
+particles_bis <- particles_bis |> dplyr::group_by(wmo, size) |> dplyr::mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
+
+up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
+  #group_by(size) |>
+  ggplot() + facet_grid(wmo~size) + theme_bw() +
+  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+  scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = '#/L', x = 'Month', y = 'Depth (m)') 
+
+up_part
+```
+
+In the upper part of the size range, @fig-uvp6-profiling-512-2500 shows a rapid emptying of the entire water column starting in November. In contrast with the small classes, some particles, especially above 1.5 mm, have already virtually disappeared from the water column by September. However, the rapid increase and decrease of particles on the entire water column around July-August for floats 6904241 and 1902578 (still in the same zone at that time) could suggest an export event.
+
+```{r, UVP6 profiling mode without sinking speed big classes, fig.height=8, fig.width=8}
+#| label: fig-uvp6-profiling-512-2500
+#| fig-cap: Vertical profiles of UVP6 particle concentration for size classes in the 0.512 - 2.5 mm size range. Concentrations were normalized for each size class. The colorbar is in log$_{10}$ scale. The gray background depicts the absence of particle in the specified size class.
+
+down_part <- particles_bis |> filter(depth < 2000, size >= 512) |>
+  #group_by(size) |>
+  ggplot() + facet_grid(wmo~size) + theme_bw() +
+  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+  scale_y_reverse() +
+  labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
+  #geom_vline(xintercept = as_date('2022-01-01')) +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') 
+
+down_part
+```
 
 ## Discussion
+
+### Environmental conditions before and shortly after deployment
+
+All floats measured similar particle concentrations at each drifting depth and on the vertical. In addition, except perhaps for the upper part of the UVP6 size spectrum for floats 6904241 and 1902578, the results do not indicate a clear hint of particle export signature. Therefore, we suggest that the 4 BGC-Argo floats mostly measured the dynamics of the seasonal, continuous, particle signal but that they missed the main transient particle export events associated with the LS spring bloom.
+
+To estimate the time of the bloom in the deployment area, we compared MLD and surface (0 - 20 m) Chla concentrations from both satellite and in situ data (@fig-chla-mld-satellite) in a 100 km radius around each deployment. It can be seen that these estimates are in agreement, therefore we hypothesize that we can trust satellite data prior to the floats deployment. Taking this into consideration, it seems that the pair 6904240-4903634 missed a bloom that occurred in early May whereas the pair 6904241-1902578 missed a first Chla increase in late May days before their deployment. However, a second equivalent increase (median of 2 mg m$^{-3}$) happened in late June - early July, which could be a contributing factor to the apparent particle track observed around July and August.
+
+```{r, chla and MLD from satellite, fig.height=6, fig.width=6}
+#|: label: fig-chla-mld-satellite
+#| fig-cap: Comparison of MLD and Chla concentrations measured from satellites (black) and BGC-Argo floats (red) following their deployment. Satellite error bars represent the first and third quartiles around the median in a 50 km radius around each deployment (each pair of floats) coordinates. In situ Chla represent the Chla median in the upper 20 m of the water column with the upper and lower incertitude in the correction factor of @Roesler2017-me.
+
+# fetch data
+npq_data <- vroom('/home/flo/dox/ArgoShine/npq_corrected_data.csv')
+
+# clean and smoothed chla data
+d <- npq_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> dplyr::mutate(date = as_date(juld))
+d <- d |> group_by(date, wmo, pres, cycle) |> summarize(mean_chla = mean(chla_npq, na.rm=T), mld = unique(MLD))
+d <- d |> dplyr::mutate(smoothed_chla = smooth(mean_chla)/2.15, smoothed_chla_up = smooth(mean_chla)/(2.15-0.37), smoothed_chla_down = smooth(mean_chla)/(2.15+0.37)) # 2.15 = Roesler factor in the Labrador Sea
+
+d$wmo <- factor(d$wmo, levels = c(6904240,4903634,6904241,1902578))
+
+# compute chla integration in the MLD and in the 0-100 m zone
+d_chla <- d |> group_by(wmo, date) |> summarize(chla_0_100m = integrate(smoothed_chla, pres, from=0, to=100),
+                                       mld = unique(mld),
+                                       chla_0_mld = integrate(smoothed_chla, pres, from = 0, to=mld),
+                                       median_chla_0_20m = median(smoothed_chla[pres<=20], na.rm=T),
+                                       median_chla_0_20m_up = median(smoothed_chla_up[pres<=20], na.rm=T),
+                                       median_chla_0_20m_down = median(smoothed_chla_down[pres<=20], na.rm=T))
+#
+# ggplot(d_chla) + geom_point(aes(date, chla_0_100m)) + facet_wrap(~wmo, scales = 'free') + theme_bw() + labs(x = 'Month', y = 'Integrated Chla 0-100 m (CHLA UNITS)')
+#ggplot(d_chla) + geom_point(aes(date, chla_0_mld)) + facet_wrap(~wmo, scales = 'free')
+
+# add couple info
+d_chla <- d_chla |> dplyr::mutate(group = if_else(wmo %in% c(6904240,4903634), '6904240 - 4903634', '6904241 - 1902578'))
+
+#chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_with_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
+chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_without_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
+mld_sat <- arrow::read_feather('DATA/SATELLITE/mld_sat.feather') |> dplyr::mutate(longitude = longitude - 360) |> select(time, lat = latitude, lon = longitude, mld = mlotst)
+  
+# CHLA
+chla_cover_deployment1 <- points_in_circle(chla_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
+chla_cover_deployment1 <- chla_cover_deployment1 |> dplyr::mutate(date = as_date(time), group = '6904240 - 4903634') |> dplyr::mutate(deploy = as_date('2022-05-22'))
+
+chla_cover_deployment2 <- points_in_circle(chla_sat, lon_center = -52.3, lat_center = 56.7, radius = 10000) # 50 km around center
+chla_cover_deployment2 <- chla_cover_deployment2 |> dplyr::mutate(date = as_date(time), group = '6904241 - 1902578') |> dplyr::mutate(deploy = as_date('2022-05-30'))
+
+# all deploy
+chla_cover <- rbind(chla_cover_deployment1, chla_cover_deployment2)
+
+chla_plot <- ggplot(chla_cover |> filter(date > '2022-03-01')) + geom_errorbar(aes(x = date, y = chla),
+                      stat = 'summary',
+                      fun.min = function(z) {quantile(z, 0.25)},
+                      fun.max = function(z) {quantile(z, 0.75)},
+                      fun = median, colour = 'black', width = .5) + theme_bw() +
+  labs(x = 'Month', y = TeX('Chla (mg m$^{-3}$)'))+ facet_wrap(~group) +
+  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "black", linetype = 'dashed') +
+  geom_pointrange(data = d_chla |> filter(date < '2022-08-01'), aes(x = date, ymin = median_chla_0_20m_down, ymax = median_chla_0_20m_up, y = median_chla_0_20m), colour = "#E31B23", size = .25) +
+   scale_x_date(labels = date_format("%m"), date_breaks = '1 month')
+                
+# MLD
+mld_cover_deployment1 <- points_in_circle(mld_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
+mld_cover_deployment1 <- mld_cover_deployment1 |> dplyr::mutate(date = as_date(time), group = '6904240 - 4903634') |> dplyr::mutate(deploy = as_date('2022-05-22'))
+
+mld_cover_deployment2 <- points_in_circle(mld_sat, lon_center = -52.3, lat_center = 56.7, radius = 100000) # 50 km around center
+mld_cover_deployment2 <- mld_cover_deployment2 |> dplyr::mutate(date = as_date(time), group = '6904241 - 1902578') |> dplyr::mutate(deploy = as_date('2022-05-30'))
+
+mld_cover <- rbind(mld_cover_deployment1, mld_cover_deployment2)
+
+mld_plot <- ggplot(mld_cover |> filter(date > '2022-03-01')) + geom_errorbar(aes(x = date, y = mld),
+                      stat = 'summary',
+                      fun.min = function(z) {quantile(z, 0.25)},
+                      fun.max = function(z) {quantile(z, 0.75)},
+                      fun = median, colour = 'black', width = 5) +
+  labs(x = 'Month', y = 'MLD (m)') + facet_wrap(~group) + theme_bw() +
+  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "black", linetype = 'dashed') +
+  geom_point(data = d_chla |> filter(date < '2022-08-01') |> dplyr::mutate(week = week(date), DOY = yday(date)) |> group_by(week, group) |> summarize(median_mld = median(mld), mean_date = as_date(mean(DOY), origin = '2022-01-01')), aes(mean_date, median_mld), colour = "#E31B23") +
+   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') + scale_y_continuous(trans = 'log10')
+
+chla_plot / mld_plot
+```
+
+The Chla satellite pattern for the pair 6904240-4903634 typically describes the phenology of the spring bloom in the northern part of the LS \[@Lacour2015-da\]. This is not surprising given that this pair was deployed one degree southward. The other pair was deployed in the bioregion where the phytoplankton biomass slowly develops during May to reach its maximum in June \[@Lacour2015-da\]. The Chla pattern observed in @fig-chla-mld-satellite could suggest that the development of the phytoplankton biomass was stopped by an increase in the MLD and that it started again in mid-June when the water column was well stratified. However, the Chla satellite concentration for that pair was three times lower than for the first one. Hence, it is possible that the bloom intensity was not sufficient to produce clear particle export signals, at least for BGC-Argo floats in their 10-day vertical sampling configuration.
+
+```{r, chla corrected for NPQ and MLD}
+# #|: label: fig-chla-bgc
+# #|: fig-cap : Chla concentrations and MLD measured by all floats in the upper 250 m for the period following the deployment.
+# 
+# 
+# # plot it
+# ggplot(d |> filter(date < '2022-08-01')) + geom_point(aes(x = date, y = pres, colour = log10(smoothed_chla))) +
+#   scale_y_reverse(limits = c(250,0)) +
+#   #scale_y_continuous(trans = 'rev_sqrt') +
+#   #scale_colour_viridis(option = 'A') +
+#   scale_colour_cmocean(name = 'algae', oob = scales::squish, limits = c(-1,1), na.value = 'grey') +
+#   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
+#   labs(x = 'Time', y = 'Depth (m)', colour = TeX('Chla (mg m$^{-3}$)')) + facet_wrap(~wmo) + theme_bw() +
+#   geom_line(aes(x = date, y = mld), colour = 'black', size = 1)
+```
+
+#### Just because it needs to go somewhere
+
+```{r, mld}
+
+ggplot(d) + geom_line(aes(x = date, y = mld), colour = 'black') +
+  facet_wrap(~wmo) + labs(x = 'Month', y = 'MLD (m)') + scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '1 month')
+
+```
 
 ### Comparing OST and UVP data
 
@@ -666,7 +836,7 @@ where $C_{i}$, A and b represent, respectively, the concentration of particles (
 
 The use of @eq-guidi-article3 to derive carbon fluxes from PSD was firstly implemented by @Guidi2008-vp who used a minimization procedure between sediment traps data and estimated fluxes using PSD from several previous versions of the UVP to find the optimal value of $A$ and $b$ (i.e. 12.5 and 3.81). @Iversen2010-an and @Fender2019-ou followed the same procedure and concluded that the couple of parameters found by [@Guidi2008-vp] could not be used globally at the expense of greatly over- or underestimating POC fluxes, depending on the sampling region. In addition, the formulation of such a model implies that $A$ and $b$ would be valid at global scale, at all depths, for all UVP models and across all size classes which is arguable [@Bisson2022-bt]. @eq-guidi-article3 also assumes that the flux is only size-dependent though the main driver for the settling of aggregates is still debated [@Iversen2020-kb; @Iversen2022-qj]. As a result, the direct comparison of carbon fluxes derived from both OST and UVP data with @eq-guidi-article3 should be focused on the trend rather than on absolute carbon flux values.
 
-```{r, compute guidi fluxes at parking depth}
+```{r, compute guidi fluxes at parking depth, fig.height=6, fig.width=6}
 #| label: fig-comparison-ost-uvp
 #| fig-cap: Comparison of total carbon fluxes derived from the OST (black) and the UVP6 (red) where the error bars represent the 25$^{th}$ and 75$^{th}$ percentiles around the median. 
 
@@ -752,7 +922,7 @@ ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux)) + fac
 
 ```
 
-ici je compare finalement un système ultra productif (iversen) et un système pas produtif (lionel) -> on se situerait entre les deux. Après je peux fournir els valeurs que j'ai trouvées avec le fminsearch avec la fonctiono optimize depython (21.98 et 1.18. Mais bon, cela assumerait que 'lon pourrait prendre l'OST comme référence, ce qui est un peu too much..)
+ici je compare finalement un système ultra productif (iversen) et un système pas produtif (lionel) -\> on se situerait entre les deux. Après je peux fournir els valeurs que j'ai trouvées avec le fminsearch avec la fonctiono optimize depython (21.98 et 1.18. Mais bon, cela assumerait que 'lon pourrait prendre l'OST comme référence, ce qui est un peu too much..)
 
 ```{r, correlations between OST and UVP carbon fluxes}
 #| label: tbl-correlation
@@ -1096,103 +1266,13 @@ TODO :
 -   rajouter dans les méthodes les produits satellites qu'on utilise
 -   différentes dynamiques post-bloom
 -   phénologie du bloom printanier
--   qinking speed -> trouver un truc à dire et estimer l'incertitude (en lien avec le graphique ou le DZ augmente)   + expliquer la méthode vite fait (Léo Lacour, personal communication)
-- on se trouve dans un sytème producitve entre guidi 2008 et iversen (très productif)
-
-### Environmental conditions prior to bloom
-
--   aller chercher les produits satellitaires pour montrer que l'on a bien raté le bloom ou que les conditions du bloom n'étaient pas réunies
-
-```{r, chla corrected for NPQ and MLD}
-
-# fetch data
-npq_data <- vroom('DATA/ARGO/npq_corrected_data.csv')  
-
-# clean and smoothed chla data
-d <- npq_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> dplyr::mutate(date = as_date(juld))
-d <- d |> group_by(date, wmo, pres, cycle) |> summarize(mean_chla = mean(chla_npq, na.rm=T), mld = unique(MLD))
-d <- d |> dplyr::mutate(smoothed_chla = smooth(mean_chla)/2.15, smoothed_chla_up = smooth(mean_chla)/(2.15-0.37), smoothed_chla_down = smooth(mean_chla)/(2.15+0.37)) # 2.15 = Roesler factor in the Labrador Sea
-
-#d$wmo <- factor(d$wmo, levels = c(6904240,4903634,6904241,1902578))
-
-# plot it
-ggplot(d) + geom_point(aes(x = date, y = pres, colour = log10(smoothed_chla))) +
-  scale_y_reverse(limits = c(200,0)) +
-  #scale_colour_viridis(option = 'A') +
-  scale_colour_cmocean(name = 'algae', oob = scales::squish, limits = c(-1,1), na.value = 'grey') +
-  scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
-  labs(x = 'Time', y = 'NPQ-corrected Chla') + facet_wrap(~wmo) + theme_bw() +
-  geom_line(aes(x = date, y = mld), colour = 'black', size = 1)
-
-# compute chla integration in the MLD and in the 0-100 m zone
-d_chla <- d |> group_by(wmo, date) |> summarize(chla_0_100m = integrate(smoothed_chla, pres, from=0, to=100),
-                                       mld = unique(mld),
-                                       chla_0_mld = integrate(smoothed_chla, pres, from = 0, to=mld),
-                                       median_chla_0_20m = median(smoothed_chla[pres<=20], na.rm=T),
-                                       median_chla_0_20m_up = median(smoothed_chla_up[pres<=20], na.rm=T),
-                                       median_chla_0_20m_down = median(smoothed_chla_down[pres<=20], na.rm=T))
-# 
-# ggplot(d_chla) + geom_point(aes(date, chla_0_100m)) + facet_wrap(~wmo, scales = 'free') + theme_bw() + labs(x = 'Month', y = 'Integrated Chla 0-100 m (CHLA UNITS)')
-#ggplot(d_chla) + geom_point(aes(date, chla_0_mld)) + facet_wrap(~wmo, scales = 'free')
-
-# add couple info
-d_chla <- d_chla |> dplyr::mutate(group = if_else(wmo %in% c(6904240,4903634), '6904240 - 4903634', '6904241 - 1902578'))
-
-```
-
-```{r, chla and MLD from satellite}
-
-#chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_with_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
-chla_sat <- arrow::read_feather('DATA/SATELLITE/chla_without_clouds_sat.feather') |> select(time, lat, lon, chla = CHL)
-mld_sat <- arrow::read_feather('DATA/SATELLITE/mld_sat.feather') |> dplyr::mutate(longitude = longitude - 360) |> select(time, lat = latitude, lon = longitude, mld = mlotst)
-  
-# CHLA
-chla_cover_deployment1 <- points_in_circle(chla_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
-chla_cover_deployment1 <- chla_cover_deployment1 |> dplyr::mutate(date = as_date(time), group = '6904240 - 4903634') |> dplyr::mutate(deploy = as_date('2022-05-22'))
-
-chla_cover_deployment2 <- points_in_circle(chla_sat, lon_center = -52.3, lat_center = 56.7, radius = 10000) # 50 km around center
-chla_cover_deployment2 <- chla_cover_deployment2 |> dplyr::mutate(date = as_date(time), group = '6904241 - 1902578') |> dplyr::mutate(deploy = as_date('2022-05-30'))
-
-# all deploy
-chla_cover <- rbind(chla_cover_deployment1, chla_cover_deployment2)
-
-chla_plot <- ggplot(chla_cover |> filter(date > '2022-04-01')) + geom_errorbar(aes(x = date, y = chla),
-                      stat = 'summary',
-                      fun.min = function(z) {quantile(z, 0.25)},
-                      fun.max = function(z) {quantile(z, 0.75)},
-                      fun = median, colour = 'black', width = .5) + theme_bw() +
-  labs(x = 'Time', y = 'Chla')+ facet_wrap(~group) +
-  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "black", linetype = 'dashed') +
-  geom_pointrange(data = d_chla |> filter(date < '2022-08-01'), aes(x = date, ymin = median_chla_0_20m_down, ymax = median_chla_0_20m_up, y = median_chla_0_20m), colour = "red", size = .25)
-                
-# MLD
-mld_cover_deployment1 <- points_in_circle(mld_sat, lon_center = -49.2, lat_center = 58.9, radius = 100000) # 50 km around center
-mld_cover_deployment1 <- mld_cover_deployment1 |> dplyr::mutate(date = as_date(time), group = '6904240 - 4903634') |> dplyr::mutate(deploy = as_date('2022-05-22'))
-
-mld_cover_deployment2 <- points_in_circle(mld_sat, lon_center = -52.3, lat_center = 56.7, radius = 100000) # 50 km around center
-mld_cover_deployment2 <- mld_cover_deployment2 |> dplyr::mutate(date = as_date(time), group = '6904241 - 1902578') |> dplyr::mutate(deploy = as_date('2022-05-30'))
-
-mld_cover <- rbind(mld_cover_deployment1, mld_cover_deployment2)
-
-mld_plot <- ggplot(mld_cover |> filter(date > '2022-04-01')) + geom_errorbar(aes(x = date, y = mld),
-                      stat = 'summary',
-                      fun.min = function(z) {quantile(z, 0.25)},
-                      fun.max = function(z) {quantile(z, 0.75)},
-                      fun = median, colour = 'black', width = 5) +
-  labs(x = 'Time', y = 'MLD (m)') + facet_wrap(~group) + theme_bw() +
-  geom_vline(data = chla_cover, aes(xintercept = deploy), colour = "black", linetype = 'dashed') +
-  geom_point(data = d_chla |> filter(date < '2022-08-01') |> dplyr::mutate(week = week(date), DOY = yday(date)) |> group_by(week, group) |> summarize(median_mld = median(mld), mean_date = as_date(mean(DOY), origin = '2022-01-01')), aes(mean_date, median_mld), colour = "red")
-
-chla_plot / mld_plot
-
-```
-
-with a radius of 100 km around both deployment positions
+-   qinking speed -\> trouver un truc à dire et estimer l'incertitude (en lien avec le graphique ou le DZ augmente) + expliquer la méthode vite fait (Léo Lacour, personal communication)
+-   on se trouve dans un sytème producitve entre guidi 2008 et iversen (très productif)
 
 ### Sinking speed
 
 -   Montrer que les sinking speed observées ne sont pas compatibles avec des valeurs de bloom (càd rapides pour les grosses particules à minima)
-- rajouter dans les méthodes le calcul de cette sinking speed.
+-   rajouter dans les méthodes le calcul de cette sinking speed.
 
 ```{r, sinking speed plot}
 
@@ -1224,7 +1304,7 @@ all_sinking_speed <- rbind(sinking_1902578, sinking_4903634, sinking_6904240, si
 
 ```
 
-```{r, vertical plots + sinking speed}
+```{r, vertical plots + sinking speed bis, fig.height=8, fig.width=8}
 
 particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld))
 
@@ -1304,7 +1384,7 @@ ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() 
 
 ### TS diagram
 
--   Pour le drift à 200, 500 et 1000 m -> interpète ce graph -> va checker les masses d'eau de la region... attention on est en PARKING DEPTH -> mettre la couleur de la parking depth dans le truc, ça permettrait de voir si on peut comparer les processus (style ratio 500/1000m) dans les couches qui sont dans la meme masse d'eau.
+-   Pour le drift à 200, 500 et 1000 m -\> interpète ce graph -\> va checker les masses d'eau de la region... attention on est en PARKING DEPTH -\> mettre la couleur de la parking depth dans le truc, ça permettrait de voir si on peut comparer les processus (style ratio 500/1000m) dans les couches qui sont dans la meme masse d'eau.
 
 ```{r, TS diagram}
 #ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26, park_depth != '200 m') |> dplyr::mutate(date = as_date(date))
@@ -1417,10 +1497,6 @@ ggplot(dd) +
   facet_wrap(~wmo) + scale_fill_viridis_d(option = 'A')
 
 ```
-
-
-
-
 
 ## Discussion2
 
