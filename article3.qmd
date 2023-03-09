@@ -100,8 +100,23 @@ argo_map_last <- argo_map |> filter(cycle == max(cycle))
 argo_map_geo <- transform_coord(argo_map) |> dplyr::mutate(cycle = argo_map$cycle, WMO = as.factor(argo_map$WMO))
 argo_map_last_geo <- transform_coord(argo_map_last) |> mutate(WMO = as.factor(argo_map_last$WMO))
 
-basemap(limits = c(-55,-40,55,65), bathymetry = T, lat.interval = 2.5, bathy.style = 'poly_blues',
-        grid.col = 'black') +
+p <- basemap(limits = c(-55,-40,55,65), bathymetry = T, lat.interval = 2.5, bathy.style = 'poly_blues') 
+
+# Make the graticules:
+lims <- attributes(p)$limits 
+graticule <- sf::st_graticule(
+  c(lims[1], lims[3], lims[2], lims[4]), 
+  crs = attributes(p)$proj,
+  lon = attributes(p)$map.grid$lon.breaks, 
+  lat = attributes(p)$map.grid$lat.breaks
+)
+
+p <- p + 
+  geom_sf(data = graticule, color = "grey", size = LS(1)) + # graticules
+  coord_sf(xlim = lims[1:2], ylim = lims[3:4], # redefine limits
+           crs = attributes(p)$proj) 
+
+p +
   geom_path(data = argo_map_geo, aes(lon, lat, colour = WMO), linewidth = 1) + 
   geom_point(data = argo_map_geo, aes(x= lon, y = lat, colour = WMO), size = 2) +
   scale_color_brewer(palette = 'Dark2') + theme_bw() +
@@ -110,10 +125,9 @@ basemap(limits = c(-55,-40,55,65), bathymetry = T, lat.interval = 2.5, bathy.sty
   geom_point(data = argo_map_last_geo, aes(lon, lat), fill = 'black', size = 4, shape = 1) +
   #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/#suppress-aesthetics-from-part-of-the-legend
   guides(color = guide_legend(override.aes = list(size = c(1.5,1.5,1.5,1.5),
-                                                  shape = c(NA, NA, NA, NA)))) #+
-  # basemap(limits = c(-55,-40,55,65), bathymetry = F, lat.interval = 2.5,
-  #       grid.col = 'black')
-
+                                                  shape = c(NA, NA, NA, NA)))) +
+  annotation_scale(location = "br") + 
+  annotation_north_arrow(location = "tr", which_north = "true") 
 ```
 
 ### Data processing
@@ -796,7 +810,7 @@ mld_plot <- ggplot(mld_cover |> filter(date > '2022-03-01')) + geom_errorbar(aes
 chla_plot / mld_plot
 ```
 
-The Chla satellite pattern for the pair 6904240-4903634 typically describes the phenology of the spring bloom in the northern part of the LS \[@Lacour2015-da\]. This is not surprising given that this pair was deployed one degree southward. The other pair was deployed in the bioregion where the phytoplankton biomass slowly develops during May to reach its maximum in June \[@Lacour2015-da\]. The Chla pattern observed in @fig-chla-mld-satellite could suggest that the development of the phytoplankton biomass was stopped by an increase in the MLD and that it started again in mid-June when the water column was well stratified. However, the Chla satellite concentration for that pair was three times lower than for the first one. Hence, it is possible that the bloom intensity was not sufficient to produce clear particle export signals, at least for BGC-Argo floats in their 10-day vertical sampling configuration.
+The Chla satellite pattern for the pair 6904240-4903634 typically describes the phenology of the spring bloom in the northern part of the LS [@Lacour2015-da]. This is not surprising given that this pair was deployed one degree southward. The other pair was deployed in the bioregion where the phytoplankton biomass slowly develops during May to reach its maximum in June [@Lacour2015-da]. The Chla pattern observed in @fig-chla-mld-satellite could suggest that the development of the phytoplankton biomass was stopped by an increase in the MLD and that it started again in mid-June when the water column was well stratified. However, the Chla satellite concentration for that pair was three times lower than for the first one. Hence, it is possible that the bloom intensity was not sufficient to produce clear particle export signals, at least for BGC-Argo floats in their 10-day vertical sampling configuration.
 
 ```{r, chla corrected for NPQ and MLD}
 # #|: label: fig-chla-bgc
