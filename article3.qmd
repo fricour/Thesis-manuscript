@@ -2,6 +2,30 @@
 
 ## Introduction
 
+The biological carbon pump (BCP) refers to a series of processes that transport biogenic carbon produced in sunlit surface waters to the ocean interior [@Claustre2021-tx]. It is composed of three main pathways [@Claustre2021-tx; @Boyd2019-ez; @Siegel2022-wd]: the biological gravitational pump that is the gravitational settling of particulate organic carbon (POC); the physically mediated particle injection pump that represents physical mechanisms that transport dissolved organic carbon (DOC) to depth via mixing processes; and the biologically mediated particle injection pump that characterizes the transport of POC (and DOC) by diel and seasonal migration of animals in the water column. Historically, the BCP was mainly studied with sediment traps [@Honjo2008-kn] and Thorium-234 radionuclide disequilibria [@Buesseler2007-ql] focused on the gravitational pump hence the contribution of DOC and migrating animals to the BCP was likely under-estimated. However, the advent of autonomous underwater vehicles (AUVs) equipped with a variety of physical and biogeochemical sensors have demonstrated their ability to better understand the latter [e.g. @Omand2015-mf; @DallOlmo2016-ex; @Llort2018-pa; @Lacour2019-id; @Haentjens2020-dc; @Stukel2017-lc]. Still, we are missing processes to close the carbon budget [@Giering2014-tj; @Boyd2019-ez] and unkowns remain in the under-sampled mesopelagic (i.e. twilight) zone [@Martin2020-wa]. In order to fill the observational gaps, the Biogeochemical-Argo (BGC-Argo) network aims to develop an operational global array of 1000 profiling floats measuring six core variables from the surface to 2000 m [@Claustre2020-jo]: oxygen, nitrate, pH, chlorophyll a (Chla), suspended particles ($b_{bp}$) and downwelling irradiance. In addition to the six core variables, new sensors have been developped to target specific BCP-related questions [@Claustre2020-jo; @Claustre2021-tx; @Chai2020-uq]. In this study, we will focus on BGC-Argo floats equipped with two new sensors: the Underwater Vision Profiler (UVP6) [@Picheral2021-sx] and a transmissometer used as an optical sediment trap (OST).
+
+The UVP6 is a low power miniaturized version of the UVP5 [@Picheral2010-to]. It consists of an underwater camera that counts particles and images objects in, respectively, the 0.1 - 2.5 cm and 0.8 - 2.5 cm size range. The latest version of the UVP6 also embarks an embedded image classification algorithm that transmits the abundance of 20 classes in near-real time. The OST consists of a vertically mounted transmissometer whose upward-facing optical window intercepts sinking particles. The latter have already been used on AUVs [@Bishop2004-at; @Bishop2009-ka; @Estapa2013-gw; @Estapa2017-jr; @Estapa2019-nk].
+
+Two pairs of BGC-Argo floats equipped with both the UVP6 and an OST were deployed in the southern part of the Labrador Sea in May 2022 to investigate seasonal and bloom-related particle and carbon fluxes. The Labrador and the northern part the atlantic are charateterid by blablabla -\> lire le truc et faire la micro revie sur l'atlantique nord, son bloom et la mer du labrador.
+
+but it is the first time that BGC-Argo floats are deployed with both a UVP6 and an OST.
+
+In this work, we will
+
+-   Pour l'intro je dois lire briggs 2011-2020
+
+-   projet remocean Hervé
+
+-   miwing convection virginie thierry?
+
+-   atlantic nord, le bloom de l'atlantic nord
+
+-   léo lacour
+
+-   yashayeav
+
+-   hanetjens 2020
+
 introduire la notion de cycle de flotteurs BGC-Argo etc (+ parking depth)
 
 -   dire que le but du papier est de faire une comparaison OST UVP qui sont deux instruments qui permettent de mesurer la meme chose (le flux des particules, l'abondance de particules) et donc le flux de carbone de manière indirecte papier GRL Lacour de 2015
@@ -11,6 +35,7 @@ introduire la notion de cycle de flotteurs BGC-Argo etc (+ parking depth)
 -   si on peut prouver que le diagramme ST, les massses d'eau sont les memes, alors on peut peut-être parler des ratios entre particlues à 500 et 1000 m
 -   définir la méthode de calcul de la MLD
 -   plotter la MLD sur les profils verticaux de
+-   from llort 2017: This is especially true in the Southern Ocean, where the circulation has been described as equivalent barotropic (Gille et al., 2007; Killworth & Hughes, 2002). An equivalent barotropic circulation basically implies that the strength of the current might change with depth (weaker as depth increases) but the orientation does not change. Therefore, Argo and BGCArgo can be interpreted as "quasi-Lagrangian" because floats follow well ocean mesoscale circulation lasting more than 1 week; yet they cannot follow shorter and smaller features such the ones associated to submesocale circulation
 
 Two pairs of Biogeochemical-Argo (BGC) floats were planned to be deployed at the time of the annual spring bloom in the Labrador Sea (LS). The latter is characterized by two bioregions with distinct phytoplankton bloom phelonogies on both side of the 60°N parallel [@Lacour2015-da]. The northern part is characterized by a short spring bloom in late April whereas the bloom in the southern part starts in April-May and slowly develops to reach its maximum in June [@Lacour2015-da]. In this study, two pairs of floats were deployed south of the 60°N parallel with a first couple (WMO 6904240 and 4903634) deployed closely to it (58.9°N) in late May 2022.
 
@@ -69,8 +94,7 @@ float_1902578 <- vroom('/home/flo/dox/ArgoShine/1902578_FromNetCDF.csv')
 all_floats <- rbind(float_6904240, float_6904241, float_4903634, float_1902578)
 
 # add levels for some field
-all_floats <- all_floats |> dplyr::mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)),
-                                   park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
+all_floats <- all_floats |> dplyr::mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)), park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 
 # summarize localization of floats
 argo_map <- all_floats |> select(WMO = wmo, cycle, lat, lon) |> drop_na(lat) |> dplyr::group_by(WMO, cycle) |> dplyr::mutate(WMO = factor(WMO)) |>
@@ -78,23 +102,6 @@ argo_map <- all_floats |> select(WMO = wmo, cycle, lat, lon) |> drop_na(lat) |> 
 
 argo_map_first <- argo_map |> filter(cycle == 1)
 argo_map_last <- argo_map |> filter(cycle == max(cycle))
-
-# # map positions of floats
-# world_data <- map_data("world")
-# w <- list(geom_polygon(aes(long, lat, group=group), data=world_data, fill="grey70"), coord_quickmap())
-# 
-# ggplot(argo_map) + w + geom_path(aes(lon, lat, colour = WMO), size = 1) +
-#   geom_point(aes(lon, lat, colour = WMO), size = 1.5) +
-#   scale_color_brewer(palette = 'Dark2') +
-#   theme_bw() +
-#   #scale_colour_manual(values = c('#a6cee3', '#33a02c', '#b2df8a', '#1f78b4')) +
-#   coord_cartesian(xlim = c(-55, -40), ylim = c(55,65)) + geom_point(data = argo_map_first, aes(lon, lat), shape = 17, size = 3) +
-#   geom_point(data = argo_map_last, aes(lon, lat, colour = WMO), size = 3) +
-#   geom_point(data = argo_map_last, aes(lon, lat, fill = WMO), size = 3, shape = 1) +
-#   labs(x = 'longitude', y = 'latitude') +
-#   #https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/#suppress-aesthetics-from-part-of-the-legend
-#   guides(color = guide_legend(override.aes = list(size = c(1.5,1.5,1.5,1.5),
-#                                                   shape = c(NA, NA, NA, NA))))
 
 # prepare data for geomapping, see https://mikkovihtakari.github.io/ggOceanMaps/
 argo_map_geo <- transform_coord(argo_map) |> dplyr::mutate(cycle = argo_map$cycle, WMO = as.factor(argo_map$WMO))
@@ -165,6 +172,7 @@ We used the same relationship to compute $F_{big}$ by replacing $slope_{w}$ as t
 ```{r, example of a cp signal analyzed for jumps (with an old method here)}
 #| label: fig-estapa-method_article
 #| fig-cap: Application of the method of @Estapa2017-jr on a drifting transmissometer to divide the $c_{p}$ signal into a continuous (dark blue) component and a discontinuous (positive jumps, red) component. Slopes for each group are depicted in light blue. A negative jump was also detected (yellow). Data from BGC-ARGO float WMO 6904240, drifting at 1000 m during its 21$^{st}$ cycle.
+
 clean_cp_data <- function(data, moving_median_order){
   
   data <- data |> arrange(dates)
@@ -297,13 +305,6 @@ drifting_time <- as.numeric(difftime(max_time, min_time, units = 'days'))
 check <- tmp2 |> select(dates, cp, colour)
 check <- check |> filter(colour %in% c('jump', 'negative jump'))
 
-# ggplot(clean_data, aes(x = dates, y = cp)) + geom_point(size= 3) + geom_point(data = tmp2, aes(x = dates, y = cp, colour = colour), size = 2) + 
-#     scale_colour_manual(values = c('#003366','#E31B23', '#FFC325')) + 
-#     scale_shape_manual(values = c(1,1,4)) +
-#     geom_path(data = part_slope, aes(x = time, y = cp, group = group), colour = '#DCEEF3', size = 1) + theme_bw() + 
-#     labs(x = 'Time', y = 'Cp (1/m)') +
-#   geom_point(data = check, aes(x = dates, y = cp, colour = colour))
-
 ggplot(tmp2, aes(x = dates, y = cp, colour = colour)) + geom_point(size = 3) +
     scale_colour_manual(values = c('#003366','#E31B23', '#FFC325')) + 
     #scale_shape_manual(values = c(1,1,4)) +
@@ -311,9 +312,6 @@ ggplot(tmp2, aes(x = dates, y = cp, colour = colour)) + geom_point(size = 3) +
     labs(x = 'Time', y = TeX('$c_{p}~(m^{-1})$')) +
   geom_point(data = check, aes(x = dates, y = cp, colour = colour), size = 3) +
   geom_point(data = check, aes(x = dates, y = cp), shape = 1, size = 3, colour = 'black')  +
-  #https://r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
-  # theme(legend.position = c(0.02,0.99), legend.justification = c('left', 'top'), 
-  #       legend.title = element_blank())
     theme(legend.position = 'none')
 ```
 
@@ -409,19 +407,6 @@ plot_jumps <- function(data){
   
   # remove negative jumps, if any
   check_colour <- unique(tmp2$colour)
-  # if(length(check_colour) == 3){ # there is at least a negative jump
-  #   index_neg_jump <- which(tmp2$colour == 'negative jump')
-  #   tmp2 <- tmp2[-c(index_neg_jump, index_neg_jump+1),]
-  #   tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
-  #   even_indexes <- seq(2,nrow(tmp2),2)
-  #   tmp2 <- tmp2[even_indexes,]
-  # }else if(length(check_colour) == 2){ # only positive jumps
-  #   tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
-  #   even_indexes <- seq(2,nrow(tmp2),2)
-  #   tmp2 <- tmp2[even_indexes,]
-  # }else{ # No jump
-  #   tmp2 <- NULL
-  # }
   if(length(check_colour) >= 2){ # there is a least a jump (positive or negative)
     tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
     even_indexes <- seq(2,nrow(tmp2),2)
@@ -528,11 +513,17 @@ $F_{small}$ and $F_{big}$ were computed at each drifting depth for all floats (@
 
 ```{r, plot Fsmall and Fbig, fig.width=8, fig.height=6}
 #| label: fig-OST-flux
-#| fig-cap: OST-derived small (top) and big (bottom) particles carbon flux for all floats at each drifting depth. Black lines and shaded areas represent, respectively, the monthly mean flux and the 95% confidence interval around the mean. 
+#| fig-cap: OST-derived small (top) and big (bottom) particles carbon flux for all floats at each drifting depth. Black lines and shaded areas represent, respectively, the monthly mean flux and the 95% confidence interval around the mean. There is no data after January and February at, respectively, 200 m and 500 m because the drifting was stopped at those depths due to the increase of the MLD.
 
-up <- cflux |> ggplot(aes(x = date, y = small_flux)) +
-    geom_point(data = cflux, aes(x = date, y = small_flux, colour = WMO, shape = WMO)) +
-  geom_smooth(data = cflux, aes(x = date, y = small_flux), colour = 'black') +
+# add black data to have the same x axis for all drifting depths (to show that we stopped the drifting at 200 and 500 m)
+blank_data <- tibble(max_time = c(NA, NA), min_time = c(NA,NA), small_flux = c(NA,NA), big_flux = c(NA,NA), park_depth = c('200 m', '500 m'),
+                     wmo = rep(4903634,2), cycle = c(NA,NA), drifting_time = c(NA,NA), WMO = rep(as.factor(4903634),2), date = rep('2023-03-05',2))
+
+tmp <- rbind(cflux, blank_data)
+
+up <- tmp |> ggplot(aes(x = date, y = small_flux)) +
+    geom_point(data = tmp, aes(x = date, y = small_flux, colour = WMO, shape = WMO)) +
+  geom_smooth(data = tmp, aes(x = date, y = small_flux), colour = 'black') +
   scale_color_brewer(palette = 'Dark2') + 
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
   guides(fill=guide_legend(title="WMO")) +
@@ -541,9 +532,9 @@ up <- cflux |> ggplot(aes(x = date, y = small_flux)) +
   scale_y_continuous(trans = 'log10') +
   theme_bw() 
 
-down <- cflux |> ggplot(aes(x = date, y = big_flux)) +
-  geom_point(data = cflux, aes(x = date, y = big_flux, colour = WMO, shape = WMO)) +
-  geom_smooth(data = cflux, aes(x = date, y = big_flux), colour = 'black') +
+down <- tmp |> ggplot(aes(x = date, y = big_flux)) +
+  geom_point(data = tmp, aes(x = date, y = big_flux, colour = WMO, shape = WMO)) +
+  geom_smooth(data = tmp, aes(x = date, y = big_flux), colour = 'black') +
   scale_color_brewer(palette = 'Dark2') + 
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
   guides(fill=guide_legend(title="WMO")) +
@@ -848,7 +839,7 @@ $$ {#eq-guidi-article3}
 
 where $C_{i}$, A and b represent, respectively, the concentration of particles (number/L) for the $i^{th}$ class of mean diameter $d_{i}$ (in mm) and 2 constants with $b$ being related to the fractal dimension ($D$) of an aggregate by $D = (b +1)/2$ [@Guidi2008-vp].
 
-The use of @eq-guidi-article3 to derive carbon fluxes from PSD was firstly implemented by @Guidi2008-vp who used a minimization procedure between sediment traps data and estimated fluxes using PSD from several previous versions of the UVP to find the optimal value of $A$ and $b$ (i.e. 12.5 and 3.81). @Iversen2010-an and @Fender2019-ou followed the same procedure and concluded that the couple of parameters found by [@Guidi2008-vp] could not be used globally at the expense of greatly over- or underestimating POC fluxes, depending on the sampling region. In addition, the formulation of such a model implies that $A$ and $b$ would be valid at global scale, at all depths, for all UVP models and across all size classes which is arguable [@Bisson2022-bt]. @eq-guidi-article3 also assumes that the flux is only size-dependent though the main driver for the settling of aggregates is still debated [@Iversen2020-kb; @Iversen2022-qj]. As a result, the direct comparison of carbon fluxes derived from both OST and UVP data with @eq-guidi-article3 should be focused on the trend rather than on absolute carbon flux values.
+The use of @eq-guidi-article3 to derive carbon fluxes from PSD was firstly implemented by @Guidi2008-vp who used a minimization procedure between sediment traps data and estimated fluxes using PSD from several previous versions of the UVP to find the optimal value of $A$ and $b$ (i.e. 12.5 and 3.81). @Iversen2010-an and @Fender2019-ou followed the same procedure and concluded that the couple of parameters found by [@Guidi2008-vp] could not be used globally at the expense of greatly over- or underestimating POC fluxes, depending on the sampling region. In addition, the formulation of such a model implies that $A$ and $b$ would be valid at global scale, at all depths, for all UVP models and across all size classes which is arguable [@Bisson2022-bt]. @eq-guidi-article3 also assumes that the flux is only size-dependent though the main driver for the settling of aggregates is still debated [@Iversen2020-kb; @Iversen2023-qj]. As a result, the direct comparison of carbon fluxes derived from both OST and UVP data with @eq-guidi-article3 should be focused on the trend rather than on absolute carbon flux values.
 
 ```{r, compute guidi fluxes at parking depth, fig.height=6, fig.width=6}
 #| label: fig-comparison-ost-uvp
@@ -918,21 +909,28 @@ comparison_flux_ost_uvp <- comparison_flux_ost_uvp |> dplyr::mutate(guidi_flux_f
 ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
   geom_errorbar(aes(x = date, y = guidi_flux),
                       stat = 'summary',
-                      fun.min = function(z) {quantile(z, 0.25)},
-                      fun.max = function(z) {quantile(z, 0.75)},
+                      #fun.min = function(z) {quantile(z, 0.25)},
+                      #fun.max = function(z) {quantile(z, 0.75)},
                       fun = median, colour = '#E31B23', width = 5) +
     geom_line(aes(x = date, y = guidi_flux),
                       stat = 'summary',
                       fun = median, colour = '#E31B23') +
     geom_errorbar(aes(x = date, y = iversen_flux),
                       stat = 'summary',
-                      fun.min = function(z) {quantile(z, 0.25)},
-                      fun.max = function(z) {quantile(z, 0.75)},
+                      #fun.min = function(z) {quantile(z, 0.25)},
+                      #fun.max = function(z) {quantile(z, 0.75)},
                       fun = median, colour = '#003366', width = 5) +
     geom_line(aes(x = date, y = iversen_flux),
                       stat = 'summary',
                       fun = median, colour = '#003366') + 
-  scale_y_continuous(trans = 'log10') + theme_bw() + labs(x = 'Month', y = TeX('$F_{total}$ (mg C m$^{-2}$ day$^{-1}$)'))
+  scale_y_continuous(trans = 'log10') + theme_bw() + labs(x = 'Month', y = TeX('$F_{total}$ (mg C m$^{-2}$ day$^{-1}$)')) +
+  scale_x_date(labels = date_format("%m"), date_breaks = '1 month')
+
+```
+
+```{r, and on the vertical?}
+
+
 
 ```
 
@@ -1103,33 +1101,31 @@ TO DO HERE
 wmo <- c(4903634, 6904240, 6904241, 1902578)
 park_depth <- c('200 m', '500 m', '1000 m')
 
-# i <- 4903634
-# j <- '1000 m'
-# k <- 15
-# tmp <- all_floats_slope |> filter(wmo == i, park_depth == j, cycle == k)
-# 
-# data <- tmp
+# res_slope <- data.frame()
+# res_jumps <- data.frame()
+# for (i in wmo){
+#   max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
+#   for (j in park_depth){
+#     for (k in seq(1:max_cycle)){
+#       tmp <- all_floats_slope |> filter(wmo == i, park_depth == j, cycle == k)
+#       if(nrow(tmp) == 0){
+#         next
+#       }else if(nrow(tmp) < 3){ # case where there is not enough data
+#         next
+#       }else{
+#           output <- get_jump_info(tmp)
+#           res_slope <- rbind(res_slope, output$slope_info)
+#           res_jumps <- rbind(res_jumps, output$jump_info)
+#       }
+#     }
+#   }
+# }
 
-res_slope <- data.frame()
-res_jumps <- data.frame()
-for (i in wmo){
-  max_cycle <- as.numeric(all_floats_slope |> filter(wmo == i) |> dplyr::summarise(max_cycle = max(cycle)))
-  for (j in park_depth){
-    for (k in seq(1:max_cycle)){
-      tmp <- all_floats_slope |> filter(wmo == i, park_depth == j, cycle == k)
-      if(nrow(tmp) == 0){
-        next
-      }else if(nrow(tmp) < 3){ # case where there is not enough data
-        next
-      }else{
-          output <- get_jump_info(tmp)
-          res_slope <- rbind(res_slope, output$slope_info)
-          res_jumps <- rbind(res_jumps, output$jump_info)
-      }
-    }
-  }
-}
-
+# write data because it's long
+# vroom_write(res_slope, file = '/home/flo/dox/THESIS/DATA/ARGO/res_slope.csv')
+# vroom_write(res_jumps, file = '/home/flo/dox/THESIS/DATA/ARGO/res_jumps.csv')
+res_slope <- vroom::vroom(file = '/home/flo/dox/THESIS/DATA/ARGO/res_slope.csv')
+res_jumps <- vroom::vroom(file = '/home/flo/dox/THESIS/DATA/ARGO/res_jumps.csv')
 ```
 
 ```{r, check total biovolume with slope value}
@@ -1227,8 +1223,10 @@ slope_vs_biovolume <- slope_vs_biovolume |> mutate(park_depth = factor(park_dept
 # 
 # test2 |> group_by(wmo, park_depth) |> summarize(correl = cor(slope, weighted_group_biovolume))
 
-ggplot(slope_vs_biovolume) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST slope [UNITS]', y = 'UVP biovolume [UNITS]') #+ theme(axis.title.x = element_blank())
-#ggplot(test) + geom_point(aes(x = slope, y = weighted_group_biovolume)) + facet_wrap(~park_depth)
+# ggplot(slope_vs_biovolume) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST slope [UNITS]', y = 'UVP biovolume [UNITS]') #+ theme(axis.title.x = element_blank())
+# #ggplot(test) + geom_point(aes(x = slope, y = weighted_group_biovolume)) + facet_wrap(~park_depth)
+ggplot(slope_vs_biovolume |> filter(slope > 0.00001)) + geom_point(aes(x = slope*0.25, y = weighted_group_biovolume)) + facet_wrap(~park_depth, scales = 'free') + labs(x = TeX('$ATN~slope~(day^{-1})$'), y = TeX('$UVP~biovolume~(mm^{3})$')) +
+  scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + theme_bw()
 
 
 # what about jump values with uvp measurements at jump
@@ -1268,7 +1266,10 @@ diff_jump_vs_biovolume <- vroom::vroom('DATA/ARGO/diff_jump_vs_biovolume.csv')
 diff_jump_vs_biovolume <- diff_jump_vs_biovolume|> mutate(park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 
 #ggplot(test_jump) + geom_point(aes(diff_jump, biovolume))
-ggplot(diff_jump_vs_biovolume) + geom_point(aes(log(diff_jump), log(biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST jump difference [UNITS]', y = 'UVP biovolume [UNITS]')
+# ggplot(diff_jump_vs_biovolume) + geom_point(aes(log(diff_jump), log(biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST jump difference [UNITS]', y = 'UVP biovolume [UNITS]') +
+#   scale_x_continuous(breaks = c(-6,-4,-2,0))
+ggplot(diff_jump_vs_biovolume) + geom_point(aes(x = diff_jump*0.25, y = biovolume)) + facet_wrap(~park_depth, scales = 'free') + labs(x = TeX('$ATN~jump~difference$'), y = TeX('$UVP~biovolume~(mm^{3})$')) +
+  scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + theme_bw()
 
 
 ```
@@ -1288,111 +1289,121 @@ TODO :
 -   Montrer que les sinking speed observées ne sont pas compatibles avec des valeurs de bloom (càd rapides pour les grosses particules à minima)
 -   rajouter dans les méthodes le calcul de cette sinking speed.
 
-```{r, sinking speed plot}
-
-# NOTE : pas besoin d'updater ici vu que l'on regarde par rapport au 'bloom' de fin mai/juin
-sinking_fit <- vroom('DATA/ARGO/gaussian_fit_sinking_speed_full_before_06032023.csv') |> dplyr::mutate(size = size_class |> str_remove('NP_Size_') |> as.numeric(), date = as_date(date))
-
-estimate_sinking_speed <- function(siz, data, threshold){
-  
-  # above 500 m
-  tmp <- data |> filter(size == siz) |> filter(depth <= threshold)
-  model <- lm(formula = depth ~ time_max_abundance, data = tmp)
-  tmp$sinking_speed_above_threshold <- model$coefficients[2] # equivalent to slope of the fit
-  tmp2 <- tmp
-  
-  # below 500 m
-  tmp <- data |> filter(size == siz) |> filter(depth > threshold)
-  model <- lm(formula = depth ~ time_max_abundance, data = tmp)
-  tmp2$sinking_speed_below_threshold <- model$coefficients[2] # equivalent to slope of the fit
-  
-  return(tmp2)
-}
-
-# sinking speed for each float
-sinking_6904240 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 6904240), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
-sinking_6904241 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 6904241), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
-sinking_1902578 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 1902578), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
-sinking_4903634 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 4903634), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
-all_sinking_speed <- rbind(sinking_1902578, sinking_4903634, sinking_6904240, sinking_6904241)
+```{r, vertical plots + sinking speed bis, fig.height=8, fig.width=8}
+# 
+# particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld), doy = yday(juld), year = year(juld))
+# 
+# particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> dplyr::mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) 
+# #particles_bis$size <- factor(particles_bis$size, levels = lpm_class)
+# 
+# # remove buggy data from float 4903634 (negative depth for some reason)
+# particles_bis <- particles_bis |> filter(depth >= 0)
+# 
+# # rel_conc
+# particles_bis <- particles_bis |> dplyr::group_by(wmo, size) |> dplyr::mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
+# 
+# up_part <-  particles_bis |> filter(depth < 2000, size < 512, doy < 220, year == 2022) |>
+#   #group_by(size) |>
+#   ggplot() + facet_grid(wmo~size) + theme_bw() +
+#   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+#   scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+#   scale_y_reverse() +
+#   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+#   labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
+#   geom_pointrange(data = sinking_fit |> filter(size < 512, DOY < 220, standard_dev <= 30), aes(xmin = as_date(xmin, origin = '2022-01-01'), xmax = as_date(xmax, origin = '2022-01-01'), x = as_date(DOY, origin = '2022-01-01'), y = depth), size = .2, colour = 'black')
+# 
+# up_part
+# 
+# # down_part <- particles_bis |> filter(depth < 2000, size > 512) |>
+# #   #group_by(size) |>
+# #   ggplot() + facet_grid(wmo~size) + theme_bw() +
+# #   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+# #   scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+# #   scale_y_reverse() +
+# #   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+# #   labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
+# #   geom_pointrange(data = sinking_fit |> filter(size > 512), aes(xmin = as_date(xmin, origin = '2022-01-01'), xmax = as_date(xmax, origin = '2022-01-01'), x = as_date(DOY, origin = '2022-01-01'), y = depth), size = .2, colour = 'white') 
+# 
+# down_part <-  particles_bis |> filter(depth < 2000, size > 512, doy < 220, year == 2022) |>
+#   #group_by(size) |>
+#   ggplot() + facet_grid(wmo~size) + theme_bw() +
+#   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
+#   scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+#   scale_y_reverse() +
+#   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+#   labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
+#   geom_pointrange(data = sinking_fit |> filter(size > 512, DOY < 220, standard_dev <= 30), aes(xmin = as_date(xmin, origin = '2022-01-01'), xmax = as_date(xmax, origin = '2022-01-01'), x = as_date(DOY, origin = '2022-01-01'), y = depth), size = .2, colour = 'black')
+# 
+# down_part
 
 ```
 
-```{r, vertical plots + sinking speed bis, fig.height=8, fig.width=8}
+```{r, sinking speed plot}
 
-particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld))
-
-particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> dplyr::mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) 
-#particles_bis$size <- factor(particles_bis$size, levels = lpm_class)
-
-# remove buggy data from float 4903634 (negative depth for some reason)
-particles_bis <- particles_bis |> filter(depth >= 0)
-
-# rel_conc
-particles_bis <- particles_bis |> dplyr::group_by(wmo, size) |> dplyr::mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
-
-up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
-  #group_by(size) |>
-  ggplot() + facet_grid(wmo~size) + theme_bw() +
-  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
-  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
-  scale_y_reverse() +
-  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
-  labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
-  geom_pointrange(data = sinking_fit |> filter(size < 512), aes(xmin = as_date(xmin, origin = '2022-01-01'), xmax = as_date(xmax, origin = '2022-01-01'), x = as_date(DOY, origin = '2022-01-01'), y = depth), size = .2, colour = 'white') 
-
-up_part
-
-down_part <- particles_bis |> filter(depth < 2000, size > 512) |>
-  #group_by(size) |>
-  ggplot() + facet_grid(wmo~size) + theme_bw() +
-  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
-  scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
-  scale_y_reverse() +
-  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
-  labs(colour = '#/L', x = 'Month', y = 'Depth (m)') +
-  geom_pointrange(data = sinking_fit |> filter(size > 512), aes(xmin = as_date(xmin, origin = '2022-01-01'), xmax = as_date(xmax, origin = '2022-01-01'), x = as_date(DOY, origin = '2022-01-01'), y = depth), size = .2, colour = 'white') 
-
-down_part
+# # NOTE : pas besoin d'updater ici vu que l'on regarde par rapport au 'bloom' de fin mai/juin
+# sinking_fit <- vroom('DATA/ARGO/gaussian_fit_sinking_speed_full_before_06032023.csv') |> dplyr::mutate(size = size_class |> str_remove('NP_Size_') |> as.numeric(), date = as_date(date))
+# 
+# estimate_sinking_speed <- function(siz, data, threshold){
+#   
+#   # above 500 m
+#   tmp <- data |> filter(size == siz) |> filter(depth <= threshold)
+#   model <- lm(formula = depth ~ time_max_abundance, data = tmp)
+#   tmp$sinking_speed_above_threshold <- model$coefficients[2] # equivalent to slope of the fit
+#   tmp2 <- tmp
+#   
+#   # below 500 m
+#   tmp <- data |> filter(size == siz) |> filter(depth > threshold)
+#   model <- lm(formula = depth ~ time_max_abundance, data = tmp)
+#   tmp2$sinking_speed_below_threshold <- model$coefficients[2] # equivalent to slope of the fit
+#   
+#   return(tmp2)
+# }
+# 
+# # sinking speed for each float
+# sinking_6904240 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 6904240), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+# sinking_6904241 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 6904241), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+# sinking_1902578 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 1902578), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+# sinking_4903634 <- map_dfr(unique(sinking_fit$size), estimate_sinking_speed, sinking_fit |> filter(wmo == 4903634), 400) |> select(wmo, sinking_speed_above_threshold, sinking_speed_below_threshold, size) |> distinct()
+# all_sinking_speed <- rbind(sinking_1902578, sinking_4903634, sinking_6904240, sinking_6904241)
 
 ```
 
 ```{r, sinking speed values}
 
-gt(all_sinking_speed)
-
-all_sinking_speed |> ggplot() + geom_point(aes(y = sinking_speed_below_threshold, x = size))
+# gt(all_sinking_speed)
+# 
+# all_sinking_speed |> ggplot() + geom_point(aes(y = sinking_speed_below_threshold, x = size))
 
 ```
 
 ```{r, check gaussian profiles}
 
-# depth layers for Gaussian fit
-depthL <- c(seq(40,200,20), c(250,300,400,500,600,800,1000,1250,1500,1750,2000))
-
-# Gaussian formula #> but z is not the depth but the TIME
-fgauss <- function(z, peak_conc, peak_doy, dz){
-  peak_conc*exp(-((z-peak_doy)**2)/(dz**2))
-}
-
-return_fitted <- function(d){
-  
-  #timeframe near the bloom so to say
-  ztime <- seq(160,240,1)
-  # gaussian fit
-  tib <- map_dfr(1:nrow(d), function(i){tibble(ztime = ztime, fgauss = fgauss(ztime, d$max_abundance[i], d$time_max_abundance[i], d$standard_dev[i]), depth = d$depth[i])})
-  return(tib)
-}
-
-# test
-tmp <- sinking_fit |> filter(wmo == 6904240, size == 645)
-
-test <- return_fitted(tmp)
-
-ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() + 
-  scale_color_viridis_d() +
-  theme_bw() 
-
+# # depth layers for Gaussian fit
+# depthL <- c(seq(40,200,20), c(250,300,400,500,600,800,1000,1250,1500,1750,2000))
+# 
+# # Gaussian formula #> but z is not the depth but the TIME
+# fgauss <- function(z, peak_conc, peak_doy, dz){
+#   peak_conc*exp(-((z-peak_doy)**2)/(dz**2))
+# }
+# 
+# return_fitted <- function(d){
+#   
+#   #timeframe near the bloom so to say
+#   ztime <- seq(160,240,1)
+#   # gaussian fit
+#   tib <- map_dfr(1:nrow(d), function(i){tibble(ztime = ztime, fgauss = fgauss(ztime, d$max_abundance[i], d$time_max_abundance[i], d$standard_dev[i]), depth = d$depth[i])})
+#   return(tib)
+# }
+# 
+# # test
+# tmp <- sinking_fit |> filter(wmo == 6904240, size == 645)
+# 
+# test <- return_fitted(tmp)
+# 
+# ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() + 
+#   scale_color_viridis_d() +
+#   theme_bw() 
+# 
 
 ```
 
@@ -1402,113 +1413,42 @@ ggplot(test, aes(x = ztime, y = fgauss, colour = factor(depth))) + geom_point() 
 
 ```{r, TS diagram}
 #ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26, park_depth != '200 m') |> dplyr::mutate(date = as_date(date))
-ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26) |> 
-  dplyr::mutate(date = as_date(date), colour = if_else(park_depth == '200 m', '#E31B23', if_else(park_depth == '500 m', '#FFC325', 'black')))
+# ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26) |> 
+#   dplyr::mutate(date = as_date(date), colour = if_else(park_depth == '200 m', '#E31B23', if_else(park_depth == '500 m', '#FFC325', 'black')))
 
 ts_data <- all_floats |> filter(PhaseName == 'NPAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26) |> 
   dplyr::mutate(date = as_date(date))
 
-# https://dankelley.github.io/oce/reference/plotTS.html
-# https://dankelley.github.io/oce/reference/argo-class.html
-test <- as.argo(time = ts_data$date, longitude = ts_data$lon, latitude = ts_data$lat, salinity = ts_data$psal, temperature = ts_data$temp, pressure = ts_data$depth,
-        id = ts_data$wmo) 
+ts_data <- ts_data |> mutate(spiciness = swSpice(ts_data$psal, ts_data$temp, ts_data$depth, ts_data$lon, ts_data$lat))
 
-plotTS(test, inSitu = T, type = 'p', xlab = 'Salinity [PSU]')
-
-
-```
-
-### Processes at play
-
-J'ai enlevé le truc du spectre inversé à 500 et 1000 m car difficile de conclure -\> mais comme on est dans la meme masse d'eau, on pourrait le garder, why not
-
-```{r, monthly anomaly between drifting at 500 and 1000 m}
-#| label: fig-processes-at-play
-#| fig-cap: Ratio of monthly mean particles concentrations during drifting (1000 m over 500 m) for size classes below 1.63 mm. 
-
-tmp <- uvp_data |> filter(park_depth != '200 m') |> group_by(wmo, size, month, park_depth) |>
-  summarize(monthly_mean_conc = mean(conc), monthly_median_conc = median(conc)) |>
-  # compute concentration anomaly at 500 and 1000 m
-  dplyr::mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
-  select(wmo, size, month, diff_anomaly, div_anomaly) |> dplyr::mutate(month = month.abb[month]) |>
-  dplyr::mutate(size = as.character(size)) |>
-  dplyr::mutate(rev_div_anomaly = 1/div_anomaly) |>
-  #filter(is.finite(rev_div_anomaly)) |>
-  dplyr::mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1), div_anomaly = round(div_anomaly, 1)) |>
-  ungroup()
-
-# test en weekly
-# tmp <- uvp_data |> filter(park_depth != '200 m', month != 5) |> group_by(wmo, size, week, park_depth) |> 
-#   summarize(monthly_mean_conc = mean(conc), monthly_median_conc = median(conc)) |>
-#   # compute concentration anomaly at 500 and 1000 m
-#   dplyr::mutate(diff_anomaly = monthly_mean_conc - lead(monthly_mean_conc), div_anomaly = monthly_mean_conc/lead(monthly_mean_conc)) |> drop_na(diff_anomaly) |> #filter(is.finite(div_anomaly)) |>
-#   select(wmo, size, week, diff_anomaly, div_anomaly) |> 
-#   dplyr::mutate(size = as.character(size)) |>
-#   dplyr::mutate(rev_div_anomaly = 1/div_anomaly) |> 
-#   #filter(is.finite(rev_div_anomaly)) |>
-#   dplyr::mutate(diff_anomaly = round(diff_anomaly, 1), rev_div_anomaly = round(rev_div_anomaly, 1)) |>
-#   ungroup()
+# # https://dankelley.github.io/oce/reference/plotTS.html
+# # https://dankelley.github.io/oce/reference/argo-class.html
+# test <- as.argo(time = ts_data$date, longitude = ts_data$lon, latitude = ts_data$lat, salinity = ts_data$psal, temperature = ts_data$temp, pressure = ts_data$depth,
+#         id = ts_data$wmo) 
 # 
-# create_data_for_heatmap <- function(float){
-#   y <- unique(tmp$size)[1:12] # above, data is way too low
-#   d <- tmp |> filter(wmo == float, size %in% y, week > 5)
-#   x <- unique(d$week)
-#   data <- expand.grid(X=x, Y=y)
-#   #data$Z <- tt$diff_anomaly
-#   data$Z <- d$rev_div_anomaly
-#   data$wmo <- float
-#   return(data)
-# }
-
-# d1 <- create_data_for_heatmap(6904241)
-# d2 <- create_data_for_heatmap(1902578)
-# d3 <- create_data_for_heatmap(4903634)
-# d4 <- create_data_for_heatmap(6904240)
+# plotTS(test, inSitu = T, type = 'p', xlab = 'Salinity [PSU]')
 # 
-# dd <- rbind(d1, d2, d3, d4)
+# 
+# ggplot(ts_data) + geom_point(aes(x = spiciness, y = depth)) + scale_y_reverse() + facet_wrap(~wmo)
 
-# ggplot(dd, aes(X, Y, fill= Z)) + 
-#   geom_tile() + scale_fill_viridis() + facet_wrap(~wmo)
+a <- ggplot(ts_data |> filter(depth <= 1000)) + geom_point(aes(x=date, y=depth, colour=spiciness), size = 3, shape = 15) +
+  scale_y_reverse() +
+  #scale_color_viridis() +
+  scale_color_cmocean(name = 'balance', limits = c(-0.25,0.25), oob = scales::squish, na.value = 'grey') +
+  theme_bw() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = TeX('Spiciness (kg m$^{-3}$)'), x = 'Month', y = 'Depth (m)') +
+  facet_wrap(~wmo, ncol = 4)
 
-create_data_for_heatmap <- function(float, df){
-  y <- unique(df$size)[1:12] # above, data is way too low
-  d <- df |> filter(wmo == float, size %in% y)
-  #x <- c('Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan')
-  x <- unique(d$month)
-  data <- expand.grid(X=x, Y=y)
-  #data$Z <- tt$diff_anomaly
-  data$Z <- d$rev_div_anomaly
-  #data$Z <- d$div_anomaly
-  data$wmo <- float
-  return(data)
-}
-
-# for some reason, there is some bug with the quarto compilation .. so I save the tibble .. and reload it 
-# d1 <- create_data_for_heatmap(6904241, tmp)
-# d2 <- create_data_for_heatmap(1902578, tmp)
-# d3 <- create_data_for_heatmap(4903634, tmp)
-# d4 <- create_data_for_heatmap(6904240, tmp)
-# dd <- rbind(d1, d2, d3, d4)
-# vroom_write(dd, 'heatmap_data.csv')
-
-# reload + redo some annoying stuff that were lost during the writing of the csv
-dd <- vroom('heatmap_data.csv') |> dplyr::mutate(Y = as.character(Y)) 
-dd$X <- factor(dd$X, levels = c('May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'))
-dd$Y <- factor(dd$Y, levels = c('102', '128', '161', '203', '256', '323', '406', '512', '645', '813', '1020', '1290'))
-dd$Y <- factor(dd$Y, levels = c('1290', '1020', '813', '645', '512', '406', '323', '256', '203', '161', '128', '102'))
-# dd$wmo <- factor(dd$wmo, levels = c(6904240,4903634,6904241,1902578))
-
-#dd <- dd |> dplyr::mutate(Z_binned = cut(Z, breaks = c(0,1,1.5,2.5,max(Z))))
-dd <- dd |> dplyr::mutate(Z_binned = cut(Z, breaks = c(0,.5,1,1.5,2,max(Z))))
-
-# ggplot(dd) +
-#   geom_tile(aes(X, Y, fill = Z), alpha = 0.75) + scale_fill_viridis() + theme_bw() + labs(x = 'Month', y = 'Size class') +
-#   facet_wrap(~wmo) +
-#   geom_text(data = dd, aes(X, Y, label = Z))
-
-ggplot(dd) + 
-  geom_tile(aes(X, Y, fill = Z_binned), colour = 'black', alpha = 1) + theme_bw() + labs(fill = 'Ratio', x = 'Month', y = 'Size class') +
-  facet_wrap(~wmo) + scale_fill_viridis_d(option = 'A')
+b <- particles_bis |> filter(depth <= 1000, size == 102) |>
+  #group_by(size) |>
+  ggplot() + facet_wrap(~wmo, ncol = 4) + theme_bw() +
+  geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=2, shape=15) +
+  #scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
+  scale_color_cmocean(name = 'thermal', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) +
+  scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = 'Particles (#/L)', x = 'Month', y = 'Depth (m)') 
 
 ```
 
