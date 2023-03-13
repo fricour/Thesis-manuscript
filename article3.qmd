@@ -732,7 +732,7 @@ down_part
 
 ## Discussion
 
-### Phenology of the spring bloom in the Labrador Sea
+### Dynamics of the spring bloom in the Labrador Sea
 
 <!-- All floats measured similar particle concentrations at each drifting depth and on the vertical during the entire time series. In addition, except perhaps for the upper part of the UVP6 size spectrum for floats 6904241 and 1902578, the results do not indicate a clear hint of particle export signature. Therefore, we suggest that the 4 BGC-Argo floats mostly measured the dynamics of the seasonal, continuous, particle signal but that they missed the main transient particle export events associated with the LS spring bloom. -->
 
@@ -818,15 +818,49 @@ mld_plot <- ggplot(mld_cover |> filter(date > '2022-03-01')) + geom_errorbar(aes
 chla_plot / mld_plot
 ```
 
-The Chla satellite pattern for the 6904240-4903634 pair typically describes the phenology of the spring bloom in the northern part of the LS [@Lacour2015-da]. This is not surprising given that this pair was deployed one degree southward to the so-called 60°N limit [@Lacour2015-da]. @fig-chla-mld-satellite shows that the satellite MLD in that region had already shoaled below 100 m since March and that the water column was stable and relatively well stratified in May which might explain the intensity of surface Chla concentration in contrast with those measured in the other region. The other pair was deployed in the bioregion where the phytoplankton biomass is said to slowly develops during May to reach its maximum in June [@Lacour2015-da]. The Chla pattern observed in @fig-chla-mld-satellite could suggest that the development of the phytoplankton biomass was stopped by an increase in the MLD (end of May) and that it started again in mid-June when the water column was well stratified. <!-- However, the increase of the MLD in June could have also impacted the intensity of the bloom which might explain the three times lower than Chla concentrations. However, the Chla satellite concentration (before deployment) for that pair was three times lower than for the other pair and the second Chla increase (satellite and in situ) was of the same order of magnitude. Therefore, the second pair was deployed in a less productive area and that the inten <!--Hence, it is possible that the bloom intensity was not sufficient to produce clear particle export signals, at least for BGC-Argo floats in their 10-day vertical sampling configuration. -->
+The Chla satellite pattern for the 6904240-4903634 pair typically describes the dynamics of the spring bloom in the northern part of the LS [@Lacour2015-da]. This is not surprising given that this pair was deployed one degree southward to the so-called 60°N limit [@Lacour2015-da]. @fig-chla-mld-satellite shows that the satellite MLD in that region had already shoaled below 100 m since March and that the water column was stable and relatively well stratified in May which might explain the intensity of surface Chla concentrations in contrast with those measured at the second deployment site. The two other floats were deployed in the bioregion where the phytoplankton biomass typically develops slowly in May to reach its maximum in June [@Lacour2015-da]. However, the Chla pattern observed in @fig-chla-mld-satellite could suggest that the development of the phytoplankton biomass was stopped by an increase in the MLD at the end of May and that it started again in mid-June when the water column was well stratified. <!-- However, the increase of the MLD in June could have also impacted the intensity of the bloom which might explain the three times lower than Chla concentrations. However, the Chla satellite concentration (before deployment) for that pair was three times lower than for the other pair and the second Chla increase (satellite and in situ) was of the same order of magnitude. Therefore, the second pair was deployed in a less productive area and that the inten <!--Hence, it is possible that the bloom intensity was not sufficient to produce clear particle export signals, at least for BGC-Argo floats in their 10-day vertical sampling configuration. -->
+
+### Phytoplankton communities at deployment sites
+
+Here, we refer to the first and second deployment as, respectively, station A and station B. High Performance Liquid Chromatography (HPLC) analyses were performed on samples taken during the two deployments. The selected pigments, their taxonomic significance and their size class were taken from Table 2 in @Petit2022-de. Station A showed Chla concentrations (TChla pigment in @fig-hplc) two times higher than in station B in the first 100 m as well as higher concentrations of diatoms (Fucoxanthin). Station B showed higher concentrations of cryptophytes (Alloxanthin), dinoflagellates (Peridin) and green flagellates and prochlorophytes (TChlb) than in station A. However, their absolute concentrations are quite low (usually less than 0.05 mg m$^{-3}$). Taking that into consideration, it seems that station A was more productive than station B and was dominated by diatoms (i.e. microphytoplankton) whereas station B was composed of a majority of smaller phytoplankton species (mostly nano and picozooplankton). This supports the idea of two distinct bloom dynamics as inferred from satellite data.
+
+```{r, hplc, fig.width=8, fig.height=6}
+#| label: fig-hplc
+#| fig-cap: Pigments derived from HPLC analyses at stations A and B.
+
+hplc <- vroom('DATA/ARGO/CE22009_pigments_031122_Travail_Herve_FŔ.csv') |> filter(Station %in% c(29,9))
+
+# subset (all QCs are GOOD so OK)
+# hplc <- hplc |> select(lat = Latitude, lon = Longitude, depth = `Depth_(m)`,
+#                        Zea = Zeaxanthin, TChlb, HF_19 = `19'-Hexanoyloxyfucoxanthin`,
+#                        BF_19 = `19'-Butanoyloxyfucoxanthin`, Allo = Alloxanthin,
+#                        Fuco = Fucoxanthin, Peri = Peridinin, TChla = Total_Chlorophyll_a) |> mutate(station = c(rep('station A', 10), rep('station B', 9)))
+
+hplc <- hplc |> select(lat = Latitude, lon = Longitude, depth = `Depth_(m)`,
+                       Zeaxanthin, TChlb, `19'-Hexanoyloxyfucoxanthin`,
+                       `19'-Butanoyloxyfucoxanthin`, Alloxanthin,
+                       Fucoxanthin, Peridinin, TChla = Total_Chlorophyll_a) |> mutate(station = c(rep('station A', 10), rep('station B', 9)))
+
+# format
+# hplc <- hplc |> pivot_longer(cols = c(Zea, TChlb, HF_19, BF_19, Allo, Fuco, Peri, TChla), names_to = 'pigment', values_to = 'concentration') |> drop_na(concentration) 
+
+hplc <- hplc |> pivot_longer(cols = c(Zeaxanthin, TChlb, `19'-Hexanoyloxyfucoxanthin`,
+                       `19'-Butanoyloxyfucoxanthin`, Alloxanthin,
+                       Fucoxanthin, Peridinin, TChla), names_to = 'pigment', values_to = 'concentration') |> drop_na(concentration)
+
+ggplot(hplc) + geom_path(aes(y = depth, x = concentration, colour = station)) + 
+  facet_wrap(~pigment, scales = 'free') + scale_y_reverse() +
+  labs(colour = 'Station', x = TeX('Concentration (mg m$^{-3}$)'), y = 'Depth (m)') +
+  theme_bw() + scale_color_manual(values = c('#E31B23', '#003366'))
+```
 
 ### Unclear particle export signature
 
-Even though we suggested that the two pairs of floats were deployed in two different bloom regimes, they all measured an increase in particle concentrations in the 102 - 512 $\mu$m range (@fig-uvp6-profiling-102-406) around 800 - 1000 m as well as an increase in the abundance of big particles (@fig-uvp6-profiling-512-2500) between June and August. This increase raises the question of a possible particle export event. In the upper part of the PSD, the vertical concentration profiles highlight a bigger particle plume for the 6904241-1902578 pair than for the other one. However, apart from the float 6904240, all floats measured similar integrated Chla content in the upper 100 m and in the mixed layer (@fig-chla-content). @fig-OST-flux also shows that $F_{small}$ is similar across all floats at all parking depths and that $F_{big}$ is also similar across all floats at 1000 m with the same increase (from June to August) than for F$_{small}$. The same behavior is observed for UVP6 particles in the lower size range at 1000 m (@fig-uvp-1000m).
+Even though we suggested that the two pairs of floats were deployed in two different bloom regimes, they all measured an increase in particle concentrations in the 102 - 512 $\mu$m range (@fig-uvp6-profiling-102-406) around 800 - 1000 m as well as an increase in the abundance of big particles (@fig-uvp6-profiling-512-2500) between June and August. This increase raises the question of a possible particle export event. For classes \> 512 $\mu$m, the vertical concentration profiles highlight a bigger particle plume for the 6904241-1902578 pair than for the other one. However, apart from the float 6904240, all floats measured similar integrated Chla content in the upper 100 m and in the mixed layer (@fig-chla-content). @fig-OST-flux also shows that $F_{small}$ is similar across all floats at all parking depths and that $F_{big}$ is also similar across all floats at 1000 m with the same increase (from June to August) than for F$_{small}$. The same behavior is observed for UVP6 particles in the lower size range at 1000 m (@fig-uvp-1000m). Observing similar properties across a wide geographical range around deployments suggests that we observe the latent dynamics of the system rather than episodic export events.
 
-```{r, mld + chla, fig.height=6}
+```{r, mld + chla, fig.height=6, fig.width=8}
 #| label: fig-chla-content
-#| fig-cap: Integrated Chla content in the mixed layer (up) and in the upper 100 m for each float.
+#| fig-cap: Integrated Chla content in the mixed layer (up) and in the upper 100 m (down) for each float.
 
 chla_mld <- d_chla |> drop_na(chla_0_100m)
 
@@ -842,39 +876,86 @@ chla_plot_100m <- ggplot(chla_mld) + geom_line(aes(x = date, y = chla_0_100m, co
 chla_plot_mld / chla_plot_100m
 ```
 
-```{r, spiciness}
-#| label: fig-spice
-#| fig-cap: Spiciness (up) and particle concentrations for the 102-128 $\mu$m size class.
+```{r, spectral slope}
 
-#ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26, park_depth != '200 m') |> dplyr::mutate(date = as_date(date))
-# ts_data <- all_floats |> filter(PhaseName == 'PAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26) |> 
-#   dplyr::mutate(date = as_date(date), colour = if_else(park_depth == '200 m', '#E31B23', if_else(park_depth == '500 m', '#FFC325', 'black')))
+mid_DSE <- c(0.1147968,0.1446349,0.1822286,0.2295937,0.2892699,0.3644572,0.4591873,0.5785398,0.7289145,0.9183747,1.1570796,1.4578289,1.83674934,2.31415916)
+sizebin <- c(0.02640633,0.03326989,0.04191744,0.05281267,0.06653979,0.08383488,0.10562533,0.13307958,0.16766976,0.21125066,0.26615915,0.33533952,0.422501323,0.532318310)
+
+vertical_profiles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class)) |> drop_na(NP_Size_102) |> mutate(juld = as_date(juld)) |>
+  filter(depth > 0) # remove buggy data from 4903634
+
+compute_slope <- function(i, data_spectra){
+  
+  spectrum <- data_spectra[i,]
+  
+  spectrum_norm <- spectrum/sizebin
+  
+  # prepare data for linear regression
+  Y <- log(spectrum_norm)
+  X <- log(mid_DSE)
+  
+  # check for finite value
+  h <- is.finite(Y)
+  Y <- Y[h]
+  X <- X[h]
+  
+  data_slope <- tibble(X=X, Y=Y)
+  
+  model <- lm(formula = Y ~ X, data = data_slope)
+  slope <- model$coefficients[2]
+  
+  return(slope)
+}
+
+# compute slope on vertical profiles
+vertical_spectra <- as.matrix(data.frame(vertical_profiles[,5:18]))
+index <- seq(from = 1, to = nrow(vertical_spectra), by = 1)
+slopes <- map_dbl(index, compute_slope, data_spectra = vertical_spectra)
+vertical_profiles$spectral_slope <- slopes
+```
+
+```{r, taxo}
+
+# read vertical (NPAR) taxo data
+taxo_1902578 <- vroom::vroom('DATA/ARGO/1902578_TAXO_FromNetCDF.csv') |> mutate(wmo = 1902578, date = argoJuldToTime(juld)) |> filter(PhaseName == 'NPAR')
+taxo_4903634 <- vroom::vroom('DATA/ARGO/4903634_TAXO_FromNetCDF.csv') |> mutate(wmo = 4903634, date = argoJuldToTime(juld)) |> filter(PhaseName == 'NPAR')
+taxo_6904240 <- vroom::vroom('DATA/ARGO/6904240_TAXO_FromNetCDF.csv') |> mutate(wmo = 6904240, date = argoJuldToTime(juld)) |> filter(PhaseName == 'NPAR')
+taxo_6904241 <- vroom::vroom('DATA/ARGO/6904241_TAXO_FromNetCDF.csv') |> mutate(wmo = 6904241, date = argoJuldToTime(juld)) |> filter(PhaseName == 'NPAR')
+
+all_taxo <- rbind(taxo_1902578, taxo_4903634, taxo_6904240, taxo_6904241) |> mutate(wmo = factor(wmo, levels = c('6904240','4903634','6904241','1902578')))
+
+# test taxo -> pas forcément concluant -> à creuser..
+#ggplot(taxo_1902578 |> filter(cycle == 3)) + geom_point(aes(x = concentration, y = -depth))
+```
+
+```{r, spiciness, fig.width=6, fig.height=10}
+#| label: fig-spice
+#| fig-cap: Potential density anomaly, spiciness, *Calanoida* concentrations (log$_{10}$ colorscale), spectral slope and particle concentrations for the 102-128 $\mu$m size class (log$_{10}$ colorscale) for each float. 
 
 ts_data <- all_floats |> filter(PhaseName == 'NPAR') |> select(date = juld, depth = pres, temp, psal, wmo, sigma, park_depth, lon, lat) |> drop_na(temp) |> filter(sigma > 26) |> 
   dplyr::mutate(date = as_date(date))
 
 ts_data <- ts_data |> mutate(spiciness = swSpice(ts_data$psal, ts_data$temp, ts_data$depth, ts_data$lon, ts_data$lat))
 
-# # https://dankelley.github.io/oce/reference/plotTS.html
-# # https://dankelley.github.io/oce/reference/argo-class.html
-# test <- as.argo(time = ts_data$date, longitude = ts_data$lon, latitude = ts_data$lat, salinity = ts_data$psal, temperature = ts_data$temp, pressure = ts_data$depth,
-#         id = ts_data$wmo) 
-# 
-# plotTS(test, inSitu = T, type = 'p', xlab = 'Salinity [PSU]')
-# 
-# 
-# ggplot(ts_data) + geom_point(aes(x = spiciness, y = depth)) + scale_y_reverse() + facet_wrap(~wmo)
-
-a <- ggplot(ts_data |> filter(depth <= 1000)) + geom_point(aes(x=date, y=depth, colour=spiciness), size = 3, shape = 15) +
+density <- ggplot(ts_data |> filter(depth <= 1000)) + geom_point(aes(x=date, y=depth, colour=sigma), size = 3, shape = 15) +
   scale_y_reverse() +
   #scale_color_viridis() +
-  scale_color_cmocean(name = 'balance', limits = c(-0.25,0.25), oob = scales::squish, na.value = 'grey') +
+  scale_color_cmocean(name = 'dense', limits = c(27,28), oob = scales::squish, na.value = 'grey') +
+  theme_bw() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = TeX('Sigma (kg m$^{-3}$)    '), x = 'Month', y = 'Depth (m)') +
+  facet_wrap(~wmo, ncol = 4) + theme(axis.title.x = element_blank())
+
+spiciness <- ggplot(ts_data |> filter(depth <= 1000)) + geom_point(aes(x=date, y=depth, colour=spiciness), size = 3, shape = 15) +
+  scale_y_reverse() +
+  #scale_color_viridis() +
+  scale_color_cmocean(name = 'balance', limits = c(-0.5,0.5), oob = scales::squish, na.value = 'grey') +
   theme_bw() +
   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
   labs(colour = TeX('Spiciness (kg m$^{-3}$)'), x = 'Month', y = 'Depth (m)') +
-  facet_wrap(~wmo, ncol = 4)
+  facet_wrap(~wmo, ncol = 4) + theme(axis.title.x = element_blank())
 
-b <- particles_bis |> filter(depth <= 1000, size == 102) |>
+part102 <- particles_bis |> filter(depth <= 1000, size == 102) |>
   #group_by(size) |>
   ggplot() + facet_wrap(~wmo, ncol = 4) + theme_bw() +
   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=2, shape=15) +
@@ -882,26 +963,31 @@ b <- particles_bis |> filter(depth <= 1000, size == 102) |>
   scale_color_cmocean(name = 'thermal', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) +
   scale_y_reverse() +
   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
-  labs(colour = 'Particles (#/L)', x = 'Month', y = 'Depth (m)') 
+  labs(colour = 'Particles (#/L)       ', x = 'Month', y = 'Depth (m)') 
 
-a/b
+taxo_plot <- all_taxo |> filter(depth <= 1000) |> mutate(date = as.Date(date)) |> filter(date < as.Date("2023-06-03")) |>
+  #group_by(size) |>
+  ggplot() + facet_wrap(~wmo, ncol = 4) + theme_bw() +
+  geom_point(aes(x=date, y=depth, colour=log10(concentration)), size=1, shape=15) +
+  scale_color_cmocean(name = 'thermal', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = 1) +
+  scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = 'Calanoida (#/L)    ', x = 'Month', y = 'Depth (m)') + theme(axis.title.x = element_blank())
+
+spectral_slope_plot <- vertical_profiles |> filter(depth <= 1000) |> mutate(wmo = factor(wmo, levels = c('6904240','4903634','6904241','1902578'))) |>
+  ggplot() + facet_wrap(~wmo, ncol = 4) + theme_bw() +
+  geom_point(aes(x=juld, y=depth, colour=spectral_slope), size=2, shape=15) +
+  scale_color_cmocean(name = 'thermal', limits = c(-4,-3), oob = scales::squish, na.value = 'grey', direction = 1) +
+  scale_y_reverse() +
+  scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
+  labs(colour = 'Spectral slope     ', x = 'Month', y = 'Depth (m)') + theme(axis.title.x = element_blank())
+
+density / spiciness / taxo_plot / spectral_slope_plot / part102
 ```
 
-It is also worth noting that the progressive emptying of the water column does not start from the surface in small classes [@fig-uvp6-profiling-102-406]. By computing the spiciness [@fig-spice], we show that this pattern does not likely result from water subduction (no spiciness anomalies) hence it would be support the hypothesis of the particle export ending.
+Still, it is unclear why we observe a progressive emptying of the water column starting below 500 m for size classes below 323 $\mu$m [@fig-uvp6-profiling-102-406]. This pattern could result from several causes. It could either be the signature of a subduction event [@Llort2018-pa] either the end of a slow sinking export (i.e latent dynamic of the system) or a sign of disaggregation processes by zooplankton (i.e. zooplankton feeding). Therefore, we looked at physical properties (density anomaly and spiciness) and well as particle characteristics (zooplankton concentration and spectral slope) to investigate this particularity (@fig-spice). Spiciness is a variable that allows the differentiation of water masses with distinct thermohaline properties but similar density [@Flament2002-zm], to look for the signature of subduction. @fig-spice shows that both the density field and the spiciness field are uniform below 500 m hence it is unlikely that a subduction event would be the reason for this decrease in particle abundance below 500 m. Using the embedded zooplankton classification results from the UVP6, we looked at concentrations of *Calanoida*, a species that is abundant in the NA [@Corkett1979-ha]. @fig-spice shows that the concentration of *Calanoida* increase with depth similarly to the plume observed in @fig-uvp6-profiling-512-2500. However, their concentrations decrease with the advent of a poorer water column in terms of particles (see @fig-uvp6-profiling-102-406 and @fig-uvp6-profiling-512-2500). The last panel of that figure shows that the particle concentrations for the smallest size class had already slightly decreased when the the *Calanoida* were at their maximum (see below 500 m between August and November). This could correspond to zooplankton feeding where *Calanoida* would ingest small particles until food vanishes. The spectral slope defines the slope of the PSD where a high (in absolute values) spectral slope indicates that small particules dominate the PSD. The panel on spectral slopes in @fig-spice shows a lower (in absolute values) spectral slope at the beginning of the time series that is concurrent with *Calanoida* abundance at first order (except for float 4903634). Would this mean that *Calanoida* feed on small particles and eject fecal pellets (via repackaging) that in turn would be the source of big particles observed in @fig-uvp6-profiling-512-2500? Such an hypothesis would solve the issue brought earlier by trying to link the surface to the big particle plume but at this stage, it is very difficult conclude without more data.
 
-All things considered, it is not straightforward to conclude for the presence of a carbon export event. First, the 10-day profiling configuration hinders the characterization of particle export events that are transient processes. Second, the plume of big particles can be misleading because their abundance measured by the UVP6 are very low (usually \< 0.1 #/L). Third, all floats measured the same particle dynamics in distinct zones which suggests that if the two systems were initially different (i.e. different bloom dynamics), they merged back after the bloom of May. Therefore, we suggest that we mostly observe the latent dynamics of the system rather than clear export signatures that would likely be spotted with both higher bloom intensity and a higher profiling temporal resolution.
-
-### hplc pour les communautés pour montrer que les deux endroits sont différents (peripery vs central)
-
-mettre ça dans phenology of the bloom pour bien montrer que l'on est dans 2 systèmes différentes
-
-```{r, HPLC}
-
-pigments <- vroom('DATA/ARGO/CE22009_pigments_031122_Travail_Herve_FŔ.csv') |> filter(Station %in% c(29,9))
-
-# select interesting coumns (all QCs == 1 so OK)
-# pigments <- pigments |> select(station = Station, depth = `Depth_(m)`, Chla_c3 = Chlorophyll_c3, Chla_c1_c2_MgDVP = `Chlorophyll_c1+c2+MgDVP`, Phaeophorbid_a, Peridinin, `19'-Butanoyloxyfucoxanthin`
-```
+All things considered, it is not straightforward to conclude for the presence of a carbon export event. First, the 10-day profiling configuration hinders the characterization of particle export events that are transient processes. Second, the plume of big particles can be misleading because their abundance measured by the UVP6 are very low (usually \< 0.1 #/L). However, the plume could be the result of aggregation (repackaging) by zooplankton feeding on small particles. Third, all floats measured the same particle dynamics in distinct zones which suggests that if the two systems were initially different (i.e. different bloom dynamics), they merged back after the bloom of May. Therefore, we suggest that we mostly observe the latent dynamics of the system rather than clear export signatures that would likely be spotted with both higher bloom intensities (e.g. the May bloom that was missed) and a higher profiling temporal resolution.
 
 ### Comparing OST and UVP data
 
@@ -1004,7 +1090,7 @@ ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux)) + fac
 
 ```{r, and on the vertical?}
 
-
+#TO OR NOT TO DO?
 
 ```
 
@@ -1350,15 +1436,9 @@ ggplot(diff_jump_vs_biovolume) + geom_point(aes(x = diff_jump*0.25, y = biovolum
 
 TODO :
 
--   science: on voit le système latent, on a raté le bloom
-
 -   
 
 -   on se trouve dans un sytème producitve entre guidi 2008 et iversen (très productif)
-
-    ### TS diagram
-
--   Pour le drift à 200, 500 et 1000 m -\> interpète ce graph -\> va checker les masses d'eau de la region... attention on est en PARKING DEPTH -\> mettre la couleur de la parking depth dans le truc, ça permettrait de voir si on peut comparer les processus (style ratio 500/1000m) dans les couches qui sont dans la meme masse d'eau.
 
 ## Discussion2
 
