@@ -1,5 +1,7 @@
 # Case study in the Labrador Sea {#sec-case-study-labrador-sea}
 
+In the first chapter, I explained the different steps that led to the creation of the embedded zooplankton classification model for the UVP6. However, I did not specify that in spite of the technical and energetic constraints, the model was also due for April 2022 for a deployment of BGC-Argo floats in the Labrador Sea a month later. Once deployed, it was only a question of time before I could dig into the UVP6 and the OST data. In the meantime I asked myself, what could be a cool thing to do about those data? I already had some experience with BGC-Argo floats during my master's degree (study of the deep chlorophyll maximum in the Black Sea, see also the abstract of that paper in APPENDIX XX) and because I was a bit bored waiting for new BGC-Argo profiles, I thought it would be useful to have a visualization tool in the form of a web app to investigate incoming data and already prepare the ground for the following study. Here is the link to the [web app](https://fricour.shinyapps.io/CARBON_REFINE/), which is still currently being updated every night with new data (near) live from the Labrador Sea and hopefully with other BGC-Argo floats equipped with the UVP6 and the OST to investigate carbon and particle fluxes in other regions. This study uses preliminary data (not even one year of data) and a new BGC-Argo float configuration hence more work should be addressed to better understand the dynamics of the system.
+
 ## Introduction
 
 The biological carbon pump (BCP) refers to a series of processes that transport biogenic carbon produced in sunlit surface waters to the ocean interior [@Claustre2021-tx]. It is composed of three main pathways [@Claustre2021-tx; @Boyd2019-ez; @Siegel2022-wd]: the biological gravitational pump that is the gravitational settling of particulate organic carbon (POC); the physically mediated particle injection pump that represents physical mechanisms that transport dissolved organic carbon (DOC) to depth via mixing processes; and the biologically mediated particle injection pump that characterizes the transport of POC (and DOC) by diel and seasonal migration of animals in the water column. Historically, the BCP was mainly studied with sediment traps [@Honjo2008-kn] and Thorium-234 radionuclide disequilibria [@Buesseler2007-ql] focused on the gravitational pump hence the contribution of DOC and migrating animals to the BCP was poorly known. However, the advent of autonomous underwater vehicles (AUVs) equipped with a variety of physical and biogeochemical sensors have demonstrated their ability to better understand them [e.g. @Omand2015-mf; @DallOlmo2016-ex; @Llort2018-pa; @Lacour2019-id; @Haentjens2020-dc; @Stukel2017-lc]. Still, we are missing processes to close the carbon budget [@Giering2014-tj; @Boyd2019-ez] and unkowns remain in the under-sampled mesopelagic (i.e. twilight) zone [@Martin2020-wa]. In order to fill the observational gaps, the Biogeochemical-Argo (BGC-Argo) network aims to develop an operational global array of 1000 profiling floats measuring six core variables from the surface to 2000 m [@Claustre2020-jo]: oxygen, nitrate, pH, chlorophyll a (Chla), suspended particles and downwelling irradiance. In addition to the six core variables, new sensors have been developped to target specific BCP-related questions [@Claustre2020-jo; @Claustre2021-tx; @Chai2020-uq]. In this study, we will focus on BGC-Argo floats equipped with two additional sensors: the Underwater Vision Profiler (UVP6) [@Picheral2021-sx] and a transmissometer used as an optical sediment trap (OST).
@@ -124,11 +126,11 @@ All data were divided into vertical profiles and drifting data using time stamps
 
 ### Derivation of carbon fluxes from OST
 
-We applied a similar approach to @Estapa2013-gw and @Estapa2017-jr to derive the continuous component (i.e. continuous deposition of small particles on the upward-facing window of the transmissometer) and discontinuous (i.e. deposition of stochastic big particles) components of the downward POC flux, hereafter referred to as, respectively, $F_{small}$ and $F_{big}$.
+We applied a similar approach to @Estapa2013-gw and @Estapa2017-jr to derive the continuous component (i.e. continuous deposition of small particles on the upward-facing window of the transmissometer) and discontinuous (i.e. deposition of stochastic large particles) components of the downward POC flux, hereafter referred to as, respectively, $F_{small}$ and $F_{large}$.
 
 First, the drifting $c_{p}$ signal was cleaned from spikes (hypothesized as transient particles not landing on the window or active swimmers [@Estapa2013-gw]). For this, we computed a 7-point moving median and a 7-point moving median absolute deviation (MAD). Then, we computed the anomaly to the moving median as the difference between the drifting $c_{p}$ signal and the moving median. We considered that a $c_{p}$ measurement was a spike when the anomaly was above $5.2 \times MAD$ following @Leys2013-eu. Despiked $c_{p}$ data were then smoothed with a 7-point moving median filter.
 
-Contrarily to previous works [@Estapa2013-gw; @Estapa2017-jr; @Estapa2023-oz], we chose an empirical statistical approach instead of fixed thresholds to detect jumps. Therefore, we firstly computed the slope between each $c_{p}$ observation for each drifting phase and computed the z-score (i.e. standard score) of each of them. The detection of jumps therefore consisted in spotting outliers in the z-score distribution. For this, we computed the interquartile range ($IQR$) between the first ($Q_{1}$) and third ($Q_{3}$) quartiles. Positive and negative jumps were defined as, respectively, a z-score above $Q_{3} + 1.5 \times IQR$ and below $Q_{1} - 1.5 \times IQR$. We found that this method better detected outliers than the one used to despike the $c_{p}$ signal.
+Contrarily to previous works [@Estapa2013-gw; @Estapa2017-jr; @Estapa2023-oz], we chose an empirical statistical approach instead of fixed thresholds to detect jumps. Therefore, we firstly computed the slope between each $c_{p}$ observation for each drifting phase and computed the z-score (i.e. standard score) of each of them. The detection of jumps therefore consisted in spotting outliers in the slope distribution. For this, we computed the interquartile range ($IQR$) between the first ($Q_{1}$) and third ($Q_{3}$) quartiles. Positive and negative jumps were defined as, respectively, a slope above $Q_{3} + 1.5 \times IQR$ and below $Q_{1} - 1.5 \times IQR$. We found that this method better detected outliers than the one used to despike the $c_{p}$ signal.
 
 In order to compute $F_{small}$, we firstly computed the slope of each group of observations between jumps (positive and negative, see @fig-estapa-method_article). Undefined slopes (a single point between two jumps) were removed as well as any negative slope assuming that either the so-called fit failed (leading to undetected jumps) either the transmissometer window was perturbed by factors other than the pump cleaning the optical window (e.g. turbulence ou zooplankton consumption of accumulated material). Afterwards, we computed the weighted average slope ($slope_{w}$) using the previously computed slopes of each remaining group in order to derive the small particles flux using the linear relationship between the beam attenuance flux and the POC flux (see first panel of Figure 2 in @Estapa2023-oz).
 
@@ -138,7 +140,7 @@ $$ {#eq-estapa}
 
 where $slope_{w}$ is multiplied by the transmissometer pathlength due to the fact that @eq-estapa is an empirical POC-to-attenuance (ATN) relationship where ATN is the product of $c_{p}$ and the transmissometer pathlength.
 
-We used the same relationship to compute $F_{big}$ by replacing $slope_{w}$ as the sum of positive jumps divided by the drifting time.
+We used the same relationship to compute $F_{large}$ by replacing $slope_{w}$ as the sum of positive jumps divided by the drifting time.
 
 ```{r, example of a cp signal analyzed for jumps (with an old method here), fig.width=8, fig.height=5}
 #| label: fig-estapa-method_article
@@ -231,7 +233,7 @@ part_slope <- rbind(part1, part2)
 # spot negative jump
 tmp2$colour[which((tmp2$colour == 'jump') & (tmp2$jump < 0))]  <- 'negative jump'
   
-# add big particles flux
+# add large particles flux
 rows_to_keep <- c(jump_index, jump_index-1) 
 tmp3 <- tmp2[rows_to_keep,] |> select(dates, cp, jump, colour, group) |> dplyr::arrange(dates)
   
@@ -251,20 +253,20 @@ if(length(check_colour) == 3){
   tmp3 <- NULL
   }
   
-# big particles flux
+# large particles flux
 if(is.null(tmp3)){ # no jumps
-  big_part_poc_flux <- 0
+  large_part_poc_flux <- 0
 }else{
   tmp4 <- tmp3 |> filter(diff_jump > 0)
   if(nrow(tmp4) == 0){ # no positive jumps
-    big_part_poc_flux <- 0
+    large_part_poc_flux <- 0
   }else{
     delta_y <- sum(tmp4$diff_jump) *0.25 # to get ATN (= cp*0.25)
     max_time <- max(tmp2$dates)
     min_time <- min(tmp2$dates)
     delta_x <- as.numeric(difftime(max_time, min_time, units = 'days'))
-    slope_big_part <- delta_y/delta_x
-    big_part_poc_flux <- 633*(slope_big_part**0.77)
+    slope_large_part <- delta_y/delta_x
+    large_part_poc_flux <- 633*(slope_large_part**0.77)
   }
 }
   
@@ -323,6 +325,12 @@ plot_jumps <- function(data){
   spikes_up <-  tmp$zscore > quantile(tmp$zscore, 0.75, na.rm=T) + 1.5 *IQR
   spikes <- as.logical(spikes_down + spikes_up)
   
+  # IQR <- quantile(tmp$slope, probs = 0.75, na.rm=T) - quantile(tmp$slope, probs = 0.25, na.rm=T)
+  # # outliers ('spikes' in the Z score signal)
+  # spikes_down <- tmp$slope < quantile(tmp$slope, 0.25, na.rm=T) - 1.5 *IQR
+  # spikes_up <-  tmp$slope > quantile(tmp$slope, 0.75, na.rm=T) + 1.5 *IQR
+  # spikes <- as.logical(spikes_down + spikes_up)
+  
   # assign spikes
   tmp$spikes <- spikes
   
@@ -372,7 +380,7 @@ plot_jumps <- function(data){
   # spot negative jump
   tmp$colour[which((tmp$colour == 'jump') & (tmp$slope < 0))]  <- 'negative jump'
   
-  # add big particles flux to the party
+  # add large particles flux to the party
   rows_to_keep <- c(jump_index, jump_index-1)
   tmp2 <- tmp[rows_to_keep,] |> select(dates, cp, slope, colour, group) |> arrange(dates)
   
@@ -387,19 +395,19 @@ plot_jumps <- function(data){
   }
   
   if(is.null(tmp2)){ # no jump
-    big_part_poc_flux <- 0
+    large_part_poc_flux <- 0
     tmp3 <- NULL
   }else{
     tmp3 <- tmp2 |> filter(diff_jump > 0)
     if(nrow(tmp3) == 0){ # no positive jumps
-      big_part_poc_flux <- 0
+      large_part_poc_flux <- 0
     }else{
       delta_y <- sum(tmp3$diff_jump) *0.25 # to get ATN (= cp*0.25)
       max_time <- max(tmp$dates)
       min_time <- min(tmp$dates)
       delta_x <- as.numeric(difftime(max_time, min_time, units = 'days'))
-      slope_big_part <- delta_y/delta_x
-      big_part_poc_flux <- 633*(slope_big_part**0.77)
+      slope_large_part <- delta_y/delta_x
+      large_part_poc_flux <- 633*(slope_large_part**0.77)
     }
   }
   
@@ -417,13 +425,13 @@ plot_jumps <- function(data){
     layout(title= paste0('Drifting time: ', round(drifting_time,3), ' days\n',
                          'Mean ATN slope (light blue): ', round(mean_slope,3), ' day-1\n',
                          'POC flux (small particles): ', round(poc_flux,1), ' mg C m-2 day-1\n',
-                         'POC flux (big particles): ', round(big_part_poc_flux,1), ' mg C m-2 day-1'), yaxis = list(title = 'Cp (1/m)'), xaxis = list(title = 'Time'))
+                         'POC flux (large particles): ', round(large_part_poc_flux,1), ' mg C m-2 day-1'), yaxis = list(title = 'Cp (1/m)'), xaxis = list(title = 'Time'))
   
   #return(jump_plot)
   #return(list('jump_plot' = jump_plot, 'jump_table' = tmp3))
   
-    # adapt script to return big and small flux
-  df <- tibble('max_time' = max_time, 'min_time' = min_time, 'small_flux' = poc_flux, 'big_flux' = big_part_poc_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],
+    # adapt script to return large and small flux
+  df <- tibble('max_time' = max_time, 'min_time' = min_time, 'small_flux' = poc_flux, 'large_flux' = large_part_poc_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],
                cycle = data$cycle[1])
   
   return(df)
@@ -435,7 +443,7 @@ plot_jumps <- function(data){
 # plot_jumps(tmp)
 ```
 
-```{r, compute Fsmall and F big}
+```{r, compute Fsmall and F large}
 
 # remove bad data from float 6904241
 float_6904241_slope <- float_6904241 |> filter(cycle < 20)
@@ -473,21 +481,21 @@ cflux <- res |> dplyr::mutate(drifting_time = difftime(max_time, min_time, units
 cflux_info_table <- cflux |> dplyr::group_by(park_depth) |> summarize(min_smallf = min(small_flux, na.rm=T), max_smallf = max(small_flux, na.rm=T),
                                                                 mean_smallf = mean(small_flux, na.rm=T), median_smallf = median(small_flux, na.rm=T),
                                                                 std_smallf = sd(small_flux, na.rm=T),
-                                                                min_bigf = min(big_flux, na.rm=T), max_bigf = max(big_flux, na.rm=T),
-                                                                mean_bigf = mean(big_flux, na.rm=T), median_bigf = median(big_flux, na.rm=T),
-                                                                std_bigf = sd(big_flux, na.rm=T))
+                                                                min_largef = min(large_flux, na.rm=T), max_largef = max(large_flux, na.rm=T),
+                                                                mean_largef = mean(large_flux, na.rm=T), median_largef = median(large_flux, na.rm=T),
+                                                                std_largef = sd(large_flux, na.rm=T))
 
 cflux$date <- as_date(cflux$min_time)
 ```
 
-$F_{small}$ and $F_{big}$ were computed at each drifting depth for all floats (@fig-OST-flux). At 200 m, $F_{small}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ (average $\pm$ standard deviation). At 500 m, $F_{small}$ is comprised between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_smallf, 1)` mg C m$^{2}$ day$^{-1}$. For both drifting depths, the trend shows a decrease of $F_{small}$ from June to, respectively, January and February before the drift was stopped at those depths due to the deepening of the winter MLD (@fig-mld) in order to ensure the float stability. At 1000 m, all floats measured an increase of $F_{small}$ from late May to mid/end of July followed by a steady decrease towards March, with $F_{small}$ ranging between `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ on average.
+$F_{small}$ and $F_{large}$ were computed at each drifting depth for all floats (@fig-OST-flux). At 200 m, $F_{small}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ (average $\pm$ standard deviation). At 500 m, $F_{small}$ is comprised between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_smallf, 1)` mg C m$^{2}$ day$^{-1}$. For both drifting depths, the trend shows a decrease of $F_{small}$ from June to, respectively, January and February before the drift was stopped at those depths due to the deepening of the winter MLD (@fig-mld) in order to ensure the float stability. At 1000 m, all floats measured an increase of $F_{small}$ from late May to mid/end of July followed by a steady decrease towards March, with $F_{small}$ ranging between `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$min_smallf, 1)` and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_smallf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_smallf, 1)` mg C m$^{-2}$ day$^{-1}$ on average.
 
-```{r, Fsmall and Fbig, fig.width=8, fig.height=6}
+```{r, Fsmall and Flarge, fig.width=8, fig.height=6}
 #| label: fig-OST-flux
-#| fig-cap: OST-derived small (top) and big (bottom) particles carbon flux for all floats at each drifting depth. Black lines and shaded areas represent, respectively, the monthly mean flux and the 95% confidence interval around the mean. There is no data after January and February at, respectively, 200 m and 500 m because the drifting was stopped at those depths due to the deepening of the MLD.
+#| fig-cap: OST-derived small (top) and large (bottom) particles carbon flux for all floats at each drifting depth. Black lines and shaded areas represent, respectively, the monthly mean flux and the 95% confidence interval around the mean. There is no data after January and February at, respectively, 200 m and 500 m because the drifting was stopped at those depths due to the deepening of the MLD.
 
 # add black data to have the same x axis for all drifting depths (to show that we stopped the drifting at 200 and 500 m)
-blank_data <- tibble(max_time = c(NA, NA), min_time = c(NA,NA), small_flux = c(NA,NA), big_flux = c(NA,NA), park_depth = c('200 m', '500 m'),
+blank_data <- tibble(max_time = c(NA, NA), min_time = c(NA,NA), small_flux = c(NA,NA), large_flux = c(NA,NA), park_depth = c('200 m', '500 m'),
                      wmo = rep(4903634,2), cycle = c(NA,NA), drifting_time = c(NA,NA), WMO = rep(as.factor(4903634),2), date = rep('2023-03-05',2))
 
 tmp <- rbind(cflux, blank_data)
@@ -503,14 +511,14 @@ up <- tmp |> ggplot(aes(x = date, y = small_flux)) +
   scale_y_continuous(trans = 'log10') +
   theme_bw() 
 
-down <- tmp |> ggplot(aes(x = date, y = big_flux)) +
-  geom_point(data = tmp, aes(x = date, y = big_flux, colour = WMO, shape = WMO)) +
-  geom_smooth(data = tmp, aes(x = date, y = big_flux), colour = 'black') +
+down <- tmp |> ggplot(aes(x = date, y = large_flux)) +
+  geom_point(data = tmp, aes(x = date, y = large_flux, colour = WMO, shape = WMO)) +
+  geom_smooth(data = tmp, aes(x = date, y = large_flux), colour = 'black') +
   scale_color_brewer(palette = 'Dark2') + 
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
   guides(fill=guide_legend(title="WMO")) +
   facet_wrap(~park_depth, scales = 'free') +
-  labs(x = 'Month', y = TeX('$F_{big}$ (mg C m$^{-2}$ day$^{-1}$)')) +
+  labs(x = 'Month', y = TeX('$F_{large}$ (mg C m$^{-2}$ day$^{-1}$)')) +
   theme_bw() +
   scale_y_continuous(trans = 'log10') +
   theme(legend.position = 'none') 
@@ -559,7 +567,7 @@ mld_plot <- ggplot(mld_data) + geom_line(aes(x = date, y = mld, colour = WMO)) +
 mld_plot
 ```
 
-$F_{big}$ was estimated at 200 m between 0 (no deposition of big particles on the transmissometer window) and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$. High fluxes (\> 100 mg C m$^{-2}$ day$^{-1}$) were measured by 3 out of 4 floats at the end of May before a sharp decrease towards July. At 500 m, $F_{big}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$, decreasing from September to February. At 1000 m, $F_{big}$ shows a similar pattern than the one observed for $F_{small}$ with an increase from June to mid-July, followed by a decrease towards March, with values ranging from 0 to `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_bigf, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_bigf, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_bigf, 1)` mg C m$^{-2}$ day$^{-1}$.
+$F_{large}$ was estimated at 200 m between 0 (no deposition of large particles on the transmissometer window) and `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$max_largef, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$mean_largef, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '200 m',]$std_largef, 1)` mg C m$^{-2}$ day$^{-1}$. High fluxes (\> 100 mg C m$^{-2}$ day$^{-1}$) were measured by 3 out of 4 floats at the end of May before a sharp decrease towards July. At 500 m, $F_{large}$ ranges between `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$min_largef, 1)` mg C m$^{-2}$ day$^{-1}$ and `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$max_largef, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$mean_largef, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '500 m',]$std_largef, 1)` mg C m$^{-2}$ day$^{-1}$, decreasing from September to February. At 1000 m, $F_{large}$ shows a similar pattern than the one observed for $F_{small}$ with an increase from June to mid-July, followed by a decrease towards March, with values ranging from 0 to `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$max_largef, 1)` mg C m$^{-2}$ day$^{-1}$ with an average of `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$mean_largef, 1)` $\pm$ `r round(cflux_info_table[cflux_info_table$park_depth == '1000 m',]$std_largef, 1)` mg C m$^{-2}$ day$^{-1}$.
 
 ### UVP6 particle abundance
 
@@ -683,7 +691,7 @@ p1000m
 
 #### On profiling mode
 
-Vertical profiles of particle concentration in the lower (102 - 512 $\mu$m) and upper (0.512 - 2.5 mm) size range of the UVP6 shows similar patterns across all floats. In the lower part of the size spectrum, @fig-uvp6-profiling-102-406 shows the rapid emptying of the water column in November. This process occurred on the entire water column (e.g. size class 406, float 4903634) but also started with more intensity from below the surface (e.g. size class 102, float 6904240). All floats also measured a local particle abundance maximum around 800 - 1000 m whose origin could be due to a previous particle export or remineralization of bigger particles.
+Vertical profiles of particle concentration in the lower (102 - 512 $\mu$m) and upper (0.512 - 2.5 mm) size range of the UVP6 shows similar patterns across all floats. In the lower part of the size spectrum, @fig-uvp6-profiling-102-406 shows the rapid emptying of the water column in November. This process occurred on the entire water column (e.g. size class 406, float 4903634) but also started with more intensity from below the surface (e.g. size class 102, float 6904240). All floats also measured a local particle abundance maximum around 800 - 1000 m whose origin could be due to a previous particle export or remineralization of largeger particles.
 
 ```{r, UVP6 profiling mode without sinking speed small classes, fig.height=8, fig.width=8}
 #| label: fig-uvp6-profiling-102-406
@@ -713,7 +721,7 @@ up_part
 
 In the upper part of the size range, @fig-uvp6-profiling-512-2500 shows a rapid emptying of the entire water column starting in November. In contrast with small classes (referred to here as below 512 $\mu$m), some particles, especially above 1.5 mm, have almost entirely disappeared from the water column by September. However, the rapid increase and decrease of particles on the entire water column around July-August for floats 6904241 and 1902578 (still in the same zone at that time) could suggest an export event.
 
-```{r, UVP6 profiling mode without sinking speed big classes, fig.height=8, fig.width=8}
+```{r, UVP6 profiling mode without sinking speed large classes, fig.height=8, fig.width=8}
 #| label: fig-uvp6-profiling-512-2500
 #| fig-cap: Vertical profiles of UVP6 particle concentration for size classes in the 0.512 - 2.5 mm size range. Concentrations were normalized for each size class. The colorbar is in log$_{10}$ scale. The gray background depicts the absence of particle in the specified size class.
 
@@ -818,11 +826,11 @@ mld_plot <- ggplot(mld_cover |> filter(date > '2022-03-01')) + geom_errorbar(aes
 chla_plot / mld_plot
 ```
 
-The Chla satellite pattern for the 6904240-4903634 pair typically describes the dynamics of the spring bloom in the northern part of the LS [@Lacour2015-da]. This is not surprising given that this pair was deployed one degree southward to the so-called 60°N limit [@Lacour2015-da]. @fig-chla-mld-satellite shows that the satellite MLD in that region had already shoaled below 100 m since March and that the water column was stable and relatively well stratified in May which might explain the intensity of surface Chla concentrations in contrast with those measured at the second deployment site. The two other floats were deployed in the bioregion where the phytoplankton biomass typically develops slowly in May to reach its maximum in June [@Lacour2015-da]. However, the Chla pattern observed in @fig-chla-mld-satellite could suggest that the development of the phytoplankton biomass was stopped by an increase in the MLD at the end of May and that it started again in mid-June when the water column was well stratified. <!-- However, the increase of the MLD in June could have also impacted the intensity of the bloom which might explain the three times lower than Chla concentrations. However, the Chla satellite concentration (before deployment) for that pair was three times lower than for the other pair and the second Chla increase (satellite and in situ) was of the same order of magnitude. Therefore, the second pair was deployed in a less productive area and that the inten <!--Hence, it is possible that the bloom intensity was not sufficient to produce clear particle export signals, at least for BGC-Argo floats in their 10-day vertical sampling configuration. -->
+The Chla satellite pattern for the 6904240-4903634 pair typically describes the dynamics of the spring bloom in the northern part of the LS [@Lacour2015-da]. This is not surprising given that this pair was deployed one degree southward to the so-called 60°N limit [@Lacour2015-da]. @fig-chla-mld-satellite shows that the satellite MLD in that region had already shoaled below 100 m since March and that the water column was stable and relatively well stratified in May which might explain the intensity of surface Chla concentrations in contrast with those measured at the second deployment site. The latter is located in the bioregion where the phytoplankton biomass typically develops slowly in May to reach its maximum in June [@Lacour2015-da]. However, the Chla pattern observed in @fig-chla-mld-satellite could suggest that the development of the phytoplankton biomass was stopped by an increase in the MLD at the end of May and that it started again in mid-June when the water column was well stratified. <!-- However, the increase of the MLD in June could have also impacted the intensity of the bloom which might explain the three times lower than Chla concentrations. However, the Chla satellite concentration (before deployment) for that pair was three times lower than for the other pair and the second Chla increase (satellite and in situ) was of the same order of magnitude. Therefore, the second pair was deployed in a less productive area and that the inten <!--Hence, it is possible that the bloom intensity was not sufficient to produce clear particle export signals, at least for BGC-Argo floats in their 10-day vertical sampling configuration. -->
 
 ### Phytoplankton communities at deployment sites
 
-Here, we refer to the first and second deployment as, respectively, station A and station B. High Performance Liquid Chromatography (HPLC) analyses were performed on samples taken during the two deployments. The selected pigments, their taxonomic significance and their size class were taken from Table 2 in @Petit2022-de. Station A showed Chla concentrations (TChla pigment in @fig-hplc) two times higher than in station B in the first 100 m as well as higher concentrations of diatoms (Fucoxanthin). Station B showed higher concentrations of cryptophytes (Alloxanthin), dinoflagellates (Peridin) and green flagellates and prochlorophytes (TChlb) than in station A. However, their absolute concentrations are quite low (usually less than 0.05 mg m$^{-3}$). Taking that into consideration, it seems that station A was more productive than station B and was dominated by diatoms (i.e. microphytoplankton) whereas station B was composed of a majority of smaller phytoplankton species (mostly nano and picozooplankton). This supports the idea of two distinct bloom dynamics as inferred from satellite data.
+Here, we refer to the first and second deployment sites as, respectively, station A and station B. High Performance Liquid Chromatography (HPLC) analyses were performed on samples taken during the two deployments. The selected pigments, their taxonomic significance and their size class were taken from Table 2 in @Petit2022-de. Station A showed Chla concentrations (TChla pigment in @fig-hplc) two times higher than in station B in the first 100 m as well as higher concentrations of diatoms (Fucoxanthin). Station B showed higher concentrations of cryptophytes (Alloxanthin), dinoflagellates (Peridin) and green flagellates and prochlorophytes (TChlb) than in station A. However, their absolute concentrations are quite low (usually less than 0.05 mg m$^{-3}$). Taking that into consideration, it seems that station A was more productive than station B and was dominated by diatoms (i.e. microphytoplankton) whereas station B was composed of a majority of smaller phytoplankton species (mostly nano and picozooplankton). This supports the idea of two distinct bloom dynamics as inferred from float and satellite data.
 
 ```{r, hplc, fig.width=8, fig.height=6}
 #| label: fig-hplc
@@ -850,13 +858,13 @@ hplc <- hplc |> pivot_longer(cols = c(Zeaxanthin, TChlb, `19'-Hexanoyloxyfucoxan
 
 ggplot(hplc) + geom_path(aes(y = depth, x = concentration, colour = station)) + 
   facet_wrap(~pigment, scales = 'free') + scale_y_reverse() +
-  labs(colour = 'Station', x = TeX('Concentration (mg m$^{-3}$)'), y = 'Depth (m)') +
+  labs(colour = '', x = TeX('Concentration (mg m$^{-3}$)'), y = 'Depth (m)') +
   theme_bw() + scale_color_manual(values = c('#E31B23', '#003366'))
 ```
 
 ### Unclear particle export signature
 
-Even though we suggested that the two pairs of floats were deployed in two different bloom regimes, they all measured an increase in particle concentrations in the 102 - 512 $\mu$m range (@fig-uvp6-profiling-102-406) around 800 - 1000 m as well as an increase in the abundance of big particles (@fig-uvp6-profiling-512-2500) between June and August. This increase raises the question of a possible particle export event. For classes \> 512 $\mu$m, the vertical concentration profiles highlight a bigger particle plume for the 6904241-1902578 pair than for the other one. However, apart from the float 6904240, all floats measured similar integrated Chla content in the upper 100 m and in the mixed layer (@fig-chla-content). @fig-OST-flux also shows that $F_{small}$ is similar across all floats at all parking depths and that $F_{big}$ is also similar across all floats at 1000 m with the same increase (from June to August) than for F$_{small}$. The same behavior is observed for UVP6 particles in the lower size range at 1000 m (@fig-uvp-1000m). Observing similar properties across a wide geographical range around deployments suggests that we observe the latent dynamics of the system rather than episodic export events.
+Even though we suggested that the two pairs of floats were deployed in two different bloom regimes, they all measured an increase in particle concentrations in the 102 - 512 $\mu$m range (@fig-uvp6-profiling-102-406) around 800 - 1000 m as well as an increase in the abundance of large particles (@fig-uvp6-profiling-512-2500) between June and August. This increase raises the question of a possible particle export event. For classes \> 512 $\mu$m, the vertical concentration profiles highlight a largeger particle plume for the 6904241-1902578 pair than for the other one. However, apart from the float 6904240, all floats measured similar integrated Chla content in the upper 100 m and in the mixed layer (@fig-chla-content). @fig-OST-flux also shows that $F_{small}$ is similar across all floats at all parking depths and that $F_{large}$ is also similar across all floats at 1000 m with an increase from June to August as observed in F$_{small}$. The same behavior is observed for UVP6 particles in the lower size range at 1000 m (@fig-uvp-1000m). Observing similar properties across a wide geographical range around deployments suggests that we observe the latent dynamics of the system rather than episodic export events.
 
 ```{r, mld + chla, fig.height=6, fig.width=8}
 #| label: fig-chla-content
@@ -925,7 +933,7 @@ taxo_6904241 <- vroom::vroom('DATA/ARGO/6904241_TAXO_FromNetCDF.csv') |> mutate(
 all_taxo <- rbind(taxo_1902578, taxo_4903634, taxo_6904240, taxo_6904241) |> mutate(wmo = factor(wmo, levels = c('6904240','4903634','6904241','1902578')))
 
 # test taxo -> pas forcément concluant -> à creuser..
-#ggplot(taxo_1902578 |> filter(cycle == 3)) + geom_point(aes(x = concentration, y = -depth))
+#ggplot(taxo_6904241 |> filter(cycle == 3)) + geom_point(aes(x = conc_calanoid, y = -depth))
 ```
 
 ```{r, spiciness, fig.width=6, fig.height=10}
@@ -968,7 +976,7 @@ part102 <- particles_bis |> filter(depth <= 1000, size == 102) |>
 taxo_plot <- all_taxo |> filter(depth <= 1000) |> mutate(date = as.Date(date)) |> filter(date < as.Date("2023-06-03")) |>
   #group_by(size) |>
   ggplot() + facet_wrap(~wmo, ncol = 4) + theme_bw() +
-  geom_point(aes(x=date, y=depth, colour=log10(concentration)), size=1, shape=15) +
+  geom_point(aes(x=date, y=depth, colour=log10(conc_calanoid)), size=1, shape=15) +
   scale_color_cmocean(name = 'thermal', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = 1) +
   scale_y_reverse() +
   scale_x_date(labels = date_format("%m"), date_breaks = '3 month') +
@@ -985,36 +993,30 @@ spectral_slope_plot <- vertical_profiles |> filter(depth <= 1000) |> mutate(wmo 
 density / spiciness / taxo_plot / spectral_slope_plot / part102
 ```
 
-Still, it is unclear why we observe a progressive emptying of the water column starting below 500 m for size classes below 323 $\mu$m [@fig-uvp6-profiling-102-406]. This pattern could result from several causes. It could either be the signature of a subduction event [@Llort2018-pa] either the end of a slow sinking export (i.e latent dynamic of the system) or a sign of disaggregation processes by zooplankton (i.e. zooplankton feeding). Therefore, we looked at physical properties (density anomaly and spiciness) and well as particle characteristics (zooplankton concentration and spectral slope) to investigate this particularity (@fig-spice). Spiciness is a variable that allows the differentiation of water masses with distinct thermohaline properties but similar density [@Flament2002-zm], to look for the signature of subduction. @fig-spice shows that both the density field and the spiciness field are uniform below 500 m hence it is unlikely that a subduction event would be the reason for this decrease in particle abundance below 500 m. Using the embedded zooplankton classification results from the UVP6, we looked at concentrations of *Calanoida*, a species that is abundant in the NA [@Corkett1979-ha]. @fig-spice shows that the concentration of *Calanoida* increase with depth similarly to the plume observed in @fig-uvp6-profiling-512-2500. However, their concentrations decrease with the advent of a poorer water column in terms of particles (see @fig-uvp6-profiling-102-406 and @fig-uvp6-profiling-512-2500). The last panel of that figure shows that the particle concentrations for the smallest size class had already slightly decreased when the the *Calanoida* were at their maximum (see below 500 m between August and November). This could correspond to zooplankton feeding where *Calanoida* would ingest small particles until food vanishes. The spectral slope defines the slope of the PSD where a high (in absolute values) spectral slope indicates that small particules dominate the PSD. The panel on spectral slopes in @fig-spice shows a lower (in absolute values) spectral slope at the beginning of the time series that is concurrent with *Calanoida* abundance at first order (except for float 4903634). Would this mean that *Calanoida* feed on small particles and eject fecal pellets (via repackaging) that in turn would be the source of big particles observed in @fig-uvp6-profiling-512-2500? Such an hypothesis would solve the issue brought earlier by trying to link the surface to the big particle plume but at this stage, it is very difficult conclude without more data.
+Still, it is unclear why we observe a progressive emptying of the water column starting below 500 m for size classes below 323 $\mu$m [@fig-uvp6-profiling-102-406]. This pattern could result from several causes. It could either be the signature of a subduction event [@Llort2018-pa] either the end of a slow sinking export (i.e latent dynamic of the system) or a sign of disaggregation processes by zooplankton (i.e. zooplankton feeding). Therefore, we looked at physical properties (density anomaly and spiciness) and well as particle characteristics (zooplankton concentration and spectral slope) to investigate this particularity (@fig-spice). Spiciness is a variable that allows the differentiation of water masses with distinct thermohaline properties but similar density [@Flament2002-zm]. @fig-spice shows that both the density field and the spiciness field are uniform below 500 m hence it is unlikely that a subduction event would be the reason for this decrease in particle abundance below 500 m. Using the embedded zooplankton classification results from the UVP6, we looked at concentrations of *Calanoida*, a species that is abundant in the NA [@Corkett1979-ha]. @fig-spice shows that the concentration of *Calanoida* is higher from the end of May to July in the surface layer. There seems to be a lower patch between 250 and 500 m from August to November however it is difficult to estimate their impact on particle concentrations at this stage. Finally, we computed the spectral slope to look for aggregation/fragmentation processes. The spectral slope defines the slope of the PSD where a high (in absolute values) spectral slope indicates that small particules dominate the PSD. Here, the panel on spectral slopes in @fig-spice shows a lower (in absolute values) spectral slope at the beginning of the time series but it is also difficult to attach it to biological processes such as zooplankton feeding without additional data.
 
-All things considered, it is not straightforward to conclude for the presence of a carbon export event. First, the 10-day profiling configuration hinders the characterization of particle export events that are transient processes. Second, the plume of big particles can be misleading because their abundance measured by the UVP6 are very low (usually \< 0.1 #/L). However, the plume could be the result of aggregation (repackaging) by zooplankton feeding on small particles. Third, all floats measured the same particle dynamics in distinct zones which suggests that if the two systems were initially different (i.e. different bloom dynamics), they merged back after the bloom of May. Therefore, we suggest that we mostly observe the latent dynamics of the system rather than clear export signatures that would likely be spotted with both higher bloom intensities (e.g. the May bloom that was missed) and a higher profiling temporal resolution.
+All things considered, it is not straightforward to conclude for the presence of a carbon export event. First, the 10-day profiling configuration hinders the characterization of particle export events that are transient processes. Second, the plume of large particles can be misleading because their abundance measured by the UVP6 are very low (usually \< 0.1 #/L). However, the plume could be the result of aggregation (repackaging) by zooplankton feeding on small particles. Third, all floats measured the same particle dynamics in distinct zones which suggests that if the two systems were initially different (i.e. different bloom dynamics), they merged back after the bloom of May. Therefore, we suggest that we mostly observe the latent dynamics of the system rather than clear export signatures that would likely be spotted with both higher bloom intensities (e.g. the May bloom that was missed) and a higher profiling temporal resolution.
 
 ### Comparing OST and UVP data
 
-For the first time, BGC-Argo floats equipped with both a transmissometer and a UVP6 have been deployed to better characterize the downward carbon flux and the nature of sinking particles from a multi-instrument approach [@Claustre2021-tx]. The quantification of the POC flux using the OST method [@Bishop2004-at; @Estapa2013-gw; @Estapa2017-jr] is based on an empirical POC:ATN ratio \[REF estapa 2022\] whereas UVP6 PSD measurements are used to compute POC fluxes using @eq-guidi-article3:
+#### Carbon flux trends and estimations
+
+For the first time, BGC-Argo floats equipped with both an OST and a UVP6 have been deployed to better characterize the downward carbon flux and the nature of sinking particles from a multi-instrument approach [@Claustre2021-tx]. The quantification of the POC flux using the OST method [@Bishop2004-at; @Estapa2013-gw; @Estapa2017-jr; @Estapa2019-nk; @Estapa2023-oz] is based on an empirical POC:ATN ratio [@Estapa2023-oz] whereas UVP6 PSD measurements are used to compute POC fluxes using @eq-guidi-article3:
 
 $$
 F = \sum_{i}^{N}C_{i}Ad_{i}^{b}
 $$ {#eq-guidi-article3}
 
-where $C_{i}$, A and b represent, respectively, the concentration of particles (number/L) for the $i^{th}$ class of mean diameter $d_{i}$ (in mm) and 2 constants with $b$ being related to the fractal dimension ($D$) of an aggregate by $D = (b +1)/2$ [@Guidi2008-vp].
+where $C_{i}$, A and b represent, respectively, the concentration of particles (#/L) for the $i^{th}$ class of mean diameter $d_{i}$ (in mm) and 2 constants with $b$ being related to the fractal dimension ($D$) of an aggregate by $D = (b +1)/2$ [@Guidi2008-vp].
 
 The use of @eq-guidi-article3 to derive carbon fluxes from PSD was firstly implemented by @Guidi2008-vp who used a minimization procedure between sediment traps data and estimated fluxes using PSD from several previous versions of the UVP to find the optimal value of $A$ and $b$ (i.e. 12.5 and 3.81). @Iversen2010-an and @Fender2019-ou followed the same procedure and concluded that the couple of parameters found by [@Guidi2008-vp] could not be used globally at the expense of greatly over- or underestimating POC fluxes, depending on the sampling region. In addition, the formulation of such a model implies that $A$ and $b$ would be valid at global scale, at all depths, for all UVP models and across all size classes which is arguable [@Bisson2022-bt]. @eq-guidi-article3 also assumes that the flux is only size-dependent though the main driver for the settling of aggregates is still debated [@Iversen2020-kb; @Iversen2023-qj]. As a result, the direct comparison of carbon fluxes derived from both OST and UVP data with @eq-guidi-article3 should be focused on the trend rather than on absolute carbon flux values.
 
-```{r, compute guidi fluxes at parking depth, fig.height=6, fig.width=6}
+```{r, compute guidi fluxes at parking depth, fig.height=6, fig.width=8}
 #| label: fig-comparison-ost-uvp
-#| fig-cap: Comparison of total carbon fluxes derived from the OST (black) and the UVP6 (red) where the error bars represent the 25$^{th}$ and 75$^{th}$ percentiles around the median. 
+#| fig-cap: Comparison of total carbon fluxes (F$_{small}$ + F$_{large}$) derived from the OST (black) and the UVP6 using the A and b values of @Guidi2008-vp (red) and @Iversen2010-an (yellow) in @eq-guidi-article3. OST data from float 6904241 stops in November due to a transmissometer failure.
 
 compute_flux <- function(A, b, PSD){ # PSD = Particle Size Distribution
-  # for classes sizes between 0.102 mm and 1.5 mm
-  #mid_ESD <- c(0.1164512, 0.1463600, 0.1843915, 0.2325200, 0.2933257, 0.3691650, 0.4650400, 0.5860455, 0.7385533, 0.9280422, 1.1705684, 1.4795321) # With Rainer's code (paruvpy)
-  # mid_ESD <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685,
-  #              0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
-  #              1.16170742, 1.46365963) # With Lionel's script
-  # mid_ESD <- c(0.23051195, 0.29042685,
-  #              0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
-  #              1.16170742, 1.46365963) # With Lionel's script
-  #mid_ESD <- c(0.287555212,0.362129811,0.455929819,0.57466512,0.724144323,0.91063714,1.147083258,1.450068964)
+  # for classes sizes between 0.25 mm and 1.5 mm
   mid_ESD <- c(0.29042685,
                0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
                1.16170742, 1.46365963) # With Lionel's script
@@ -1047,7 +1049,7 @@ parking_data <- parking_data |> dplyr::mutate(rainer_flux = compute_flux_rainer(
 parking_data <- parking_data |> dplyr::mutate(iversen_flux = compute_flux(273, 4.27, parking_spectra)) 
 
 # plot it
-comparison_flux_ost_uvp <- merge(parking_data, cflux) |> dplyr::mutate(total_flux = small_flux + big_flux)
+comparison_flux_ost_uvp <- merge(parking_data, cflux) |> dplyr::mutate(total_flux = small_flux + large_flux)
 
 # add guidi flux obtained with fminsearch
 # mean_d <- c(0.29042685, 0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
@@ -1066,7 +1068,7 @@ comparison_flux_ost_uvp <- merge(parking_data, cflux) |> dplyr::mutate(total_flu
 comparison_flux_ost_uvp <- comparison_flux_ost_uvp |> dplyr::mutate(guidi_flux_fminsearch = compute_flux(21.98, 1.18, parking_spectra))
 
 # https://stackoverflow.com/questions/41077199/how-to-use-r-ggplot-stat-summary-to-plot-median-and-quartiles
-ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
+ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux), colour = 'black') + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
   geom_errorbar(aes(x = date, y = guidi_flux),
                       stat = 'summary',
                       #fun.min = function(z) {quantile(z, 0.25)},
@@ -1079,181 +1081,173 @@ ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux)) + fac
                       stat = 'summary',
                       #fun.min = function(z) {quantile(z, 0.25)},
                       #fun.max = function(z) {quantile(z, 0.75)},
-                      fun = median, colour = '#003366', width = 5) +
+                      fun = median, colour = '#FFC325', width = 5) + # #003366
     geom_line(aes(x = date, y = iversen_flux),
                       stat = 'summary',
-                      fun = median, colour = '#003366') + 
+                      fun = median, colour = '#FFC325') + 
   scale_y_continuous(trans = 'log10') + theme_bw() + labs(x = 'Month', y = TeX('$F_{total}$ (mg C m$^{-2}$ day$^{-1}$)')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month')
-
 ```
-
-```{r, and on the vertical?}
-
-#TO OR NOT TO DO?
-
-```
-
-ici je compare finalement un système ultra productif (iversen) et un système pas produtif (lionel) -\> on se situerait entre les deux. Après je peux fournir els valeurs que j'ai trouvées avec le fminsearch avec la fonctiono optimize depython (21.98 et 1.18. Mais bon, cela assumerait que 'lon pourrait prendre l'OST comme référence, ce qui est un peu too much..)
 
 ```{r, correlations between OST and UVP carbon fluxes}
 #| label: tbl-correlation
-#| tbl-cap: TODO
-correlations <- comparison_flux_ost_uvp |> dplyr::select(park_depth, wmo, cycle, guidi_flux, small_flux, big_flux, date, total_flux) |> dplyr::group_by(wmo, park_depth, cycle) |> dplyr::mutate(median_guidi_flux = median(guidi_flux)) |> dplyr::group_by(park_depth, wmo) |> dplyr::summarize(cor_small = round(cor(median_guidi_flux, small_flux),2), cor_big = round(cor(median_guidi_flux, big_flux),2), cor_total = round(cor(median_guidi_flux, total_flux),2))
+#| tbl-cap: Pearson correlations between UVP6 PSD-derived carbon fluxes and total, large particles and small particles carbon flux measured by the OST at 3 drifting depths.
+correlations <- comparison_flux_ost_uvp |> dplyr::select(park_depth, wmo, cycle, guidi_flux, small_flux, large_flux, date, total_flux) |> dplyr::group_by(wmo, park_depth, cycle) |> dplyr::mutate(median_guidi_flux = median(guidi_flux)) |> dplyr::group_by(park_depth, wmo) |> dplyr::summarize(cor_small = round(cor(median_guidi_flux, small_flux),2), cor_large = round(cor(median_guidi_flux, large_flux),2), cor_total = round(cor(median_guidi_flux, total_flux),2))
 
-correlations <- correlations |> pivot_wider(names_from = park_depth, values_from = c(cor_small, cor_big, cor_total))
+correlations <- correlations |> pivot_wider(names_from = park_depth, values_from = c(cor_small, cor_large, cor_total))
 
-gt(correlations) |> tab_spanner(label = "Small flux", columns = 2:4) |> tab_spanner(label = "Big flux", columns = 5:7) |> tab_spanner(label = 'Total flux', columns = 8:10) |>
+gt(correlations) |> tab_spanner(label = "Small flux", columns = 2:4) |> tab_spanner(label = "Large flux", columns = 5:7) |> tab_spanner(label = 'Total flux', columns = 8:10) |>
   cols_label(wmo = 'WMO', `cor_small_200 m` = '200 m',
              `cor_small_500 m` = '500 m',
              `cor_small_1000 m` = '1000 m',
-             `cor_big_200 m` = '200 m',
-             `cor_big_500 m` = '500 m',
-             `cor_big_1000 m` = '1000 m',
+             `cor_large_200 m` = '200 m',
+             `cor_large_500 m` = '500 m',
+             `cor_large_1000 m` = '1000 m',
              `cor_total_200 m` = '200 m',
              `cor_total_500 m` = '500 m',
              `cor_total_1000 m` = '1000 m')
-
 ```
 
-Figure @fig-comparison-ost-uvp shows a comparison of carbon fluxes estimated with the OST ($F_{total} = F_{small} + F_{big}$) and the UVP6 (median of all UVP measurements while the float was drifting) at all drifting depths. Overall, carbon fluxes estimated with the coefficients ($A$, $b$) of @Guidi2008-vp, are lower than the ones measured by the OST. Without additional measurements (e.g. co-deployed sediment traps), it is however impossible to decipher which measurements is closest to the truth. Nonetheless, the trends measured by both instruments are very well correlated at all drifting depths for floats 6904240 and 6904241 with correlations comprised between `r min(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])` and `r max(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])`. @tbl-correlation also shows that the correlation between UVP-derived carbon fluxes and $F_{small}$ and $F_{big}$ is `r mean(as.vector(as.matrix(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,2:7])))` on average. We calculated lower correlations with the other two floats, especially the float 1902578 at 200 m, where correlations between the UVP-derived carbon fluxes and all fluxes (small, big and total) are close to 0.
+@fig-comparison-ost-uvp shows the comparison between the total carbon flux measured by the OST ($F_{total} = F_{small} + F_{large}$) and the UVP6 (median of all UVP measurements while the float was drifting) at all drifting depths. Overall, carbon fluxes estimated with the $A$ and $b$ coefficients of @Guidi2008-vp are lower than the ones measured by the OST whereas the same estimation using the coefficient of @Iversen2010-an generally overestimates the OST at 200 m but is of the same order at 500 m and 1000 m. Without additional measurements (e.g. co-deployed sediment traps), it is however impossible to decipher which measurement is closest to the truth. Nonetheless, carbon fluxes measured at 1000 m by the OST and the UVP6 with the coefficients of @Iversen2010-an are both well correlated (\> 0.6 for all floats) and of similar magnitudes while carbon fluxes using @Guidi2008-vp are one order of magnitude lower. In their paper, @Iversen2010-an proposed that the carbon fluxes discrepancy could be due to different biogeochemical regimes where the relationship of @Guidi2008-vp was based on sediment traps at open ocean sites with lower carbon fluxes [@Honjo2008-kn] while the study site of @Iversen2010-an was located in a highly productive system at the continental margin off Cape Blanc in Mauritania. The LS is productive during the spring bloom [@Lacour2015-da] therefore it is coherent to find a closer relationship with estimations based on a highly productive system.
 
-Floats equipped with both a transmissometer and a UVP6 represent an opportunity to look at the influence of parts of the size spectrum on $F_{small}$ and $F_{big}$. For this, we decided to build a regression model using XGBoost, a gradient boosting method \[REF\], using biovolumes measured by the UVP to predict the slope of $F_{small}$ and $F_{big}$ measured by the OST.
+The trends of total flux measured by both instruments are very well correlated at all drifting depths for floats 6904240 and 4903634 with correlations (see @tbl-correlation) ranging from `r min(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])` to `r max(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,8:10])`. @tbl-correlation also shows that the correlation between UVP-derived carbon fluxes and $F_{small}$ and $F_{large}$ is `r round(mean(as.vector(as.matrix(correlations[correlations$wmo %in% c(6904240, 4903634),][1:2,2:7]))),2)` on average. We calculated lower correlations with the other two floats, especially the float 1902578 at 200 m, where correlations between the UVP-derived carbon fluxes and all fluxes (small, large and total) are close to 0. Overall, it nevertheless suggests that there is a possibility to get more accurate estimations of carbon fluxes using PSD only therefore using only the particle size as an estimator of carbon flux, contrarily to what other studies have argued \[@Iversen2020-kb; @McDonnell2010-un; @Iversen2023-qj\].
+
+#### Nature of particles seen by the OST and the UVP6
+
+F$_{small}$ represents the continuous accumulation of small particles hence it could be related to the accumulated biovolume of particles seen by the UVP6. Similarly, $F_{large}$ could be related to the biovolume seen by the UVP6 when the OST detects jumps in the attenuation signal. Consequently, we firstly computed all the subslopes (see lightblue straight lines in @fig-estapa-method_article) and all the jumps at all drifting depths as well as the total biovolume seen by the UVP6 while the float was drifting. Then, we computed the average biovolume seen during each subslope duration and we associated the closest total biovolume (in time) with a jump.
 
 ```{r, get jump info}
 
-get_jump_info <- function(data){
-  
-  # make sure that the cp signal is in chronological order
-  tmp <- data |> arrange(dates)
-  
-  # despike cp data with a 7-point moving window
-  tmp$cp <- despike(tmp$cp, k = 3)
-  
-  # smooth cp data with a 3-point moving median, n time(s)
-  tmp$cp <- slide(tmp$cp, fun = median, k = 3, n = 1, na.rm=T)
-  
-  # compute slope between two adjacent points (except first point) # we could start after 1h to let the float stabilize
-  delta_x <- as.numeric(tmp$dates - lag(tmp$dates), units = 'days')
-  delta_y <- tmp$cp - lag(tmp$cp)
-  tmp$slope <- delta_y/delta_x
-  
-  # compute a Z score (assuming a normal distribution of the slopes) on the slopes
-  tmp <- tmp |> dplyr::mutate(zscore = (slope - mean(slope, na.rm = T))/sd(slope, na.rm = T))
-  
-  # spot outliers on the Z score signal
-  # interquartile range between Q25 and Q75 -> had to used that and not the despike function because slopes are often close (or equal) to 0 so it can miss clear jumps. Q25 and Q75 are more trustworthy in this case than the despike function of Jean-Olivier (see package castr on his github: https://github.com/jiho/castr)
-  IQR <- quantile(tmp$zscore, probs = 0.75, na.rm=T) - quantile(tmp$zscore, probs = 0.25, na.rm=T)
-  # outliers ('spikes' in the Z score signal)
-  spikes_down <- tmp$zscore < quantile(tmp$zscore, 0.25, na.rm=T) - 1.5 *IQR
-  spikes_up <-  tmp$zscore > quantile(tmp$zscore, 0.75, na.rm=T) + 1.5 *IQR
-  spikes <- as.logical(spikes_down + spikes_up)
-  
-  # assign spikes
-  tmp$spikes <- spikes
-  
-  # assign colour code to cp signal
-  tmp$colour <- 'base signal' # base signal = smoothed despiked cp signal
-  tmp[which(tmp$spikes == TRUE),]$colour <- 'jump'
-  
-  # add group to compute the slope of each group of points, separated by a jump
-  tmp$group <- NA
-  
-  # index of jumps in the array
-  jump_index <- which(tmp$colour == 'jump')
-  
-  # assign group identity to each group of points, separated by a jump (= subgroup)
-  for (i in jump_index){
-    for (j in 1:nrow(tmp)){
-      if ((j < i) & (is.na(tmp$group[j]))){
-        tmp$group[j] <- paste0('group_',i)
-      }
-    }
-  }
-  tmp$group[which(is.na(tmp$group))] <- 'last_group'
-  
-  # compute slope for each subgroup
-  slope_df <- tmp |> filter(colour == 'base signal', slope != 'NA') |> dplyr::group_by(group) |> dplyr::summarise(min_time = min(dates), max_time = max(dates), 
-                                                                                                                  nb_points = n(), first_cp = cp[1], last_cp = cp[nb_points],
-                                                                                                                  delta_x = as.numeric(difftime(max_time, min_time, units = 'days')),
-                                                                                                                  delta_y = (last_cp-first_cp)*0.25, slope = delta_y/delta_x) # *0.25 to convert cp to ATN
-  
-  # remove negative slope from the mean slope (no physical meaning)
-  slope_df <- slope_df |> filter(slope > 0)
-  
-  # remove if only one point (cannot fit a slope with one point)
-  slope_df <- slope_df |> filter(nb_points > 1)
-  
-  # compute weighted average slope (to take into account the fact that some subgroups might have 2 points and a high slope vs. large group of points with a small slope)
-  mean_slope <- sum(slope_df$nb_points * slope_df$slope)/sum(slope_df$nb_points)
-  
-  # convert cp to POC using Estapa's relationship 
-  poc_flux <- 633*(mean_slope**0.77) # /!\ slope computed for ATN on y axis (delta_y *0.25 because ATN = cp*0.25) -> should be OK
-  
-  # build dataframe to plot each subgroup
-  part1 <- slope_df |> dplyr::select(group, time = min_time, cp = first_cp)
-  part2 <- slope_df |> select(group, time = max_time, cp = last_cp)
-  part_slope <- rbind(part1, part2)
-  
-  # spot negative jump
-  tmp$colour[which((tmp$colour == 'jump') & (tmp$slope < 0))]  <- 'negative jump'
-  
-  # add big particles flux to the party
-  rows_to_keep <- c(jump_index, jump_index-1)
-  tmp2 <- tmp[rows_to_keep,] |> select(dates, cp, slope, colour, group) |> arrange(dates)
-  
-  # remove negative jumps, if any
-  check_colour <- unique(tmp2$colour)
-  if(length(check_colour) >= 2){ # there is a least a jump (positive or negative)
-    tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
-    even_indexes <- seq(2,nrow(tmp2),2)
-    tmp2 <- tmp2[even_indexes,]
-  }else{ # No jump
-    tmp2 <- NULL
-  }
-  
-  if(is.null(tmp2)){ # no jump
-    big_part_poc_flux <- 0
-    tmp3 <- NULL
-  }else{
-    tmp3 <- tmp2 |> filter(diff_jump > 0) # remove negative
-    if(nrow(tmp3) == 0){ # no positive jumps
-      big_part_poc_flux <- 0
-    }else{
-      delta_y <- sum(tmp3$diff_jump) *0.25 # to get ATN (= cp*0.25)
-      max_time <- max(tmp$dates)
-      min_time <- min(tmp$dates)
-      delta_x <- as.numeric(difftime(max_time, min_time, units = 'days'))
-      slope_big_part <- delta_y/delta_x
-      big_part_poc_flux <- 633*(slope_big_part**0.77)
-    }
-  }
-  
-  # compute total drifting time
-  max_time <- max(tmp$dates)
-  min_time <- min(tmp$dates)
-  drifting_time <- as.numeric(difftime(max_time, min_time, units = 'days'))
-  
-  # to plot subgroups
-  part_slope_tmp <- part_slope |> dplyr::mutate(dates = time, colour = 'slope')
-  
-  # adapt script to return big and small flux
-  df <- tibble('max_time' = max_time, 'min_time' = min_time, 'small_flux' = poc_flux, 'big_flux' = big_part_poc_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],
-               cycle = data$cycle[1])
-  
-  # clean data to send
-  slope_df <- slope_df |> arrange(min_time) |> dplyr::mutate(min_drifting_time = df$min_time, max_drifting_time = df$max_time, small_flux = df$small_flux, big_flux = df$big_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1])
-  if(is.null(tmp3)){
-    big_jump <- tmp3
-  }else{
-     big_jump <- tmp3 |> dplyr::mutate(park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1]) 
-  }
-  
-  return(list(slope_info = slope_df, jump_info = big_jump))
-}
+# get_jump_info <- function(data){
+#   
+#   # make sure that the cp signal is in chronological order
+#   tmp <- data |> arrange(dates)
+#   
+#   # despike cp data with a 7-point moving window
+#   tmp$cp <- despike(tmp$cp, k = 3)
+#   
+#   # smooth cp data with a 3-point moving median, n time(s)
+#   tmp$cp <- slide(tmp$cp, fun = median, k = 3, n = 1, na.rm=T)
+#   
+#   # compute slope between two adjacent points (except first point) # we could start after 1h to let the float stabilize
+#   delta_x <- as.numeric(tmp$dates - lag(tmp$dates), units = 'days')
+#   delta_y <- tmp$cp - lag(tmp$cp)
+#   tmp$slope <- delta_y/delta_x
+#   
+#   # compute a Z score (assuming a normal distribution of the slopes) on the slopes
+#   tmp <- tmp |> dplyr::mutate(zscore = (slope - mean(slope, na.rm = T))/sd(slope, na.rm = T))
+#   
+#   # spot outliers on the Z score signal
+#   # interquartile range between Q25 and Q75 -> had to used that and not the despike function because slopes are often close (or equal) to 0 so it can miss clear jumps. Q25 and Q75 are more trustworthy in this case than the despike function of Jean-Olivier (see package castr on his github: https://github.com/jiho/castr)
+#   IQR <- quantile(tmp$zscore, probs = 0.75, na.rm=T) - quantile(tmp$zscore, probs = 0.25, na.rm=T)
+#   # outliers ('spikes' in the Z score signal)
+#   spikes_down <- tmp$zscore < quantile(tmp$zscore, 0.25, na.rm=T) - 1.5 *IQR
+#   spikes_up <-  tmp$zscore > quantile(tmp$zscore, 0.75, na.rm=T) + 1.5 *IQR
+#   spikes <- as.logical(spikes_down + spikes_up)
+#   
+#   # assign spikes
+#   tmp$spikes <- spikes
+#   
+#   # assign colour code to cp signal
+#   tmp$colour <- 'base signal' # base signal = smoothed despiked cp signal
+#   tmp[which(tmp$spikes == TRUE),]$colour <- 'jump'
+#   
+#   # add group to compute the slope of each group of points, separated by a jump
+#   tmp$group <- NA
+#   
+#   # index of jumps in the array
+#   jump_index <- which(tmp$colour == 'jump')
+#   
+#   # assign group identity to each group of points, separated by a jump (= subgroup)
+#   for (i in jump_index){
+#     for (j in 1:nrow(tmp)){
+#       if ((j < i) & (is.na(tmp$group[j]))){
+#         tmp$group[j] <- paste0('group_',i)
+#       }
+#     }
+#   }
+#   tmp$group[which(is.na(tmp$group))] <- 'last_group'
+#   
+#   # compute slope for each subgroup
+#   slope_df <- tmp |> filter(colour == 'base signal', slope != 'NA') |> dplyr::group_by(group) |> dplyr::summarise(min_time = min(dates), max_time = max(dates), 
+#                                                                                                                   nb_points = n(), first_cp = cp[1], last_cp = cp[nb_points],
+#                                                                                                                   delta_x = as.numeric(difftime(max_time, min_time, units = 'days')),
+#                                                                                                                   delta_y = (last_cp-first_cp)*0.25, slope = delta_y/delta_x) # *0.25 to convert cp to ATN
+#   
+#   # remove negative slope from the mean slope (no physical meaning)
+#   slope_df <- slope_df |> filter(slope > 0)
+#   
+#   # remove if only one point (cannot fit a slope with one point)
+#   slope_df <- slope_df |> filter(nb_points > 1)
+#   
+#   # compute weighted average slope (to take into account the fact that some subgroups might have 2 points and a high slope vs. large group of points with a small slope)
+#   mean_slope <- sum(slope_df$nb_points * slope_df$slope)/sum(slope_df$nb_points)
+#   
+#   # convert cp to POC using Estapa's relationship 
+#   poc_flux <- 633*(mean_slope**0.77) # /!\ slope computed for ATN on y axis (delta_y *0.25 because ATN = cp*0.25) -> should be OK
+#   
+#   # build dataframe to plot each subgroup
+#   part1 <- slope_df |> dplyr::select(group, time = min_time, cp = first_cp)
+#   part2 <- slope_df |> select(group, time = max_time, cp = last_cp)
+#   part_slope <- rbind(part1, part2)
+#   
+#   # spot negative jump
+#   tmp$colour[which((tmp$colour == 'jump') & (tmp$slope < 0))]  <- 'negative jump'
+#   
+#   # add large particles flux to the party
+#   rows_to_keep <- c(jump_index, jump_index-1)
+#   tmp2 <- tmp[rows_to_keep,] |> select(dates, cp, slope, colour, group) |> arrange(dates)
+#   
+#   # remove negative jumps, if any
+#   check_colour <- unique(tmp2$colour)
+#   if(length(check_colour) >= 2){ # there is a least a jump (positive or negative)
+#     tmp2 <- tmp2 |> dplyr::mutate(diff_jump = cp - lag(cp)) 
+#     even_indexes <- seq(2,nrow(tmp2),2)
+#     tmp2 <- tmp2[even_indexes,]
+#   }else{ # No jump
+#     tmp2 <- NULL
+#   }
+#   
+#   if(is.null(tmp2)){ # no jump
+#     large_part_poc_flux <- 0
+#     tmp3 <- NULL
+#   }else{
+#     tmp3 <- tmp2 |> filter(diff_jump > 0) # remove negative
+#     if(nrow(tmp3) == 0){ # no positive jumps
+#       large_part_poc_flux <- 0
+#     }else{
+#       delta_y <- sum(tmp3$diff_jump) *0.25 # to get ATN (= cp*0.25)
+#       max_time <- max(tmp$dates)
+#       min_time <- min(tmp$dates)
+#       delta_x <- as.numeric(difftime(max_time, min_time, units = 'days'))
+#       slope_large_part <- delta_y/delta_x
+#       large_part_poc_flux <- 633*(slope_large_part**0.77)
+#     }
+#   }
+#   
+#   # compute total drifting time
+#   max_time <- max(tmp$dates)
+#   min_time <- min(tmp$dates)
+#   drifting_time <- as.numeric(difftime(max_time, min_time, units = 'days'))
+#   
+#   # to plot subgroups
+#   part_slope_tmp <- part_slope |> dplyr::mutate(dates = time, colour = 'slope')
+#   
+#   # adapt script to return large and small flux
+#   df <- tibble('max_time' = max_time, 'min_time' = min_time, 'small_flux' = poc_flux, 'large_flux' = large_part_poc_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],
+#                cycle = data$cycle[1])
+#   
+#   # clean data to send
+#   slope_df <- slope_df |> arrange(min_time) |> dplyr::mutate(min_drifting_time = df$min_time, max_drifting_time = df$max_time, small_flux = df$small_flux, large_flux = df$large_flux, park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1])
+#   if(is.null(tmp3)){
+#     large_jump <- tmp3
+#   }else{
+#      large_jump <- tmp3 |> dplyr::mutate(park_depth = data$park_depth[1], wmo = data$wmo[1],cycle = data$cycle[1]) 
+#   }
+#   
+#   return(list(slope_info = slope_df, jump_info = large_jump))
+# }
 ```
-
-TO DO HERE
 
 ```{r, compute slope and jump info}
 
@@ -1288,49 +1282,51 @@ res_slope <- vroom::vroom(file = '/home/flo/dox/THESIS/DATA/ARGO/res_slope.csv')
 res_jumps <- vroom::vroom(file = '/home/flo/dox/THESIS/DATA/ARGO/res_jumps.csv')
 ```
 
-```{r, check total biovolume with slope value}
+```{r, check total biovolume with slope value, fig.width=10, fig.height=6}
+#| label: fig-biovolume-slope
+#| fig-cap: Average biovolume seen by the UVP6 as a function of the attenuance slope (top) and total biovolume seen by the UVP as a function of the intensity of the jump seen by the OST (bottom) at each drifting depth.
 
-uvp_drifting <- all_floats |> filter(PhaseName == 'PAR') |> select(juld, cycle, wmo, park_depth, all_of(lpm_class)) |> 
-  drop_na(NP_Size_102) |> dplyr::mutate(date = as_date(juld))
-
-# DSE for computing biovolumes
-#DSE <- c(0.29042685,0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
-DSE_long <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685, 0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
-                1.16170742, 1.46365963, 1.84409558, 2.32341484)
-
-# compute biovolume
-get_biovolume <- function(DSE){
-  r <- DSE/2
-  biovolume <- (4*pi/3)*r**3
-  return(biovolume)
-}
-
-# get biovolume for each DSE (equivalent to say for each size bin)
-biovolumes <- map_dbl(DSE_long, get_biovolume)  # unit = mm^3
-
-# compute biovolume and add them to the dataframe
-spectra_biovolume <- tibble(as.data.frame(t(t(uvp_drifting[,all_of(lpm_class)])*biovolumes)))
-colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('NP_Size', 'Biovolume')
-biovolumes_names <- colnames(spectra_biovolume)
-uvp_drifting <- cbind(uvp_drifting, spectra_biovolume) |> rowwise() |> dplyr::mutate(total_biovolume = sum(across(all_of(biovolumes_names))))
-
-assign_time_group <- function(d_uvp, d_ost){
-  d_uvp$group <- NA
-  for (i in 1:nrow(d_ost)){
-    low_time <- d_ost$min_time[i]
-    high_time <- d_ost$max_time[i]
-    #print(c(low_time, high_time))
-    group <- d_ost$group[i]
-    time_index <- which(d_uvp$juld >= low_time & d_uvp$juld <= high_time)
-    d_uvp$group[time_index] <- group
-  }
-  return(d_uvp)
-}
-
-# loop for it
-# start loop for all data
-wmo <- c(4903634, 6904240, 6904241, 1902578)
-park_depth <- c('200 m', '500 m', '1000 m')
+# uvp_drifting <- all_floats |> filter(PhaseName == 'PAR') |> select(juld, cycle, wmo, park_depth, all_of(lpm_class)) |> 
+#   drop_na(NP_Size_102) |> dplyr::mutate(date = as_date(juld))
+# 
+# # DSE for computing biovolumes
+# #DSE <- c(0.29042685,0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779, 1.16170742, 1.46365963)
+# DSE_long <- c(0.11525597, 0.14521343, 0.18295745, 0.23051195, 0.29042685, 0.36591491, 0.46102389, 0.58085371, 0.73182981, 0.92204779,
+#                 1.16170742, 1.46365963, 1.84409558, 2.32341484)
+# 
+# # compute biovolume
+# get_biovolume <- function(DSE){
+#   r <- DSE/2
+#   biovolume <- (4*pi/3)*r**3
+#   return(biovolume)
+# }
+# 
+# # get biovolume for each DSE (equivalent to say for each size bin)
+# biovolumes <- map_dbl(DSE_long, get_biovolume)  # unit = mm^3
+# 
+# # compute biovolume and add them to the dataframe
+# spectra_biovolume <- tibble(as.data.frame(t(t(uvp_drifting[,all_of(lpm_class)])*biovolumes)))
+# colnames(spectra_biovolume) <- colnames(spectra_biovolume)|> str_replace('NP_Size', 'Biovolume')
+# biovolumes_names <- colnames(spectra_biovolume)
+# uvp_drifting <- cbind(uvp_drifting, spectra_biovolume) |> rowwise() |> dplyr::mutate(total_biovolume = sum(across(all_of(biovolumes_names))))
+# 
+# assign_time_group <- function(d_uvp, d_ost){
+#   d_uvp$group <- NA
+#   for (i in 1:nrow(d_ost)){
+#     low_time <- d_ost$min_time[i]
+#     high_time <- d_ost$max_time[i]
+#     #print(c(low_time, high_time))
+#     group <- d_ost$group[i]
+#     time_index <- which(d_uvp$juld >= low_time & d_uvp$juld <= high_time)
+#     d_uvp$group[time_index] <- group
+#   }
+#   return(d_uvp)
+# }
+# 
+# # loop for it
+# # start loop for all data
+# wmo <- c(4903634, 6904240, 6904241, 1902578)
+# park_depth <- c('200 m', '500 m', '1000 m')
 
 # test <- data.frame()
 # for (i in wmo){
@@ -1359,48 +1355,26 @@ park_depth <- c('200 m', '500 m', '1000 m')
 slope_vs_biovolume <- vroom::vroom('DATA/ARGO/slope_vs_biovolume.csv')
 slope_vs_biovolume <- slope_vs_biovolume |> mutate(park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
 
-# ggplot(test) + geom_line(aes(x = mean_date, y = weighted_group_biovolume)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
-# ggplot(test) + geom_line(aes(x = mean_date, y = slope)) + facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4)
+slope_vs_biovolume <- slope_vs_biovolume |> filter(slope > 0.00001) |> mutate(slope = slope*0.25, logslope = log10(slope), logweight = log10(weighted_group_biovolume)) 
 
-# check
-# test2 <- test |> group_by(wmo, cycle) |> dplyr::mutate(mean_mean_date = mean(floor_date(mean_date))) 
-# 
-# ggplot(test2) +
-#   geom_pointrange(aes(x = mean_mean_date, y = weighted_group_biovolume),
-#                       stat = 'summary',
-#                       fun.min = function(z) {quantile(z, 0.25)},
-#                       fun.max = function(z) {quantile(z, 0.75)},
-#                       fun = median, colour = 'black', size = .1) +
-#     facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) +
-#   
-# ggplot(test2) +
-#   geom_pointrange(aes(x = mean_mean_date, y = slope),
-#                       stat = 'summary',
-#                       fun.min = function(z) {quantile(z, 0.25)},
-#                       fun.max = function(z) {quantile(z, 0.75)},
-#                       fun = median, colour = 'black', size = .1) +
-#     facet_wrap(~wmo~park_depth, scales = 'free_y', nrow = 4) 
-# 
-# test2 |> group_by(wmo, park_depth) |> summarize(correl = cor(slope, weighted_group_biovolume))
+# ggplot(slope_vs_biovolume, aes(x = logslope, y = logweight, group = park_depth)) + geom_bin2d(bins = 30) + scale_fill_continuous(type = 'viridis') + facet_wrap(~park_depth, scales = 'free') + theme_bw() +
+#    stat_smooth(aes(x = logslope, y = logweight), method = "lm", se = FALSE, colour = "red") + labs(x = TeX('$ATN~slope~(day^{-1})$'), y = TeX('$UVP~biovolume~(mm^{3})$'))
 
-# ggplot(slope_vs_biovolume) + geom_point(aes(x = log(slope), y = log(weighted_group_biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST slope [UNITS]', y = 'UVP biovolume [UNITS]') #+ theme(axis.title.x = element_blank())
-# #ggplot(test) + geom_point(aes(x = slope, y = weighted_group_biovolume)) + facet_wrap(~park_depth)
-ggplot(slope_vs_biovolume |> filter(slope > 0.00001)) + geom_point(aes(x = slope*0.25, y = weighted_group_biovolume)) + facet_wrap(~park_depth, scales = 'free') + labs(x = TeX('$ATN~slope~(day^{-1})$'), y = TeX('$UVP~biovolume~(mm^{3})$')) +
-  scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + theme_bw()
-
+uvp_ost_up <- ggplot(slope_vs_biovolume, aes(x = slope, y = weighted_group_biovolume, group = park_depth)) + geom_bin2d(bins = 30) + scale_fill_continuous(type = 'viridis') + facet_wrap(~park_depth, scales = 'free') + theme_bw() +
+    labs(x = TeX('$ATN~slope~(day^{-1})$'), y = TeX('$UVP~biovolume~(mm^{3})$')) + scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') 
 
 # what about jump values with uvp measurements at jump
-uvp_drifting <- uvp_drifting |> dplyr::mutate(num_date = as.numeric(juld))
-res_jumps <- res_jumps |> dplyr::mutate(num_date = as.numeric(dates))
-
-assign_uvp_to_jump <- function(d_uvp, d_jump){
-  d_jump$biovolume <- NA
-  for (i in 1:nrow(d_jump)){
-    index_jump_for_uvp <- which.min(abs(tmp_uvp$num_date - tmp_ost_jump$num_date[i]))
-    d_jump$biovolume[i] <- tmp_uvp$total_biovolume[index_jump_for_uvp]
-  }
-  return(d_jump)
-}
+# uvp_drifting <- uvp_drifting |> dplyr::mutate(num_date = as.numeric(juld))
+# res_jumps <- res_jumps |> dplyr::mutate(num_date = as.numeric(dates))
+# 
+# assign_uvp_to_jump <- function(d_uvp, d_jump){
+#   d_jump$biovolume <- NA
+#   for (i in 1:nrow(d_jump)){
+#     index_jump_for_uvp <- which.min(abs(tmp_uvp$num_date - tmp_ost_jump$num_date[i]))
+#     d_jump$biovolume[i] <- tmp_uvp$total_biovolume[index_jump_for_uvp]
+#   }
+#   return(d_jump)
+# }
 
 # test_jump <- data.frame()
 # for (i in wmo){
@@ -1423,31 +1397,39 @@ assign_uvp_to_jump <- function(d_uvp, d_jump){
 
 # load data computed with the above commented code
 diff_jump_vs_biovolume <- vroom::vroom('DATA/ARGO/diff_jump_vs_biovolume.csv')
-diff_jump_vs_biovolume <- diff_jump_vs_biovolume|> mutate(park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')))
+diff_jump_vs_biovolume <- diff_jump_vs_biovolume|> mutate(park_depth = factor(park_depth, levels = c('200 m', '500 m', '1000 m')), diff_jump = diff_jump*0.25, log_diff_jump = log10(diff_jump), log_biovolume = log10(biovolume))
 
-#ggplot(test_jump) + geom_point(aes(diff_jump, biovolume))
-# ggplot(diff_jump_vs_biovolume) + geom_point(aes(log(diff_jump), log(biovolume))) + facet_wrap(~park_depth) + labs(x = 'OST jump difference [UNITS]', y = 'UVP biovolume [UNITS]') +
-#   scale_x_continuous(breaks = c(-6,-4,-2,0))
-ggplot(diff_jump_vs_biovolume) + geom_point(aes(x = diff_jump*0.25, y = biovolume)) + facet_wrap(~park_depth, scales = 'free') + labs(x = TeX('$ATN~jump~difference$'), y = TeX('$UVP~biovolume~(mm^{3})$')) +
-  scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + theme_bw()
+# ggplot(diff_jump_vs_biovolume, aes(y = log_biovolume, x = log_diff_jump, group = park_depth)) + geom_bin2d(bins = 30) + scale_fill_continuous(type = 'viridis') + facet_wrap(~park_depth, scales = 'free') + theme_bw() +
+#    stat_smooth(aes(y = log_biovolume, x = log_diff_jump), method = "lm", se = FALSE, colour = "red") + labs(x = TeX('$ATN~jump~difference$'), y = TeX('$UVP~biovolume~(mm^{3})$'))
 
+uvp_ost_down <- ggplot(diff_jump_vs_biovolume, aes(y = biovolume, x = diff_jump, group = park_depth)) + geom_bin2d(bins = 30) + scale_fill_continuous(type = 'viridis') + facet_wrap(~park_depth, scales = 'free') + theme_bw() +
+    scale_x_continuous(trans = 'log10') + scale_y_continuous(trans = 'log10') + labs(x = TeX('$ATN~jump~difference$'), y = TeX('$UVP~biovolume~(mm^{3})$'))
 
+uvp_ost_up / uvp_ost_down
 ```
 
-TODO :
+@fig-biovolume-slope shows that there is no clear relationship between the biovolume seen by the UVP6 and the attenuation (continuous or stochastic) measured by the OST. For small particles, the relationship between the ATN slopes and the average biovolume shows a weak correlation (0.30 at 500 m and 1000 m). For large particles, the OST misses particles that are seen by the UVP6 (see 500 m and 1000 m in the lower panel). It is coherent with the fact that OSTs were not designed to intercept and detect large sinking particles [@Estapa2023-oz]. The current version of the OST has a housing above the optical window which can produce a "self-shading" effect [@Estapa2017-jr] that prevents the collection of fast sinking particles (assumed here to be large particles). In addition, the nature of particles is also a source of uncertainty in the attenuation signal. Mathematically, the attenuation efficiency ($Q_{c}$) of a spherical particle can be defined [@Mobley2022-de] as
 
--   
+$$
+Q_{c} = Q_{a} + Q_{b}
+$$ {#eq-optics}
 
--   on se trouve dans un sytème producitve entre guidi 2008 et iversen (très productif)
+where $Q_{a}$ and $Q_{b}$ are, respectively, the absorption and scattering efficiencies. Consequently, @Mobley2022-de defines the attenuance cross section ($\sigma_{c}$) as $Q_{c}$ multiplied by the geometrical cross section of that particle ($\pi r^{2}$ for a spherical particle). Therefore, if a particle of a given size has a small $\sigma_{c}$ (e.g. mostly transparent) or a high $\sigma_{c}$ (e.g. opaque), the attenuation will be different (lower for a smaller $\sigma_{c}$) but the size measured by the UVP6 will be the same.
 
-## Discussion2
+Therefore, if the UVP6 and the OST are well correlated at first order (@fig-comparison-ost-uvp, @tbl-correlation), it is more difficult to directly related the attenuance to the biovolume (hence the size) of a particle because of the nature of particles themselves. Consequently, the combined use of the UVP6 and the OST seems useful to study the latent particle dynamics but the interest of using the OST for large particles (e.g. during a bloom) might be more limited.
 
-PARLER DU TRADEOFF BETWEEN SMALL FLUX AND BIG PARTICLE FLUX
+## Perspectives
 
-The latter are however subject to a tradeoff between the likely underestimation of $F_{small}$ and the detection of false jumps (without great impact on the value of $F_{big}$ because false jumps have low $c_{p}$ values) if the threshold is too small and the likely overestimation of $F_{small}$ to the detriment of $F_{big}$ with missed jumps if the threshold is too high.
+### A complementary variable to investigate POC fluxes - $b_{bp}$
 
-parler aussi du fait que lesmesures en dérivés, il y a 2h en UVP et OST etc peut-etre que les mesures à 500 m ... ou alors on mets plus de temps à 200 m... voir un peu. faire des profils tous les 10 jours pour une telle apllication ça sert à rien étant donné qu'en plus si on a l'uvp 6 avec l ER embarquée pour éutider la vmmp il faut clairmeent avoir une résolution temporelle plus éleée, ce qui est loin parfait donc voilà.
+I did not use $b_{bp}$ data, a proxy for suspended particle concentration, that has already been used to derive POC concentrations, POC fluxes and particle size [@Briggs2013-hj; @Briggs2011-du; @Alkire2012-gv; @Cetinic2012-lz; @DallOlmo2014-o; @Lacour2019-id; @Briggs2020-gz; @Giering2020-mc; @Rasse2017-tg]. In @Briggs2011-du, the authors explain that when a large particle goes through the sampling volume of the $b_{bp}$ sensor, it causes a spike in the $b_{bp}$ signal. However, the height of this spike depends on many factors such as the cross section of the particle (or aggregate), $Q_{b}$, the sampling volume, the fraction of the particle in the sampling volume and the time the particle spends in the sampling volume. Using an empirical relationship between ship-based $b_{bp}$ and POC, they were able to derive POC concentrations (mg C m$^{-3}$) and then POC fluxes (mg C m$^{-2}$ day$^{-1}$) by multiplying those concentrations by a given sinking speed (m day$^{-1}$).
 
-TO DO - faire le profil de Martin (flux vertical) et faire les données de HPLC pour étudier les communautés et voir si elles sont différentes entre les deux sites de déploiements.
+As of today (March 15, 2023), 111361 $b_{bp}$ profiles were acquired by BGC-Argo floats. If a relationship between particle size measured by the UVP6 and particle size derived from $b_{bp}$ spikes (e.g. spike height) could be found, we could go back in time and infer information on the abundance of large particles at global scale.
 
-## Conclusion
+### Configuration adaptation to specific BCP-related processes
+
+The current configuration of all floats in the LS was a 10-day ascending profile acquisition with drifting at 200 m for one day, 500 m for 3 days and 1000 m for 5 days. During drifting, OST measurements were taken every 30 minutes at all depths whereas UVP measurements were taken every 20 minutes at 200 m and every 2h at 500 m and 1000 m. This initial configuration was based on a compromise between science targets and energy consumption limitations for long-term deployment (years). However, I think this configuration could be adapted depending on the period of the year to target specific processes. For instance, I tried to evaluate sinking speeds from particle concentrations using a gaussian fit in different water layers to follow the gaussian peak with time and depth for each size class. I managed to compute realistic sinking speeds but the uncertainty was huge and potentially biased because I was just trying to fit something I saw in the data. Therefore, I did not use those estimations here but I think it would be possible to compute them if the float was sampling every day when the abundance of particles is at its maximum (e.g. during the spring bloom). Similarly, to address the question of the vertical migration, a 10-day temporal resolution is way to low because plankton images are rare compared to detritus so the sampling volume should be greatly increased to have a better estimation of the presence (or absence) of zooplankton. Finally, I have not made up my mind about the choice of the three drifting depths but maybe it would be interesting to increase the time spent at 200 m (to 3 days) and decrease the time spent at 1000 m §to 3 days instead of 5) where the probability of capturing big particles is lower than at 200 m. There could also be UVP and OST measurements closer in time at all drifting depths to have a better comparison of attenuation slopes/jumps and biovolumes.
+
+### A statistical method to detect jumps instead of using a threshold
+
+One fundamental difference between our jump detection method and the initial method based on an attenuance jump threshold [@Estapa2013-gw; @Estapa2017-jr; @Estapa2019-nk; @Estapa2023-oz] is that we use a statistical method to generalize the jump detection to new environments and new drifting depths. Initially, I used slope thresholds based on the 90$^{th}$ and 95$^{th}$ percentiles of the $c_{p}$ slope distribution. Therefore, I had three distinct slope thresholds for each drifting depth. We also thought that with time, this threshold should stabilize (i.e. having enough data points in the slope distribution to have stables percentiles). However, the rapid decrease in particle concentrations starting in November kept decreasing the threshold because the 90$^{th}$ and 95$^{th}$ percentiles were decreasing due the vanishing of large particles (@fig-uvp6-profiling-512-2500). One option was to stop the slope distribution in October, before large particles virtually disappeared. At that time, we therefore looked for a method that could derive a slope threshold for each drifting profile. I think it makes sense because it solved the issue of getting the best threshold that would be a unique one for all profiles and because the method is also relatively objective, easy to implement and resilient. By resilient, I mean that if the method is not perfect, it does not miss big jumps which are important for the correct estimation of $F_{large}$ and for data points wrongly identified as jumps (as outliers in the slope distribution), they do not contribute to $F_{large}$ because they have a small $c_{p}$ contribution and $F_{small}$ is generally not so impacted either because the contribution loss of that false jump is negligible to the slow accumulation on the transmissometer window. This can be checked on the web app mentonned earlier in the *drifting OST* tab.

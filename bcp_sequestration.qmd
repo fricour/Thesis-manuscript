@@ -1,0 +1,4 @@
+```{=latex}
+\includepdf[pages=-]{"/home/flo/dox/THESIS/Ricour2023main"} %https://tex.stackexchange.com/questions/183469/includepdf-only-shows-first-page thank you stranger
+\includepdf[pages=-]{"/home/flo/dox/THESIS/Ricour2023supp"}
+```
