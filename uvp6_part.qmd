@@ -1,6 +1,10 @@
 # UVP6 embedded classification algorithm {#sec-uvp6}
 
-Introduire le chapitre et dire que le papier est en cours somehow ...
+Building the zooplankton classification model for the UVP6 was the first task of my PhD. To be honest, I knew nothing about machine learning before I started this so I spent the first three weeks reading a nice machine learning book in the corner of my team leader's office. To be even more honest, I basically knew nothing about zooplankton either. It is time to admit it.
+
+In machine learning, the no free lunch theorem [@Wolpert1996-hw] states that if you do not make any assumption about your data, then there is no model that is a priori guaranteed to work better [@Geron2019-is]. In other words, it means that you need to get your hands dirty to find a model that works. The first step consisted in developing a full data processing pipeline using UVP5 images. The aim was to be prepared for the UVP6 image data set (not ready at the time) to train the true final classification model. To this end, I developed a python package called [UVPec](https://github.com/ecotaxa/uvpec) that is able to create a full classification model based on image folders with labelled particle/zooplankton images and some hyperparameters (e.g. learning rate). It really made my life easier when I got the final UVP6 data set and it saved me a lot of time.
+
+In the end, I am rather satisfied with the results. Classifying zooplankton is already difficult for human operators (at least, for me) so building a model to automatically classify them is one challenge but adding technical and energy constraints to it was the ice on the cake. Below is the first draft of a publication on the classification model.
 
 ## Embedded recognition of zooplankton using the Underwater Vision Profiler 6 for use on autonomous platforms
 
@@ -49,6 +53,7 @@ The full UVP5 SD data set is composed of 3.578.901 validated images whereas the 
 #library(flextable)
 library(kableExtra)
 library(tibble)
+library(tidyverse)
 
 # object_attributes <- tibble(attr = c('area', 'width', 'height', 'x','y','xm','ym','major','minor', 'angle', 'eccentricity', 'esd', 'bbox_area', 'extent'), comment = c('number of pixels', 'bounding box width', 'bounding box height', 'local centroid (x direction)', 'local centroid (y direction)', 'weighted local centroid (x direction)', 'weighted local centroid (y direction)', 'major axis', 'minor axis', 'orientation angle','-', 'equivalent spherical diameter', 'bounding box area', 'pixel ratio between object and bounding box'))
 # 
@@ -435,36 +440,36 @@ DCM <- tmp$pres[which.max(tmp$mean_conc)]
 test <- data %>% select(Pressure_dbar, Nimages, ObjectNbr5)
 test$ObjectConc5 <- test$ObjectNbr5/(test$Nimages*0.6)
 test <- test %>% group_by(Pressure_dbar) %>% summarize(n_sample = n(), total_conc = sum(ObjectConc5), mean_conc = total_conc/n_sample)
-cal <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) + geom_point() + scale_x_reverse() + coord_flip()+
+cal <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) + geom_point(colour = "#005CAB") + scale_x_reverse() + coord_flip()+
   xlab('Pressure (dbar)') + ylab('Calanoida (#/L)') + geom_point(data = test[test$mean_conc>0,], 
-                                                                  aes(x = Pressure_dbar, y = mean_conc), colour = "red") +
+                                                                  aes(x = Pressure_dbar, y = mean_conc), colour = "#E31B23") +
   geom_vline(xintercept = DCM, lty = 'dotted') + theme_bw()
 
 # object number 14 (detritus)
 test <- data %>% select(Pressure_dbar, Nimages, ObjectNbr14)
 test$ObjectConc14 <- test$ObjectNbr14/(test$Nimages*0.6)
 test <- test %>% group_by(Pressure_dbar) %>% summarize(n_sample = n(), total_conc = sum(ObjectConc14), mean_conc = total_conc/n_sample)
-det <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) + geom_point() + scale_x_reverse() + coord_flip() +
+det <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) +  geom_point(colour = "#005CAB") + scale_x_reverse() + coord_flip() +
   geom_point(data = test[test$mean_conc>0,], 
-             aes(x = Pressure_dbar, y = mean_conc), colour = "red") +
+             aes(x = Pressure_dbar, y = mean_conc), colour = "#E31B23") +
   xlab('Pressure (dbar)') + ylab('detritus (#/L)') + theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
   geom_vline(xintercept = DCM, lty = 'dotted') + theme_bw()
 
 test <- data %>% select(Pressure_dbar, Nimages, ObjectNbr17)
 test$ObjectConc17 <- test$ObjectNbr17/(test$Nimages*0.6)
 test <- test %>% group_by(Pressure_dbar) %>% summarize(n_sample = n(), total_conc = sum(ObjectConc17), mean_conc = total_conc/n_sample)
-puf <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) + geom_point() + scale_x_reverse() + coord_flip()+
+puf <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) +  geom_point(colour = "#005CAB") + scale_x_reverse() + coord_flip()+
   xlab('Pressure (dbar)') + ylab('puff (#/L)') + geom_point(data = test[test$mean_conc>0,], 
-                                                                          aes(x = Pressure_dbar, y = mean_conc), colour = "red") +
+                                                                          aes(x = Pressure_dbar, y = mean_conc), colour = "#E31B23") +
   geom_vline(xintercept = DCM, lty = 'dotted') + theme_bw()
 
 test <- data %>% select(Pressure_dbar, Nimages, ObjectNbr20)
 test$ObjectConc20 <- test$ObjectNbr20/(test$Nimages*0.6)
 test <- test %>% group_by(Pressure_dbar) %>% summarize(n_sample = n(), total_conc = sum(ObjectConc20), mean_conc = total_conc/n_sample)
-tuf <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) + geom_point() + scale_x_reverse() + coord_flip()+
+tuf <- ggplot(test, aes(x = Pressure_dbar, y = mean_conc)) +  geom_point(colour = "#005CAB") + scale_x_reverse() + coord_flip()+
   xlab('Pressure (dbar)') + ylab('tuff (#/L)') + theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
   geom_point(data = test[test$mean_conc>0,], 
-             aes(x = Pressure_dbar, y = mean_conc), colour = "red") +
+             aes(x = Pressure_dbar, y = mean_conc), colour = "#E31B23") +
   geom_vline(xintercept = DCM, lty = 'dotted') + theme_bw()
 
 #grid.arrange(cal, det, puf, tuf)

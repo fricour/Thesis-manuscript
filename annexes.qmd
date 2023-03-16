@@ -1,5 +1,9 @@
 # Annexes
 
+```{=latex}
+\includepdf[pages=1]{"/home/flo/dox/THESIS/bg-18-755-2021"}
+```
+
 ```{=html}
 <!--#https://github.com/quarto-dev/quarto-cli/discussions/1042-->
 <style type="text/css">
@@ -8,7 +12,6 @@ caption, .table-caption {
 }
 </style>
 ```
-
 ```{r, poc database from traps}
 #| label: tbl-poc-from-sediment-traps
 #| tbl-cap: Compilation of POC flux measurements from sediment traps. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne and Meike Vogt). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
