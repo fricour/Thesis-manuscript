@@ -1,6 +1,8 @@
-# Revisiting the BCP with the CONVERSE framework
+# Revisiting the BCP with the CONVERSE framework {#bcp-sequestration}
 
-add a short description and then write below a sumbimtted dradft to Nature Geoscience (currently in revision)
+Initially, it was not intended that I work on this topic. As I will briefly explain in the general discussion, my attempts to find a global (or regional) relationship to derive POC fluxes from UVP5 size spectra failed constantly. Therefore, I was proposed to work on a new concept related to carbon sequestration. I was told I would be co-author, that it would be done quickly and that it was only about revising the carbon sequestration flux of the gravitational pump.
+
+Why revise one pump when you can revise them all? 1 year and a half later, hundreds of emails, one promotion to first author, one negative review and one strong rebuttal, we are still on the road to publication. Here below is the revised version of our paper submitted in Nature Geoscience about the reassessment of the global sequestration (\> 100 years) of the BCP and its components by using a continuous approach to carbon storage as opposed to the common view of long-term sequestration below a fixed reference depth.
 
 ```{=latex}
 \includepdf[pages=-]{"/home/flo/dox/THESIS/Ricour2023main"} %https://tex.stackexchange.com/questions/183469/includepdf-only-shows-first-page thank you stranger
