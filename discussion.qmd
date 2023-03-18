@@ -4,17 +4,31 @@
 
 The development of the UVP6 classification model started without a data set of labeled UVP6 images. Therefore, a significant part of my work was to test and prepare a fully functional data preparation and model training pipeline for the upcoming UVP6 data set using UVP5 images. In the following sections, I will describe a brief historic of what has been done prior to the acquisition and human labeling of UVP6 images.
 
-### Classification metric
+### Trust index
 
 <!-- https://datascience.stackexchange.com/questions/61761/how-does-xgboost-use-softmax-as-an-objective-function -->
 
-In multiclass classification task, the goal is to predict the label (i.e. class) of a given input among a defined number of labels. In @sec-uvp6, I explained that XGBoost minimizes a regularized objective function $L$ (see @eq-objective-function-xgboost) during model training. The XGBoost library proposes two choices of objective functions for multiclass classification problems: `multi:softmax` and `multi:softprob` (https://xgboost.readthedocs.io/en/latest/parameter.html, last accessed: 03/03/2023). Both functions are based on the softmax normalization which normalizes the classification score of each class using an exponential function (@eq-softmax). `multi:softmax` returns the class of highest probability whereas `multi:softprob` outputs a class probability array, that allows the computation of custom objective functions.
+In multiclass classification task, the goal is to predict the label (i.e. class) of a given input among a defined number of labels. In @sec-uvp6, I explained that XGBoost minimizes a regularized objective function $L$ (see @eq-objective-function-xgboost) during model training. In practice, the XGBoost library proposes two choices of objective functions for multiclass classification problems: `multi:softmax` and `multi:softprob` (https://xgboost.readthedocs.io/en/latest/parameter.html, last accessed: 03/03/2023). Both functions are based on the softmax normalization which normalizes the classification score of each class using an exponential function (@eq-softmax). `multi:softmax` returns the class of highest probability whereas `multi:softprob` outputs a class probability array, which allows the computation of custom objective functions.
 
 $$
 \sigma(x_{i}) = \frac{e^{x_{i}}}{\sum_{j=1}^{N}e^{x_{j}}}, i = 1,...,N
 $$ {#eq-softmax}
 
 where $x_{i}$ and $N$ are, respectively, the classification score of the $i^{th}$ class and the number of classes.
+
+::: {.blackbox data-latex=""}
+::: {.flushleft data-latex=""}
+**Information Box 4.** **Cross entropy loss**
+:::
+
+Cross entropy loss is a loss function often used in multiclass classification problems [@Geron2019-is].
+
+$$
+J({\Theta}) = -\frac{1}{m}\sum_{i=1}^{m}\sum_{k=1}^{K}y_{k}^{(i)}log(\hat{p}_{k}^{(i)})
+$$
+
+where $J$ is the loss (i.e. cost) function, $\Theta$ a parameter matrix, $m$ the number of training data (i.e. instances), $K$ the number of classes, $y_{k}^{(i)}$ the true probability that the $i^{th}$ instance belongs to class $k$ (0 or 1) and $\hat{p}_{k}^{(i)}$ the predicted probability that the instance belongs to class $k$. The XGBoost library can however be confusing in comparison with the paper of @Chen2016-xt and @eq-objective-function-xgboost. In practice, if one sets the objective function to `multi:softmax`, it means that the objective of the model is to predict the highest probability for the true class while minimizing a loss function specified by the user (in our case, cross entropy).
+:::
 
 By definition, `multi:softmax` amplifies the difference between classification scores. Here is a simple illustration of this effect. Let A, B and C, three classes of zooplankton whose classification scores are $(1,7,8)$. Using @eq-softmax, the output probabilities are $(0.0006, 0.26, 0.73)$. Therefore, a unit difference in the classification scores of class B and class C results in a probability three times higher for class C than class B.
 
@@ -43,17 +57,17 @@ grid.arrange(
 
 ### Technical constraints on the classification model
 
-Because the UVP6-LP is designed to work on AUVs, several constraints were imposed on the model to fulfill technical and energy requirements. The UVP6 data treatment at sea shown in @fig-uvp-pipeline briefly describes the steps from the image acquisition to the prediction. The two most energy consuming steps are the image segmentation (median execution time of 650 ms) and the loading of the classification model whose execution time was capped at 700 ms. This limitation imposed a direct constraint on the prediction quality of the model because it implied a limitation on the choice of values for hyperparameters of the model (learning rate, tree depth) and the number of boosting rounds.
+Because the UVP6-LP is designed to work on AUVs, several constraints were imposed on the model to fulfill technical and energy requirements. The UVP6 data treatment at sea shown in @fig-uvp-pipeline briefly describes the steps from the image acquisition to the prediction. The two most energy consuming steps are the image segmentation (median execution time of 650 ms) and the loading of the classification model whose execution time was capped at 700 ms. This limitation imposed a direct constraint on the prediction quality of the model because it implied a limitation on the choice of the model hyperparameters (learning rate, tree depth) and the number of boosting rounds.
 
-The second critical aspect of the model was its limitation at 40 classes. In the UVP5 SD data set, the most detailed classification at a taxonomic level by a human was roughly 150 classes (referred to as $level_{0}$). It was therefore necessary to merge classes based on morphological and ecological attributes to decrease that number in order to get to $level_{1}$ that had 38 classes. From $level_{1}$, we thus experimented a lot of different prediction models with a hyperparameters gridsearch in order to find both the right set of parameters and the right number of classes. There were indeed some classes that had very low precision and recall because they were confused with some specific taxonomic groups. They were merged accordingly with those groups. This trial-error approach was necessary to create the final aggregation level ($level_{2}$) used for the final UVP5 model. The same work had to be done later with the UVP6 data because the taxonomic groups were not identical.
+The second critical aspect of the model was its limitation at 40 classes. In the UVP5 SD data set, the most detailed classification at a taxonomic level by a human was roughly 150 classes (referred to as $level_{0}$). It was therefore necessary to merge classes based on morphological and ecological attributes to decrease that number in order to get to $level_{1}$ that had 38 classes (limited at 40). From $level_{1}$, we thus experimented a lot of different prediction models with a hyperparameters gridsearch in order to find both the right set of hyperparameters and the right number of classes. Still, some $level_{1}$ classes had very low precision and recall scores because they were confused with some specific taxonomic groups hence we merged them accordingly with those groups. This trial-error approach was necessary to create the final aggregation level ($level_{2}$) used for the final UVP5 model. The same work had to be done later with the UVP6 data because the taxonomic groups were not identical.
 
-The last technical limitation was the number of features (see table XX). Before I started my PhD, 55 features (basically geometry and gray levels) were defined. I was not allowed (though, I asked!) to do some feature engineering, that is either doing feature selection (selecting the most useful features) either doing feature combination (combining existing features to create new ones) or creating new features by collecting new data [@Geron2019-is]. Why was this proposition refused? Again, those 55 selected features had been tested earlier and they were compliant with the energy balance. Therefore, adding more features was not a possibility (we would have needed to redo tests and energy budget that were not possible at the time) and because they were computed quickly, they were not consuming too much energy hence there was no need to remove some of them. At worse, some features would have been redundant, without impacting the classification quality.
+The last technical limitation was the number of features (see @tbl-features). Before I started my PhD, 55 features (basically geometry and gray levels) were defined. I was not allowed (though, I asked!) to do some feature engineering, that is either doing feature selection (selecting the most useful features) either doing feature combination (combining existing features to create new ones) or creating new features by collecting new data [@Geron2019-is]. Why was this proposition refused? Again, those 55 selected features had been tested earlier and they were compliant with the energy budget. Therefore, adding more features was not a possibility (we would have needed to redo tests and energy budgets that were not possible at the time) and because they were computed quickly, they were not consuming too much energy hence there was no critical need to remove some of them. At worse, some features would have been redundant, without impacting the classification quality.
 
-Nonetheless, when we compare the results from a featured-based model and a CNN (see SECTION XX), perhaps the results would have been closer if we would have done some feature engineering to add other kinds of features.
+Nonetheless, when we compare the results from a features-based model and a CNN (@tbl-classification-report-uvp6-xgboost-cnn), perhaps the results would have been closer if we did some feature engineering and added other kinds of features.
 
 ```{r, mean and median abundances in a typical vertical profile}
 #| label: tbl-stats-uvp6
-#| tbl-cap: Mean and median concentrations and number of segmented objects whose size is above 0.6 mm(referred to as "vignettes" in french) expected from a standard vertical profile taken by a BGC-Argo float equipped with a UVP6 in different parts of the water column.
+#| tbl-cap: Mean and median concentrations and number of segmented objects whose size is above 0.6 mm (referred to as "vignettes" in french) expected from a standard vertical profile taken by a BGC-Argo float equipped with a UVP6 in different parts of the water column.
 
 library(gt)
 library(gtsummary)
@@ -81,18 +95,26 @@ stats_uvp6 |> gt() |> cols_label(mean_conc = 'Mean',
               columns = c(mean_nb, median_nb))
 ```
 
-feature engineering, citer le bouquin là
+### Detritus, this ubiquitous mess
+
+We saw in the previous section that the median number of objects detected in 3.5 m$^{3}$ is roughly 300. In addition, it is usual to have less than 20% of living objects hence the vast majority of images are labelled as detritus. The latter are ubiquitous in the ocean and display a wide variety of shapes, sizes and textures (@fig-detritus). In @sec-improve-classif, I showed that using several classes of detritus did not improve the classification model and that it actually made it worse because the N-detritus classes showed a high level of confusion between each other.
+
+![Examples of UVP objects labelled as detritus. The scale bar is the same for all (2 mm).](image/detritus/moz_detritus.jpg){#fig-detritus}
+
+![Examples of UVP objects labelled as living material. The scale bar is the same for all (2 mm). Note that I have hidden three detritus from @fig-detritus to highlight the difficulty of classifying plankton already at the human level.](image/detritus/uvp_user_meeting/living_except3.jpg){#fig-living}
+
+We assumed that detritus form a continuum in the 55-dimensional feature space. Therefore, we tried several methods to break this continuum while also trying to cope with the data set class imbalance. For this, we tried under-sampling them to decrease their number and non random under-sampling by keeping only detritus close to K-means clustered centroids but it did not improve the classification model. Using K-means to cluster detritus into several classes (e.g. fluffy gray or dark compact) to improve the classification of biological objects was based on the strong belief of some colleagues that were convinced it would work. My work and the work of another PhD student that tried using several detritus classes on a CNN (not published yet) showed that it did not improve the classification model. However, it is true that other clustering methods could be further explored. On the top of my head, I think about DBSCAN [@Schubert2017-xr] and HDBSCAN [@Campello-2013-cb] which are both density-based clustering methods in contrast to K-Means with is a partitioning clustering method that needs a predefined number of clusters in input. Other clustering methods could obviously be explored [see @Geron2019-is, pp. 259-260] based on their computational complexity and the data set characteristics (number of instances and features).
+
+### The future of the embedded classification
+
+#### UVPec
+
+[UVPec](https://github.com/ecotaxa/uvpec/) - short name for Underwater Vision Profiler Embedded Classifier - is a toolbox to train classification models for UVP6 images and evaluate their performance. This python package has been designed to be as user-friendly as possible in order to be accessible to the largest number of users. Basically, the only mission of the user is to create folders (40 maximum because the maximum number of classes is fixed at 40) of labelled UVP6 images and specify some hyperparameters (e.g. learning rate) to train a classification model. The evaluation of the created model provides a confusion matrix and a classification report to help the user evaluate the quality of the model as well as the cross entropy curve to have information on the optimal boosting round number (before the model overfits).
+
+#### REFINE and further results (with the examples of Hervé)
+
+#### New methods for zooplankton (CNN embarked and tranformers) for low energy stems
+
+#### UVP6 micro -\> UVP6 meeting, aller chercher la présentation de Camille sur le google drive pour les perspectives
 
 ### 
-
-### Features
-
-### Bilan énergique
-
-### detritus case + imbalanced
-
-### future embedded low energy models
-
-### time series, get the UVP6 data back (intéret de les mettre sur les flotteurs)
-
-volume échantillonnée vraiment faible, les trucs petits sont importants donc il faudrait l'uVP6 micro qui est on the way

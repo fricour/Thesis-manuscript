@@ -1,6 +1,6 @@
 # UVP6 embedded classification algorithm {#sec-uvp6}
 
-Building the zooplankton classification model for the UVP6 was the first task of my PhD. To be honest, I knew nothing about machine learning before I started this so I spent the first three weeks reading a nice machine learning book in the corner of my team leader's office. To be even more honest, I basically knew nothing about zooplankton either. It is time to admit it.
+Building the zooplankton classification model for the UVP6 was the first task of my PhD. To be honest, I knew nothing about machine learning before I started this so I spent the first three weeks reading a nice machine learning book in the corner of my team leader's office. To be even more honest, I basically knew nothing about zooplankton either. I think it is time to admit it.
 
 In machine learning, the no free lunch theorem [@Wolpert1996-hw] states that if you do not make any assumption about your data, then there is no model that is a priori guaranteed to work better [@Geron2019-is]. In other words, it means that you need to get your hands dirty to find a model that works. The first step consisted in developing a full data processing pipeline using UVP5 images. The aim was to be prepared for the UVP6 image data set (not ready at that time) to train the true final classification model. To this end, I developed a python package called [UVPec](https://github.com/ecotaxa/uvpec) that is able to create a full classification model based on image folders with labelled particle/zooplankton images and some hyperparameters (e.g. learning rate). It really made my life easier when I got the final UVP6 data set and it saved me a lot of time.
 
@@ -308,7 +308,7 @@ In comparison with a CNN trained on UVP5 images, the CR (@tbl-classification-rep
 
 ### Discussion
 
-#### Ways to improve the classification
+#### Ways to improve the classification {#sec-improve-classif}
 
 The on board classification of plankton is definitely not an easy task. In order to improve the classification scores of biological classes, we tried several adjustments such as quantifying planktonic samples, splitting the detritus class into several subgroups and assigning weights to classes proportional to their size, which was the only option that enhanced the recognition of scarce classes (see Methods).
 
