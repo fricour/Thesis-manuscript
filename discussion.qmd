@@ -125,29 +125,45 @@ library(tmap)
 library(tibble)
 data("World")
 library(sf)
+library(ggspatial)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggplot2)
+library(RColorBrewer)
 
 regions <- tibble(Region = c('BB', 'GS', 'LS', 'GD', 'AS', 'TIO', 'SPG', 'WKP', 'EKP'),
                   long_name = c('Baffin Bay', 'Greenland Sea', 'Labrador Sea', 'Guinea Dome',
                                 'Arabian Sea', 'Tropical Indian Ocean', 'South Pacific subtropical gyre','West Kerguelen Plateau', 'East Kerguelen Plateau'),
                   lat = c(74, 77, 62, 9, 19, -7.7, -32, -49.6, -50),
-                  lon = c(-67.4, -3, -55, -21, 64, 54, -139, 63.6, 75.6))
+                  lon = c(-67.4, -3, -55, -21, 64, 54, -130, 63.6, 75.6))
 
 
 points_sf <- st_as_sf(regions, coords = c("lon", "lat"), crs = "+proj=longlat")
 
-# map
+# # map
 tm_shape(World) +
-    tm_polygons() +
-    tm_shape(points_sf) +
-    tm_bubbles(size = .3, col = 'Region', alpha = 1, border.col = 'black', border.alpha = 1)
+  tm_polygons() +
+  tm_shape(points_sf) +
+  tm_bubbles(size = .3, col = 'Region', alpha = 1, border.col = 'black', border.alpha = 1) +
+  tm_layout(legend.position = c("left", "center"), legend.frame = T)
+
+# # load world data
+# world <- ne_countries(scale = "medium", returnclass = "sf")
+# 
+# ggplot(data = world) +
+#     geom_sf() +
+#     xlab("Longitude") + ylab("Latitude") + theme_bw() +
+#     geom_point(data = regions, aes(x = lon, y = lat, colour = Region), size = 4) +
+#     scale_colour_manual(values = brewer.pal(9, "Set3")) +
+#   geom_point(data = regions, aes(x = lon, y = lat), colour = 'black', size = 4, shape = 1)
 
 ```
 
-@fig-kerguelen present some preliminary results from the UVP6 embedded classification that highlights the difference in *Calanoida* and *Chaetognatha* concentrations between February and March 2023 in the western and eastern part of the Kerguelen Plateau.
+@fig-kerguelen present some preliminary results from the UVP6 embedded classification that highlights the difference in *Calanoida* and *Chaetognatha* concentrations between February and March 2023 in the western and eastern part of the Kerguelen Plateau. For these floats, the configuration was different from the ones deployed in the Labrador Sea with a higher profiling time resolution after deployment, which can be further modified based on observations.
 
 ```{r, kerguelen, fig.width=8, fig.height=5}
 #| label: fig-kerguelen
-#| fig-cap: $\textit{Calanoida}$ and $\textit{Chaetognatha}$concentrations between February-March 2023 in the Kerguelen Plateau.
+#| fig-cap: $\textit{Calanoida}$ and $\textit{Chaetognatha}$ concentrations in February-March 2023 in the Kerguelen Plateau.
 
 library(vroom)
 library(tidyverse)
@@ -173,15 +189,176 @@ taxo_kerguelen <- rbind(calanoids_east, calanoids_west, chaeto_east, chaeto_west
 
 ggplot(taxo_kerguelen) + geom_point(aes(x = conc_object, y = depth, colour = date)) + scale_colour_viridis_c(trans = "date",labels = c("2023-02-11","2023-02-18","2023-02-25","2023-03-04","2023-03-11"), breaks = c(as.Date("2023-02-11"), as.Date("2023-02-18"), as.Date("2023-02-25"), as.Date("2023-03-04"), as.Date("2023-03-11"))) + scale_y_reverse() + theme_bw() +
   labs(x = 'Concentration (#/L)', colour = "Date", y = 'Depth (m)') +
-  facet_wrap(~group)
+  facet_wrap(~group, scale = "free_x")
 ```
 
 #### New algorithms
 
-Unless we find a cheap and efficient (low power) way to send UVP6 images via Iridium communication, we are stuck with the issue of embedded classification. In @sec-uvp6, I showed that CNNs usually outperform features-based classifiers. However, the field of computer vision is constantly evolving with the arrival of new technologies that could help improve the automatic classification of zooplankton images. Transformers [@Vaswani2017-il], also referred to as Foundation Models in @Bommasani2021-kbare are the latest cutting-edge tool in the field of computer vision and natural language processing [e.g. @Li2022-qt; @Liu2021-jq]. The structure of transformers rely on attention mechanisms able to draw global dependencies between input and output \[@Vaswani2017-il\]. In other words, it is able to learn dependencies between distant positions in a network architecture in constrast to CNNs. As an example, @Li2022-qt used a vision transformer model combining a CNN and a transformer to identify apple diseases. In their model, the CNN is used to extract the global features of the input image while the transformer extracts local features of the disease region to help the CNN see better. How does it help the CNN? In the case of apple images with different backgrounds (different weather conditions, brightness changes, other objects in the field of view), the CNN could be "distracted" hence the transformer is able to focus the attention of the CNN on the region of interest (the disease region) and not on irrelevant features such as the weather. Therefore, transformers should definitely be on the to-do list of anyone working on improving automatic zooplankton classification.
+Unless we find a cheap and efficient (low power) way to send UVP6 images via Iridium communication, we are stuck with the issue of embedded classification. In @sec-uvp6, I showed that CNNs usually outperform features-based classifiers. However, the field of computer vision is constantly evolving with the arrival of new technologies that could help improve the automatic classification of zooplankton images. Transformers [@Vaswani2017-il], also referred to as Foundation Models in @Bommasani2021-kbare are the latest cutting-edge tool in the field of computer vision and natural language processing [e.g. @Li2022-qt; @Liu2021-jq]. The structure of transformers rely on attention mechanisms able to draw global dependencies between input and output [@Vaswani2017-il]. In other words, it is able to learn dependencies between distant positions in a network architecture in constrast to CNNs. As an example, @Li2022-qt used a vision transformer model combining a CNN and a transformer to identify apple diseases. In their model, the CNN is used to extract the global features of the input image while the transformer extracts local features of the disease region to help the CNN see better. How does it help the CNN? In the case of apple images with different backgrounds (different weather conditions, brightness changes, other objects in the field of view), the CNN could be "distracted" hence the transformer is able to focus the attention of the CNN on the region of interest (the disease region) and not on irrelevant features such as the weather. The use of transformers for automatic zooplankton classification has just begun [@Kyathanahally2022-ma] but it should certainly be explored further in the near future.
 
 #### UVP6m
 
-There is a class called "other\<living" in the UVP6 classification model. I did not mention earlier than I had to put the copepods in this class. Indeed, *Calanoida* are a "large" species of copepods compared to other copepods found in the Mediterranean Sea that are smaller. The classification of the latter was really not good (low precision and low recall) hence we put them in the "other\<living" class, which is a shame.
+There is a class called "other\<living" in the UVP6 classification model. I did not mention earlier than I was obliged to place copepods (except *Calanoida*) in that class. Indeed, *Calanoida* are a "large" species of copepods compared to other copepods found in the Mediterranean Sea that are smaller. The classification of the latter was not good (low precision and low recall) hence we put them in the "other\<living" class, which is a shame.
 
 The good news is that the next generation of UVP is already in the making with the UVP6m (m for micro) which will be able to look at smaller objects (particle counter between 10 and 200 $\mu$m and plankton/particle imaging \> 100 $\mu$m). The UVP6m will be more compact than the UVP6 but the principles will be the same and both instruments will share 5 size classes for intercalibration.
+
+## Deriving carbon fluxes from particle size distribution
+
+Before working on the CONVERSE framework, I was trying to find a global relationship (I also tried to find a regional one, without more success) to derive carbon fluxes from UVP5 PSDs. The idea was to reproduce the method of @Guidi2008-vp on the newly quality controlled UVP5 PSD data set [@Kiko2022-sk]. For this, I needed to build a global data set of POC measurements derived from sediment traps and $^{234}Th$ (see @tbl-poc-from-sediment-traps, @tbl-poc-from-thorium and [here](https://fricour.shinyapps.io/carbon_fluxes_app/) for a more interactive view). Here below, I briefly review three methods we explored to find a POC-PSD relationship and what could be further investigated.
+
+```{=latex}
+%\includepdf[pages=1]{"/home/flo/dox/THESIS/bg-18-755-2021"}
+```
+```{=html}
+<!--#https://github.com/quarto-dev/quarto-cli/discussions/1042-->
+<style type="text/css">
+caption, .table-caption {
+  text-align: left;
+}
+</style>
+```
+```{r, poc database from traps}
+#| label: tbl-poc-from-sediment-traps
+#| tbl-cap: Compilation of POC flux measurements from sediment traps. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne and Meike Vogt). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
+#| tbl-cap-location: bottom
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(purrr)
+
+# read data
+trap <- vroom::vroom('DATA/Trap_Thorium/TRAP_DATABASE.csv')
+#thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
+
+# clean a bit
+trap[trap$doi == 'https://doi.org/10.1007/s00227-018-3376-1',]$doi <- '10.1007/s00227-018-3376-1'
+trap[trap$doi == 'https://doi.org/10.1016/j.dsr.2016.08.015',]$doi <- '10.1016/j.dsr.2016.08.015'
+trap[trap$doi == 'Geochimica et Cosmochimica Acta, Vol. 66, No. 3, pp. 457–465, 2002',]$doi <- '10.1016/S0016-7037(01)00787-6'
+
+# some stats
+trap_resume <- trap |> group_by(doi) |> dplyr::summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
+  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
+
+# BASED ON : https://stackoverflow.com/questions/48506712/kable-kableextra-cells-with-hyperlinks
+# make url links
+make_link <- function(doi){
+  link <- paste0('https://doi.org/',doi)
+  return(link)
+}
+url <- map_chr(trap_resume$doi, make_link)
+
+# # put url in dataframe
+# trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, 'html', link = url)) |> select(doi_url, data_points) |>
+#   kable('html', escape = FALSE, col.names = c('Sources of data', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
+
+trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
+  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of observations'), align = 'l') 
+
+# make final table
+trap_resume
+```
+
+```{r, poc database from thorium}
+#| label: tbl-poc-from-thorium
+#| tbl-cap: Compilation of POC flux measurements derived from Thorium 234. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
+#| tbl-cap-location: bottom
+
+# read data
+thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
+
+# some stats
+thorium_resume <- thorium |> group_by(doi) |> summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
+  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
+thorium_resume$doi <- c('10.1594/PANGAEA.809717', '10.1029/2018GB00615', '10.1525/elementa.2020.030')
+
+# make url links
+url <- c('https://doi.org/10.1594/PANGAEA.809717', 'https://doi.org/10.1029/2018GB006158', 'https://doi.org/10.1525/elementa.2020.030')
+
+# put url in dataframe
+thorium_resume <- thorium_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
+  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of observations'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
+
+# make final table
+thorium_resume
+```
+
+### The straightforward approach
+
+This approach consisted in simply applying the method of @Guidi2008-vp (see @eq-carbon-flux-finite). Therefore, I looked for match-ups (i.e. spatially and temporally close observations) between UVP5 and POC observations within a 0.2° latitude and longitude window, a 10 m vertical depth range and a 5-day window. @Guidi2008-vp found 118 match-ups (with UVP2/3/4 data) whereas I only found 108 match-ups with UVP5 data, located on the western and eastern parts of the Kerguelen Plateau, in the Guinea Dome and in the California Current (panel D in @fig-uvp-trap-mapping). As a result, we decided not to go further because we would not have enough match-ups to improve the minimization (see @eq-cost-function).
+
+```{r, uvp traps th234 map}
+#| label: fig-uvp-trap-mapping
+#| fig-cap: Spatial distribution of sediment traps (A), $^{234}Th$ (B), UVP5 (C) and their spatio-temporal match-ups (D)
+
+d <- vroom::vroom('DATA/CFLUX/uvp_trap.csv')
+guidi_matchups <- vroom::vroom('DATA/CFLUX/guidi_matchups.csv')
+
+d_sf <- st_as_sf(d, coords = c("lon", "lat"), crs = "+proj=longlat")
+
+d_uvp <- d_sf |> filter(source == 'UVP5')
+d_trap <- d_sf |> filter(source == 'Trap')
+d_th <- d_sf |> filter(source == 'Thorium')
+d_matchups <- st_as_sf(guidi_matchups, coords = c("lon", "lat"), crs = "+proj=longlat")
+
+# map
+# tm_shape(World) +
+#   tm_polygons() +
+#   tm_shape(d_sf) +
+#   tm_dots(size = .2, col = "black", alpha = 1, border.col = 'black', border.alpha = 1) +
+#   tm_layout(legend.show = F) +
+#   tm_facets(by = 'source')
+
+# up left
+ul <- tm_shape(World) +
+  tm_polygons() +
+  tm_shape(d_trap) +
+  tm_bubbles(size = .05, col = "#1B9E77", alpha = 1, border.col = 'black', border.alpha = 1) +
+  tm_layout(legend.show = F, main.title = 'A', main.title.position = 'center', main.title.size = 1)
+
+ur <- tm_shape(World) +
+  tm_polygons() +
+  tm_shape(d_th) +
+  tm_bubbles(size = .05, col = "#D95F02", alpha = 1, border.col = 'black', border.alpha = 1) +
+  tm_layout(legend.show = F, main.title = 'B', main.title.position = 'center', main.title.size = 1)
+
+bl <- tm_shape(World) +
+  tm_polygons() +
+  tm_shape(d_uvp) +
+  tm_bubbles(size = .05, col = "#7570B3", alpha = 1, border.col = 'black', border.alpha = 1) +
+  tm_layout(legend.show = F, main.title = 'C', main.title.position = 'center', main.title.size = 1)
+
+br <- tm_shape(World) +
+  tm_polygons() +
+  tm_shape(d_matchups) +
+  tm_bubbles(size = .05, col = "#E7298A", alpha = 1, border.col = 'black', border.alpha = 1) +
+  tm_layout(legend.show = F, main.title = 'D', main.title.position = 'center', main.title.size = 1)
+
+tmap_arrange(ul, ur, bl, br, ncol = 2, nrow = 2)
+
+# https://www.datanovia.com/en/blog/the-a-z-of-rcolorbrewer-palette/
+# display.brewer.all()
+# brewer.pal(n = 8, name = "Dark2")
+
+
+```
+
+### The environmental match-ups approach
+
+The spatio-temporal approach lacks match-ups between UVP5 and sediment traps and $^{234}Th$ data. This is not really surprising when we look at their spatial distribution (@fig-uvp-trap-mapping) and especially their temporal distribution (@fig-sediment-trap-thorium-yearly-distribution) because the UVP5 was firstly used in 2008 while the 'historical' data reached their observation peak before 2000. Therefore, we thought of using environmental data to increase the number of match-ups.
+
+The idea was based on the assumption that carbon fluxes could be similar in distinct regions of the ocean if those regions had similar environmental conditions thus removing spatial (horizontal) and temporal constraints on match-ups. For this, I tried different combinations of environmental variables such as surface temperature, salinity, nutrients, combination of nutrients, Chla, $b_{bp}$ or water column properties such as integrated Chla content, oxygen minimum and MLD from monthly climatologies. Then, I used those environmental variables to build a 3D environmental space using a 3D principal component analysis (PCA) and I projected UVP5 data and trap/$^{234}Th$ in that space based on the environmental characteristics from the respective coordinates and month of each UVP5 and trap/$^{234}Th$ profiles.
+
+Once all data were projected in the environmental space, I had to find a new match-up procedure. Because the PCA projection conserves the euclidean distance, I firstly computed the pairwise distance between each UVP5 profile and all trap/$^{234}Th$ profiles. Then, I looked at the minimal euclidean distance for each UVP5 profile and I plotted the minimal distance distribution (\~8000 points in the distribution). From this distribution, I computed a radius of interest (ROI) corresponding to a threshold based on the 95$^{th}$ percentile (considered as a rather objective decision criterion). For each UVP5 profile in the environmental space, I kept the closest trap/$^{234}Th$ profiles within that radius (@fig-match-ups). Finally, I still needed to find the PSD-POC match-up on the vertical axis (depth). For this, I used a depth range proportional to the depth of the trap or $^{234}Th$ measurement following Martin's curve [@Martin1987-um] because the downward carbon flux is less attenuated with depth. Then, I averaged PSDs in that depth range (weighted by the water volume) to obtain a table with weighted averaged PSDs in front of POC fluxes to do the minimization procedure of @Guidi2008-vp.
+
+![Examples of match-ups in the environmental space for 4 UVP5 profiles (red dots) and their respective trap/$^{234}Th$ profiles within the ROI.](DATA/CFLUX/moz.jpeg){#fig-match-ups}
+
+dire que le choix des variables ( + le fait que ce sont des climatos -\> bof bof, ça manquait de variavbles physiques, pas assez de variables probablement) et aussi discuter du plan de phase (voir Rmarkdown de la prez waringan + revoir cette prez là pour vérifier que l'on a rien oublié) + critiquer la figure de lionel car pour moi le problème se situe déjà là, j'ai obsrvé que ça fitte tout, on prend un petit b pour u petite A et grand b pour un grand A
+
+Bottom line, I failed. I tried multiple times but it never worked
+
+### The machine learning approach
+
+on a fait avec des cimatos etc mais après y a moyen d'ajouter des meilleires données (eg alberto)
+
+-   faire un résumé de la photo du tableau sur le tableau blanc d Lionel.. pour dire la marche à suivre.. et les ouvelles données environnemntales aussi et le multioutpubut graidnet boosting

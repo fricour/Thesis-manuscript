@@ -11,46 +11,47 @@ caption, .table-caption {
 }
 </style>
 ```
+
 ```{r, poc database from traps}
 #| label: tbl-poc-from-sediment-traps
 #| tbl-cap: Compilation of POC flux measurements from sediment traps. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne and Meike Vogt). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
 #| tbl-cap-location: bottom
 
-library(dplyr)
-library(knitr)
-library(kableExtra)
-library(purrr)
-
-# read data
-trap <- vroom::vroom('DATA/Trap_Thorium/TRAP_DATABASE.csv')
-#thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
-
-# clean a bit
-trap[trap$doi == 'https://doi.org/10.1007/s00227-018-3376-1',]$doi <- '10.1007/s00227-018-3376-1'
-trap[trap$doi == 'https://doi.org/10.1016/j.dsr.2016.08.015',]$doi <- '10.1016/j.dsr.2016.08.015'
-trap[trap$doi == 'Geochimica et Cosmochimica Acta, Vol. 66, No. 3, pp. 457–465, 2002',]$doi <- '10.1016/S0016-7037(01)00787-6'
-
-# some stats
-trap_resume <- trap |> group_by(doi) |> dplyr::summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
-  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
-
-# BASED ON : https://stackoverflow.com/questions/48506712/kable-kableextra-cells-with-hyperlinks
-# make url links
-make_link <- function(doi){
-  link <- paste0('https://doi.org/',doi)
-  return(link)
-}
-url <- map_chr(trap_resume$doi, make_link)
-
-# # put url in dataframe
-# trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, 'html', link = url)) |> select(doi_url, data_points) |>
-#   kable('html', escape = FALSE, col.names = c('Sources of data', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
-
-trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
-  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') 
-
-# make final table
-trap_resume
+# library(dplyr)
+# library(knitr)
+# library(kableExtra)
+# library(purrr)
+# 
+# # read data
+# trap <- vroom::vroom('DATA/Trap_Thorium/TRAP_DATABASE.csv')
+# #thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
+# 
+# # clean a bit
+# trap[trap$doi == 'https://doi.org/10.1007/s00227-018-3376-1',]$doi <- '10.1007/s00227-018-3376-1'
+# trap[trap$doi == 'https://doi.org/10.1016/j.dsr.2016.08.015',]$doi <- '10.1016/j.dsr.2016.08.015'
+# trap[trap$doi == 'Geochimica et Cosmochimica Acta, Vol. 66, No. 3, pp. 457–465, 2002',]$doi <- '10.1016/S0016-7037(01)00787-6'
+# 
+# # some stats
+# trap_resume <- trap |> group_by(doi) |> dplyr::summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
+#   mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
+# 
+# # BASED ON : https://stackoverflow.com/questions/48506712/kable-kableextra-cells-with-hyperlinks
+# # make url links
+# make_link <- function(doi){
+#   link <- paste0('https://doi.org/',doi)
+#   return(link)
+# }
+# url <- map_chr(trap_resume$doi, make_link)
+# 
+# # # put url in dataframe
+# # trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, 'html', link = url)) |> select(doi_url, data_points) |>
+# #   kable('html', escape = FALSE, col.names = c('Sources of data', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
+# 
+# trap_resume <- trap_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
+#   kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') 
+# 
+# # make final table
+# trap_resume
 ```
 
 ```{r, poc database from thorium}
@@ -58,21 +59,21 @@ trap_resume
 #| tbl-cap: Compilation of POC flux measurements derived from Thorium 234. Data taken from public databases listed on PANGAEA or extracted from articles (with the help of Frédéric Le Moigne). The number of measurements could be different from the original publication after data cleaning and potential removal of duplicates.
 #| tbl-cap-location: bottom
 
-# read data
-thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
-
-# some stats
-thorium_resume <- thorium |> group_by(doi) |> summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
-  mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
-thorium_resume$doi <- c('10.1594/PANGAEA.809717', '10.1029/2018GB00615', '10.1525/elementa.2020.030')
-
-# make url links
-url <- c('https://doi.org/10.1594/PANGAEA.809717', 'https://doi.org/10.1029/2018GB006158', 'https://doi.org/10.1525/elementa.2020.030')
-
-# put url in dataframe
-thorium_resume <- thorium_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
-  kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
-
-# make final table
-thorium_resume
+# # read data
+# thorium <- vroom::vroom('DATA/Trap_Thorium/THORIUM_DATABASE.csv')
+# 
+# # some stats
+# thorium_resume <- thorium |> group_by(doi) |> summarise(data_points = n(), max_date = lubridate::year(max(start_date)), min_date = lubridate::year(min(start_date))) |> arrange(desc(data_points)) |>
+#   mutate(period_covered = if_else(max_date > min_date, paste0(min_date,'-',max_date), paste0(max_date)))
+# thorium_resume$doi <- c('10.1594/PANGAEA.809717', '10.1029/2018GB00615', '10.1525/elementa.2020.030')
+# 
+# # make url links
+# url <- c('https://doi.org/10.1594/PANGAEA.809717', 'https://doi.org/10.1029/2018GB006158', 'https://doi.org/10.1525/elementa.2020.030')
+# 
+# # put url in dataframe
+# thorium_resume <- thorium_resume |> mutate(doi_url = cell_spec(doi, link = url)) |> select(doi_url, period_covered, data_points) |>
+#   kable(escape = FALSE, col.names = c('Source of data', 'Period covered', 'Number of measurements'), align = 'l') #|> kable_styling(bootstrap_options = c("hover", "condensed"))
+# 
+# # make final table
+# thorium_resume
 ```
