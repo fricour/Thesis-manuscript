@@ -2,24 +2,28 @@ project:
   type: book
 
 book:
-  title: "THESIS"
-  author: "Florian Ricour"
-  date: "19/10/2022"
+  title: ""
+  subtitle: ""
+  genre: ""
+  date: ""
+  author: ""
   chapters:
     - index.qmd
     #- summary.qmd
     #- intro.qmd
     #- observingCarbonCycle.qmd
     #- uvp6_part.qmd
-    - article3.qmd
-    #- discussion.qmd
+    #- article3.qmd
+    #- bcp_sequestration.qmd
+    - discussion.qmd
     - references.qmd
-    - annexes.qmd
-
+  #appendices: 
+    #- annexes.qmd
+    
 bibliography: references.bib
 csl: journal-of-oceanography.csl
-#bibliography: https://api.citedrive.com/bib/fc082fe7-66b6-4ce0-971e-df5eb80d7808/references.bib?x=eyJpZCI6ICJmYzA4MmZlNy02NmI2LTRjZTAtOTcxZS1kZjVlYjgwZDc4MDgiLCAidXNlciI6ICIyNjg2IiwgInNpZ25hdHVyZSI6ICJhN2E2MmEyNTFmYjExZmI4MTA3OTUwOTQ0NjNiOTNiNjljNGNiOTVjODAyOWVhZDJiZmM2MDdkYzZkYjUwYjliIn0=/bibliography.bib
 link-citations: true
+
 
 format:
   #docx: default
@@ -30,6 +34,8 @@ format:
     documentclass: scrreprt
     #cite-method: biblatex
     include-in-header: preamble.tex
+    #lof: true
+    #lot: true
 
 editor: visual
 
