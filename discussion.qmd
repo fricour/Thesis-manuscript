@@ -369,4 +369,18 @@ Instead of directly predicting carbon fluxes using environmental variable, we co
 
 I used three methods to derive POC fluxes from UVP5 PSDs. The main issues I encountered were related to the number and accuracy of match-ups as well as the choice of environmental variables to link the surface ocean to the POC distribution below. With the deployment of new BGC-Argo floats equipped with both the UVP6 and the OST as well as the core biogeochemical variables (e.g. Chla, $b_{bp}$, incident light) of the BGC-Argo program, we will hopefully be able to better constraint the PSD-POC relationship however we will probably need a few more years to acquire enough profiles in different oceanic regions to better understand the key drivers of the downward POC flux.
 
-## PARTUM LOUIS LEGENDRE
+## Continuous vertical sequestration
+
+Using the CONVERSE approach, we have estimated that the global carbon sequestration (\> 100 years) flux by the BCP is 0.9-2.6 Pg C y$^{-1}$. This is 2-3 and 3-6 times larger than POC fluxes at, respectively, 1000 and 2000 m. CONVERSE sequestration flux estimates are also up to 4 times larger than those from studies assuming that sequestration occurs below a fixed reference depth [@Honjo2008-kn, @Guidi2015-sj; @Henson2012-ck]. Here below, I highlight some key points and ways to improve further our estimations.
+
+### Marine carbon dioxide removal strategies
+
+The goal of marine carbon dioxide removal (mCDR) strategies [@Boyd2023-xf] is the removal of excess CO$_{2}$ from the atmosphere and the sequestration of carbon away from the atmosphere for a given time period [@National_Academies_of_Sciences2022-ah]. Several mCDR strategies have been proposed such as increasing alkalinity to enhance the chemical uptake of atmospheric CO$_{2}$ [@Hartmann2023-vk], increasing the photosynthetic uptake of atmospheric CO$_{2}$ with iron and macronutrients fertilization [@Blain2007-ws] or directly injecting CO$_{2}$ into the deep ocean [@Siegel2021-oz].
+
+We have seen with CONVERSE that carbon sequestration occurs on the whole water column and that using a fixed reference depth would likely miss the bulk of sequestration. Therefore, the evaluation of future mCDR strategies using biologically-driven carbon sequestration fluxes should be estimated over the whole water column.
+
+### Particle injection pumps
+
+Our study on the sequestration flux by the BCP also shows that the contribution of the vertical migration and mixing pumps contribute at least to 20-31% of the sequestration flux by the BCP.
+
+dire qu'il faut améliorer la physical et la VMP (diel et saisonnière) -\> mettre le paquet sur ARGO (et les gliders pour la physical) + papier d'Hervé de 2021. + préciser qye la migration saisonnire est sous-évaluée.

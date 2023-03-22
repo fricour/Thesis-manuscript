@@ -34,8 +34,8 @@ format:
     documentclass: scrreprt
     #cite-method: biblatex
     include-in-header: preamble.tex
-    #lof: true
-    #lot: true
+    lof: true
+    lot: true
 
 editor: visual
 
