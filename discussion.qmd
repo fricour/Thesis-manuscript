@@ -2,7 +2,7 @@
 
 ## UVP6 classification model: From start to finish
 
-The development of the UVP6 classification model started without a data set of labeled UVP6 images. Therefore, a significant part of my work was to test and prepare a fully functional data preparation and model training pipeline for the upcoming UVP6 data set using UVP5 images. In the following sections, I will describe a brief historic of what has been done prior to the acquisition and human labeling of UVP6 images.
+The development of the UVP6 classification model started without a data set of labeled UVP6 images. Therefore, a significant part of my work was to test and prepare a fully functional data preparation and model training pipeline for the upcoming UVP6 data set using UVP5 images. In the following sections, I will describe a brief historic of what has been done prior to the acquisition and human labeling of UVP6 images and discuss about the use and perspectives on the embedded classification.
 
 ### Trust index
 
@@ -27,12 +27,12 @@ $$
 J({\Theta}) = -\frac{1}{m}\sum_{i=1}^{m}\sum_{k=1}^{K}y_{k}^{(i)}log(\hat{p}_{k}^{(i)})
 $$
 
-where $J$ is the loss (i.e. cost) function, $\Theta$ a parameter matrix, $m$ the number of training data (i.e. instances), $K$ the number of classes, $y_{k}^{(i)}$ the true probability that the $i^{th}$ instance belongs to class $k$ (0 or 1) and $\hat{p}_{k}^{(i)}$ the predicted probability that the instance belongs to class $k$. However, the XGBoost library can be confusing in comparison with the paper of @Chen2016-xt and especially @eq-objective-function-xgboost. In practice, if one sets the objective function to `multi:softmax`, it means that the objective of the model is to predict the highest probability for the true class while minimizing a loss function specified by the user (in our case, cross entropy).
+where $J$ is the loss (i.e. cost) function, $\Theta$ a parameter matrix, $m$ the number of training data (i.e. instances), $K$ the number of classes, $y_{k}^{(i)}$ the true probability that the $i^{th}$ instance belongs to class $k$ (0 or 1) and $\hat{p}_{k}^{(i)}$ the predicted probability that the instance belongs to class $k$. In practice, if one sets the objective function to `multi:softmax`, it means that the objective of the model is to predict the highest probability for the true class while minimizing the cross entropy loss.
 :::
 
 By definition, `multi:softmax` amplifies the difference between classification scores. Here is a simple illustration of this effect. Let A, B and C, three classes of zooplankton whose classification scores are $(1,7,8)$. Using @eq-softmax, the output probabilities are $(0.0006, 0.26, 0.73)$. Therefore, a unit difference in the classification scores of class B and class C results in a probability three times higher for class C than class B.
 
-This led us to define what we called a trust index, that is a metric whose score indicates the degree of confidence in the classification score. In other words, we looked for the best error estimator (@fig-trust-index). To this end, we trained a first classification model with classes from the UVP5 data set using a `multi:softprob` objective function. Then, we used the model to make a prediction on a test set that returned a matrix $(M \times N)$ of $M$ images and $N$ classes. Afterwards, we computed four metrics on each row of the probability matrix: the maximum probability ($max$, equivalent to `multi:softmax`), the softmax of the probability array ($softmax$, equivalent to a double `multi:softmax`), the difference between the highest and the second highest probability ($diff_{max}$) and the difference between the highest and second highest probability of the softmax array ($diff_{softmax}$). We compared those metrics for each class of the test set in @fig-trust-index which clearly shows that all metrics were very similar and that they captured the errors at the same speed. Thus, it meant that we could keep using the probability returned by XGBoost a satisfactory classification score using `multi:softprob` as the objective function. @fig-trust-index also shows that some classes kept accumulating errors in the prediction with increasing rank (e.g. *Copepoda*, darksphere and fiber\<detritus). In their case, an increasing rank is not a trustworthy indicator of increasing confidence.
+This led us to define what we called a trust index, that is a metric whose score indicates the degree of confidence in the classification score. In other words, we looked for the best error estimator (@fig-trust-index). To this end, we trained a first classification model with classes from the UVP5 data set using a `multi:softprob` objective function. Then, we used the model to make a prediction on a test set that returned a matrix $(M \times N)$ of $M$ images and $N$ probabilities ($N$ classes in the model). Afterwards, we computed four metrics on each row of the probability matrix: the maximum probability ($max$, equivalent to `multi:softmax`), the softmax of the probability array ($softmax$, equivalent to a double `multi:softmax`), the difference between the highest and the second highest probability ($diff_{max}$) and the difference between the highest and second highest probability of the softmax array ($diff_{softmax}$). We compared those metrics for each class of the test set in @fig-trust-index which clearly shows that all metrics were very similar and that they captured the errors at the same speed. This result is threefold: 1) in our case, there is no need to use a trust index in addition to the probabilities given by `multi:softprob`, 2) some classes kept accumulating errors in the prediction with increasing rank (e.g. *Copepoda*, darksphere and fiber\<detritus) thus an increasing rank is not always a trustworthy indicator of increasing confidence 3) it partly explains why the quantification did not improve the overall classification by either using a fixed probability threshold (i.e. TC) or using the probability matrix (i.e. SPAC).
 
 ```{r, trust index, dpi = 300, fig.height = 12, fig.width= 10}
 #| label: fig-trust-index
@@ -61,9 +61,11 @@ Because the UVP6-LP is designed to work on AUVs, several constraints were impose
 
 The second critical aspect of the model was its limitation at 40 classes. In the UVP5 SD data set, the most detailed (human) classification at a taxonomic level was roughly 150 classes (referred to as $level_{0}$). It was therefore necessary to merge classes based on morphological and ecological attributes to decrease that number in order to get to $level_{1}$ that had 38 classes (reminder, it is currently limited at 40). From $level_{1}$, we thus experimented a lot of different prediction models with a hyperparameters gridsearch in order to find both the right set of hyperparameters and the right number of classes. Still, some $level_{1}$ classes had very low precision and recall scores because they were confused with some specific taxonomic groups hence we merged them accordingly with those groups. This trial-error approach was necessary to create the final aggregation level ($level_{2}$) used for the final UVP5 model. The same work had to be done later with the UVP6 data because the taxonomic groups were not identical.
 
-The last technical limitation was the number of features (see @tbl-features). Before I started my PhD, 55 features (basically geometry, gray levels, statistical moments) were defined. I was not allowed (although, I asked!) to do some feature engineering, that is either doing feature selection (selecting the most useful features) either doing feature combination (combining existing features to create new ones) or creating new features by collecting new data [@Geron2019-is]. Why was this proposition refused? Again, the 55 selected features had been tested earlier and they were compliant with the energy budget. Therefore, adding more features was not a possibility because it would have required retesting them and reevaluting energy budgets that were not possible at the time. In addition, all 55 features were computed quickly hence they were not consuming a lot of energy so it was decided to simply keep them. At worse, some features would have been redundant, without impacting the classification quality.
+The last technical limitation was the number of features (see @tbl-features). Before I started my PhD, 55 features (basically geometry, gray levels and statistical moments) were defined and were compliant with the energy budget imposed by the float (the UVP6 is adapted for other AUVs but it was especially designed for profiling floats). When XGBoost results are compared with a state-of-the-art CNN, the main difference does not likely come from the classifiers themselves but most likely from the selected features. We could have done some feature engineering, that is either doing feature selection (selecting the most useful features) either doing feature combination (combining existing features to create new ones) or creating new features by collecting new data [@Geron2019-is]. Therefore, texture features could have been added to our global 55 features. The main issue with the latter (e.g. histogram of oriented gradients for detecting edges, gray-level co-occurrence matrix for homogeneity and contrast) is that their processing time is proportional to the size of the image hence it was difficult to evaluate them in the energy budget.
 
-Nonetheless, when we compare the results from a features-based model and a CNN (@tbl-classification-report-uvp6-xgboost-cnn), perhaps the results would have been closer if we actually did some feature engineering and added other kinds of features.
+### Detritus, this ubiquitous mess
+
+@tbl-stats-uvp6 shows that the median number of objects detected in 3.5 m$^{3}$ is roughly 300. In addition, it is usual to have less than 20% of living objects hence the vast majority of images are labelled as detritus. The latter are ubiquitous in the ocean and display a wide variety of shapes, sizes and textures (@fig-detritus). In @sec-improve-classif, I showed that using several classes of detritus did not improve the classification model and that it actually made it worse because the N-detritus classes showed a high level of confusion between each other.
 
 ```{r, mean and median abundances in a typical vertical profile}
 #| label: tbl-stats-uvp6
@@ -95,16 +97,15 @@ stats_uvp6 |> gt() |> cols_label(mean_conc = 'Mean',
               columns = c(mean_nb, median_nb))
 ```
 
-### Detritus, this ubiquitous mess
-
-We saw in the previous section that the median number of objects detected in 3.5 m$^{3}$ is roughly 300. In addition, it is usual to have less than 20% of living objects hence the vast majority of images are labelled as detritus. The latter are ubiquitous in the ocean and display a wide variety of shapes, sizes and textures (@fig-detritus). In @sec-improve-classif, I showed that using several classes of detritus did not improve the classification model and that it actually made it worse because the N-detritus classes showed a high level of confusion between each other.
-
 ![Examples of UVP objects labelled as detritus. The scale bar is the same for all (2 mm).](image/detritus/moz_detritus.jpg){#fig-detritus}
 
 ![Examples of UVP objects labelled as living material. The scale bar is the same for all (2 mm). Note that I have hidden three detritus from @fig-detritus to highlight the difficulty of classifying plankton already at the human level.](image/detritus/uvp_user_meeting/living_except3.jpg){#fig-living}
 
-We assumed that detritus form a continuum in the 55-dimensional feature space. Therefore, we tried several methods to break this continuum while also trying to cope with the data set class imbalance. For this, we tried under-sampling the detritus to decrease their number and non random under-sampling by keeping only detritus close to K-means clustered centroids but it did not improve the classification model. Using a clustering method to split the detritus into several classes (e.g. fluffy gray or dark compact) to improve the classification of biological objects was based on the strong belief of some colleagues that were convinced it would improve the classification. However, my work and the work of another PhD student that tried using several detritus classes using a CNN (not published yet) showed that it did not improve the classification model either. Nonetheless, it is true that other clustering methods could be further explored. Clustering algorithms such as DBSCAN [@Schubert2017-xr] and HDBSCAN [@Campello2013-cb] are density-based in contrast to K-Means with is a partitioning clustering algorithm that needs a predefined number of clusters in input. Other clustering methods could obviously be explored [see @Geron2019-is, pp. 259-260] based on their computational complexity and the data set characteristics (number of instances and features).
+We assumed that detritus form a continuum in the 55-dimensional feature space. Therefore, we tried several methods to break this continuum while also trying to cope with the data set class imbalance. For this, we tried under-sampling the detritus to decrease their number and non random under-sampling by keeping only detritus close to K-means clustered centroids but it did not improve the classification model. Using a clustering method to split the detritus into several classes (e.g. fluffy gray or dark compact) to improve the classification of biological objects was based on the strong belief that it would improve the classification. However, my work and the work of another PhD student that tried using several detritus classes using a CNN (not published yet) showed that it did not improve the classification model either. Nonetheless, it is true that other clustering methods could be further explored. Clustering algorithms such as DBSCAN [@Schubert2017-xr] and HDBSCAN [@Campello2013-cb] are density-based in contrast to K-Means with is a partitioning clustering algorithm that needs a predefined number of clusters in input. Other clustering methods could obviously be explored [see @Geron2019-is, pp. 259-260] based on their computational complexity and the data set characteristics (number of instances and features).
 
+```{=latex}
+\newpage
+```
 ### The future of the embedded classification
 
 #### UVPec
@@ -159,11 +160,11 @@ tm_shape(World) +
 
 ```
 
-@fig-kerguelen present some preliminary results from the UVP6 embedded classification that highlights the difference in *Calanoida* and *Chaetognatha* concentrations between February and March 2023 in the western and eastern part of the Kerguelen Plateau. For these floats, the configuration was different from the ones deployed in the Labrador Sea with a higher profiling time resolution after deployment, which can be further modified based on observations. It is only the beginning.
+@fig-kerguelen present some preliminary results from the UVP6 embedded classification that highlights the difference in *Calanoida*, *Chaetognatha*, detritus, puff and tuff concentrations between February and March 2023 in the western and eastern part of the Kerguelen Plateau. For these floats, the configuration was different from the ones deployed in the Labrador Sea with a higher profiling time resolution after deployment.
 
-```{r, kerguelen, fig.width=8, fig.height=5}
+```{r, kerguelen, fig.width=9, fig.height=8}
 #| label: fig-kerguelen
-#| fig-cap: $\textit{Calanoida}$ and $\textit{Chaetognatha}$ concentrations in February-March 2023 in the Kerguelen Plateau.
+#| fig-cap: $\textit{Calanoida}$, $\textit{Chaetognatha}$, detritus, puff and tuff (i.e. $\textit{Trichodesmium}$) concentrations in February-March 2023 on the Kerguelen Plateau.
 
 library(vroom)
 library(tidyverse)
@@ -180,21 +181,52 @@ calanoids_west <- vroom('DATA/ARGO/4903657_class_number_4_FromNetCDF.csv') |>
 
 chaeto_east <- vroom('DATA/ARGO/1902593_class_number_5_FromNetCDF.csv') |> 
   filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'Chaetognatha - East')
+
 chaeto_west <- vroom('DATA/ARGO/4903657_class_number_5_FromNetCDF.csv') |> 
   filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'Chaetognatha - West')
 
-taxo_kerguelen <- rbind(calanoids_east, calanoids_west, chaeto_east, chaeto_west) |> 
-  mutate(group = factor(group, levels = c('Calanoida - East', 'Calanoida - West',
-                                     'Chaetognatha - East', 'Chaetognatha - West')))
+detritus_east <- vroom('DATA/ARGO/1902593_class_number_13_FromNetCDF.csv') |> 
+  filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'detritus - East') 
 
-ggplot(taxo_kerguelen) + geom_point(aes(x = conc_object, y = depth, colour = date)) + scale_colour_viridis_c(trans = "date",labels = c("2023-02-11","2023-02-18","2023-02-25","2023-03-04","2023-03-11"), breaks = c(as.Date("2023-02-11"), as.Date("2023-02-18"), as.Date("2023-02-25"), as.Date("2023-03-04"), as.Date("2023-03-11"))) + scale_y_reverse() + theme_bw() +
+detritus_west <- vroom('DATA/ARGO/4903657_class_number_13_FromNetCDF.csv') |> 
+  filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'detritus - West') 
+
+puff_east <- vroom('DATA/ARGO/1902593_class_number_16_FromNetCDF.csv') |> 
+  filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'puff - East') 
+
+puff_west <- vroom('DATA/ARGO/4903657_class_number_16_FromNetCDF.csv') |> 
+  filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'puff - West') 
+
+tuff_east <- vroom('DATA/ARGO/1902593_class_number_19_FromNetCDF.csv') |> 
+  filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'tuff - East') 
+
+tuff_west <- vroom('DATA/ARGO/4903657_class_number_19_FromNetCDF.csv') |> 
+  filter(PhaseName == 'NPAR') |> mutate(date = as.Date(date), group = 'tuff - West') 
+
+# tuff_west |> filter(cycle == 9) |> ggplot(aes(y = -depth, x = conc_object))
+
+
+taxo_kerguelen <- rbind(calanoids_east, calanoids_west, chaeto_east, chaeto_west,
+                        detritus_east, detritus_west,
+                         puff_east, puff_west, tuff_east, tuff_west)
+
+ggplot(taxo_kerguelen) + geom_point(aes(x = conc_object, y = depth, colour = date)) + scale_colour_viridis_c(trans = "date",labels = c("2023-02-11","2023-02-18","2023-02-25","2023-03-04","2023-03-11", "2023-03-18"), breaks = c(as.Date("2023-02-11"), as.Date("2023-02-18"), as.Date("2023-02-25"), as.Date("2023-03-04"), as.Date("2023-03-11"), as.Date("2023-03-18"))) + scale_y_reverse() + theme_bw() +
   labs(x = 'Concentration (#/L)', colour = "Date", y = 'Depth (m)') +
-  facet_wrap(~group, scale = "free_x")
+  facet_wrap(~group, scale = "free_x", nrow = 5)
 ```
+
+```{=latex}
+\newpage
+```
+The observed concentrations of the 4 biological classes in @fig-kerguelen needs to be interpreted with the UVP6 classification report (@tbl-classification-report-uvp6-xgboost-cnn). *Calanoida* have a precision and recall of, respectively, 66% and 69% thus we potentially miss 31% of them (i.e. 31% of *Calanoida* are non detected because they are classified in another class) but 34% of images classified as *Calanoida* are false positives and should be placed in another class. In that case, the observed concentrations can therefore be resumed as the real concentration. *Chaetognatha* have a precision and recall of, respectively, 80% and 62% therefore when a *Chaetognaha* is detected, the model is confident (20% of false positives) but it misses 38% of them so we might have more *Chaetognatha* than measured by the UVP6. However, One must also look at the concentration values because it is likely that the 2 points measured on the eastern part of the Keguerlen Plateau are misclassified objects. We could therefore conclude to the absence *Chaetognatha* on the eastern part while their presence is likely on the western part because, on the one hand, this class has a high precision and, on the other hand, they are observed on successive short-lapsed vertical profiles and between 0-500 m where they likely feed on *Calanoida*.
+
+Puff and tuff are both *Trichodesmium* which are usually observed in tropical and subtropical regions [@Westberry2006-bt] hence their presence on the Kerguelen Plateau is dubious. Tuff have a low precision and recall (55% and 63%) in contrast to puff (73% and 78%). On the eastern part, both classes have low concentrations and their position in the water column should be questioned for photosynthetic organisms. On the western part, they also both have low concentrations (0.25 #/L for puff is likely false) even though detritus concentrations are 5-10 times higher than on the eastern part.
+
+The first results of the embedded classification are promising. However, they need to be interpreted with the UVP6 classification report and contextualized (e.g. species geographical and temporal distribution, correlation with the presence of other species, position in the water column).
 
 #### New algorithms
 
-Unless we find a cheap and efficient (low power) way to send UVP6 images via Iridium communication, we are stuck with the issue of embedded classification. In @sec-uvp6, I showed that CNNs usually outperform features-based classifiers. However, the field of computer vision is constantly evolving with the arrival of new technologies that could help improve the automatic classification of zooplankton images. Transformers [@Vaswani2017-il], also referred to as Foundation Models in @Bommasani2021-kb are the latest cutting-edge tool in the field of computer vision and natural language processing [e.g. @Li2022-qt; @Liu2021-jq]. The structure of transformers relies on attention mechanisms able to draw global dependencies between input and output [@Vaswani2017-il]. In other words, it is able to learn dependencies between distant positions in a network architecture in constrast to CNNs. As an example, @Li2022-qt used a vision transformer model combining a CNN and a transformer to identify apple diseases. In their model, the CNN is used to extract the global features of the input image while the transformer extracts local features of the disease region to help the CNN see better. How does it help the CNN? In the case of apple images with different backgrounds (different weather conditions, brightness changes, other objects in the field of view), the CNN could be "distracted" hence the transformer is able to focus the attention of the CNN on the region of interest (the disease region) and not on irrelevant features such as the weather. The use of transformers for automatic zooplankton classification has just begun [@Kyathanahally2022-ma] but it should certainly be explored further in the near future.
+Unless we find a cheap and efficient (low power) way to send UVP6 images via Iridium communication, we are stuck with the issue of embedded classification. In @sec-uvp6, I showed that CNNs usually outperform features-based classifiers. However, the field of computer vision is constantly evolving with the arrival of new technologies that could help improve the automatic classification of zooplankton images. Transformers [@Vaswani2017-il], also referred to as Foundation Models in @Bommasani2021-kb are the latest cutting-edge tool in the field of computer vision and natural language processing [e.g. @Liu2021-jq; @Li2022-qt]. The structure of transformers relies on attention mechanisms able to draw global dependencies between input and output [@Vaswani2017-il]. In other words, it is able to learn dependencies between distant positions in a network architecture in constrast to CNNs. As an example, @Li2022-qt used a vision transformer model combining a CNN and a transformer to identify apple diseases. In their model, the CNN is used to extract the global features of the input image while the transformer extracts local features of the disease region to help the CNN see better. How does it help the CNN? In the case of apple images with different backgrounds (different weather conditions, brightness changes, other objects in the field of view), the CNN could be "distracted" hence the transformer is able to focus the attention of the CNN on the region of interest (the disease region) and not on irrelevant features such as the weather. The use of transformers for automatic zooplankton classification has just begun [@Kyathanahally2022-ma] but it should certainly be explored further in the near future.
 
 #### UVP6m
 
@@ -202,6 +234,9 @@ There is a class called "other\<living" in the UVP6 classification model. I did 
 
 The good news is that the next generation of UVP is already in the making with the UVP6m (m for micro) which will be able to look at smaller objects (particle counter between 10 and 200 $\mu$m and plankton/particle imaging \> 100 $\mu$m). The UVP6m will be more compact than the UVP6 but the principles will be the same and both instruments will share 5 size classes for intercalibration.
 
+```{=latex}
+\newpage
+```
 ## Deriving carbon fluxes from particle size distribution
 
 Before working on the CONVERSE framework, I was trying to find a global relationship (I also tried to find a regional one, without more success) to derive carbon fluxes from UVP5 PSDs. The idea was to reproduce the method of @Guidi2008-vp on the newly quality controlled UVP5 PSD data set [@Kiko2022-sk]. For this, I needed to build a global data set of POC measurements derived from sediment traps and $^{234}Th$ (see @tbl-poc-from-sediment-traps, @tbl-poc-from-thorium and [here](https://fricour.shinyapps.io/carbon_fluxes_app/) for a more interactive view). Here below, I briefly review three methods we explored to find a POC-PSD relationship and what could be further investigated.
@@ -371,16 +406,24 @@ I used three methods to derive POC fluxes from UVP5 PSDs. The main issues I enco
 
 ## Continuous vertical sequestration
 
-Using the CONVERSE approach, we have estimated that the global carbon sequestration (\> 100 years) flux by the BCP is 0.9-2.6 Pg C y$^{-1}$. This is 2-3 and 3-6 times larger than POC fluxes at, respectively, 1000 and 2000 m. CONVERSE sequestration flux estimates are also up to 4 times larger than those from studies assuming that sequestration occurs below a fixed reference depth [@Honjo2008-kn, @Guidi2015-sj; @Henson2012-ck]. Here below, I highlight some key points and ways to improve further our estimations.
+Using the CONVERSE approach, we have estimated that the global carbon sequestration (\> 100 years) flux by the BCP is 0.9-2.6 Pg C y$^{-1}$. This is 2-3 and 3-6 times larger than POC fluxes at, respectively, 1000 and 2000 m. CONVERSE sequestration flux estimates are also up to 4 times larger than those from studies assuming that sequestration occurs below a fixed reference depth [@Honjo2008-kn, @Guidi2015-sj; @Henson2012-ck]. Here below, I highlight some key points and ways to improve our estimations.
 
 ### Marine carbon dioxide removal strategies
 
 The goal of marine carbon dioxide removal (mCDR) strategies [@Boyd2023-xf] is the removal of excess CO$_{2}$ from the atmosphere and the sequestration of carbon away from the atmosphere for a given time period [@National_Academies_of_Sciences2022-ah]. Several mCDR strategies have been proposed such as increasing alkalinity to enhance the chemical uptake of atmospheric CO$_{2}$ [@Hartmann2023-vk], increasing the photosynthetic uptake of atmospheric CO$_{2}$ with iron and macronutrients fertilization [@Blain2007-ws] or directly injecting CO$_{2}$ into the deep ocean [@Siegel2021-oz].
 
-We have seen with CONVERSE that carbon sequestration occurs on the whole water column and that using a fixed reference depth would likely miss the bulk of sequestration. Therefore, the evaluation of future mCDR strategies using biologically-driven carbon sequestration fluxes should be estimated over the whole water column.
+We have seen with CONVERSE that carbon sequestration occurs on the whole water column and that using a fixed reference depth would likely miss the bulk of sequestration. Therefore, the evaluation of future mCDR strategies using biologically-driven carbon sequestration fluxes should be estimated over the entire water column.
 
 ### Particle injection pumps
 
-Our study on the sequestration flux by the BCP also shows that the contribution of the vertical migration and mixing pumps contribute at least to 20-31% of the sequestration flux by the BCP.
+Our study on the sequestration flux by the BCP also shows that the contribution of the vertical migration and mixing pumps contribute at least to 21-34% of the sequestration flux by the BCP. However, those two pumps could probably be better estimated with a multi-instruments approach [@Claustre2021-tx].
 
-dire qu'il faut améliorer la physical et la VMP (diel et saisonnière) -\> mettre le paquet sur ARGO (et les gliders pour la physical) + papier d'Hervé de 2021. + préciser qye la migration saisonnire est sous-évaluée.
+#### Physically mediated particle injection pump
+
+With CONVERSE, we estimate that the mixing pump contributes to 11-23% of the sequestration flux by the BCP. However, we were not able to distinct the contribution of the three identified pathways composing the mixing pump due to lacking information in the literature. This could be improved by using the observational framework developed in @Claustre2021-tx by combining satellite, ship-based, mooring and AUV data. BGC-Argo floats have shown that they are adapted to study the detrainment of mixed-layer particles [@DallOlmo2014-ot, @DallOlmo2016-ex] and so have gliders for the eddy subduction pump [@Stukel2017-lc; @Omand2015-mf]. Nonetheless, the study of the large-scale subduction pump will be more challenging because it will require a larger number of measurements made at the scale of ocean basins and over annuals cycles [@Claustre2021-tx], hence the need for a multi-instruments approach to better understand it.
+
+#### Biologically mediated particle injection pump
+
+With CONVERSE, we estimate that the vertical migration pump contributes to 9-12% (diel) and 0.1-0.4% (seasonal). Our estimation of the seasonal migration pump is limited to the northern North Atlantic hence it is underestimated. The
+
+dire qu'il faut améliorer la physical et la VMP (diel et saisonnière) -\> mettre le paquet sur ARGO (et les gliders pour la physical) + papier d'Hervé de 2021. + préciser qye la migration saisonnire est sous-évaluée. + acoustique? passsive acoustique? parler de nowicky pour la migration saisonnière en disant qu'il y a aussi les poissons qui peuvent migrer etc
