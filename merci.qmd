@@ -1,67 +1,31 @@
 # Acknowledgments
 
-thomas boniface pour les figures
+Thanks to the members of the jury for taking the time to read and evaluate this three and a half year work. I am looking forward to debate it during the defense.
 
-merci au comité de thèse
+Cette thèse a été particulière à bien des égards, avec son lot de positifs et de négatifs mais surtout avec son lot de rebondissements qui m'ont permis d'affûter mes connaissances, ma résilience et je l'espère ma tolérance. Pour cela, je tiens à remercier chaleureusement toutes les personnes y ayant contribué de près ou de loin.
 
-merci antoine poteau et fabrizio depuis 2018
+Merci à Hervé, Lionel et Jean-Olivier pour leur accueil au Laboratoire de Villefranche-sur-Mer et pour leur disponibilité ainsi que pour leurs conseils avisés, tant scientifiques que personnels.
 
-merci a chatGPT pour la cover, elle n'est pas top mais j'avais la flemme, c'était suffisant
+Merci à Alex, Charles et Arthur pour leur aide et leur gentillesse.
 
-alberto d'avoir fourni du travail que je n'ai malhereusement pas eu le temps d'exploiter
+Merci également aux personnes que j'ai pu cotoyer à COMPLEX comme chez OMTAB depuis mon passage en stage en 2018 et les multiples allers-retours Belgique-France.
 
-merci à mon bi-encadrement Liégeois and Niçois
+Merci à Antoine Mangin de m'avoir prêté un bureau dans les locaux d'ACRI sur Grasse l'été dernier pendant que mon appartement servait d'Airbnb estival pour le plus grand bonheur du portefeuille de mon proprio.
 
-Merci à Hervé, Lionel et Jean-Olivier pour leur aide, Marc et Camille car l'UVP6 c'était un fameux truc
+Un grand merci à mes colocs de bureau: Ophélie, Laetitia et Thelma pour votre soutien et votre bonne humeur sans faille (contrairement à moi).
 
-checker le site du LOV pour n'oublier personne (sauf ceux qui sont partis evidemment).
+Merci à AMP (elle se reconnaitra), Chloé et Anaïs pour les pauses midi sur le ponton. AMP, merci d'avoir accepté de vivre virtuellement avec moi afin que la sécu daigne enfin me donner une carte vitale !
 
-Evgeny et Arthur Capet et Charles Troupin
+Ne me demandez pas des noms de restos ou de bars sur la côte d'Azur, je n'en ai aucune idée. Par contre, je connais pas mal les routes du coin. Merci à tous ceux qui ont partagé (ou subi) des kilomètres avec moi, surtout en montée (le plat pays, qui est le mien): Flavien, Ophé, Lucas, Thelma, Laeti et Satoshi.
 
-Mathieu de m'avoir accueillu sur ton divan à Bx quand j'en avais besoin
+Un grand merci à Marine et Alice pour leur bienveillance. Marine, je te souhaite le meilleur pour tes projets futurs mais fais attention à qui tu donnes tes clés quand même.
 
-I thank the ACRI team for the Nice AC-cooled office I had during last Summer because my landlord kicked me out for the summer (tourists airbnb \> yearly workers, business as usual), c'est aussi ça la côte d'azur. That's also why I wanted to finish in May because of that and because the Ducasse of Mons was the 4th of June, nothing is worth missing it.
+Merci également à Alex qui a été un excellent roommate pendant les confinements, couvre-feux et ordonnances en tout genre. See you in London !
 
-i am pretty sure they are as happy as I am it comes to an end because I really don't fit in the academic system at all.
+Merci aux Liégeois(es) (Thomas, Florent, Flop, Nico, Evgeny et Lucie) et en particulier Hadrien qui a accepté de m'avoir comme coloc pendant plusieurs mois (et qui y a survécu).
 
-alexbarth pour son bouquin sur le machine car j'ai passé mes 3 première semaines à faire ça vu que j'y connaissais absolument rien
+Merci aux Montois (Mathieu, Chris, Flo, Ju & Ju) pour votre soutien à distance, un mariage en 3 actes et pour vos visites sur Nice. Petite dédicace à Ju K qui, à force d'avoir joué avec le diable en subissant l'enfer des pourcentages, va littéralement en devenir un. Vivement 2024 pour casser la baraque.
 
-faire des stats du vélo (et meme mettre une carte si possible rapidement)
+Un très grand merci à ma famille nucléaire qui ne comprend toujours pas mon job mais qui fait semblant quand je lui explique, c'est le principal. C'est vrai que la défense tombe mal au niveau timing donc on se voit à la Ducasse :-)
 
-tous ceux qui ont partagé des moments sportifs ensembles, au bloc mais surtout en vélo et qui malgré la souffrance acceptaient encore de venir rouler avec moi (Ophélie, Flavien, Thelma, Laetitia, Alexandre, Satoshi, Lucas)
-
-Ophélie, je me grouille et j'arrive pour grimper, Alexandre, Switzeland see what you got in the legs
-
-ma maman qui a accepté de m'héberger dans une période incertaine même si elle connait mon besoin d'indépendance.
-
-Julien, des challenges à n'en plus finir, un peu mazo au final, à force d'aller en enfer, tu incarneras le diable en personne bientôt(#Ducasse)
-
-Les montois (Mathieu, inconditionel, Florent, les Juliens, Chris)
-
-Les co-Phd : Chloé, AMP (the best), Anais
-
-Hadrien who accepted to be my roomate in Liège
-
-alice
-
-marine of course
-
-expatrié que je suis et qui venu me voir 'ou profiter, I'll never really know)
-
-les Liégeois (Thomas, Nico, Hadri, Flop, Florent)
-
-Lucie, mon old roomate (lucie lelotte)
-
-Alex, my 15th french history roomate, I am glad you were there suring the 6 pm curfew we had and
-
-Les montois bien sûr
-
-tous xeux qui sont descendus me voir, (vous veniez pour moi ou la mer tirquoise, j'ai des doutes mtn)
-
-et le plus important, les montois de périront pas, ça va casser la baraque
-
-Famille et amis
-
-Girlfriend (because I am not easy going every day)
-
-Go Belgium and go Mons
+Enfin, un grand merci à une personne toute particulière qui en a probablement marre que je parle de la Belgique mais qui à présent est parfaite bilingue, mission accomplie?

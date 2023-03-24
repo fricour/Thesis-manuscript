@@ -9,12 +9,13 @@ book:
   author: ""
   chapters:
     - index.qmd
-    #- summary.qmd
-    #- intro.qmd
-    #- observingCarbonCycle.qmd
-    #- uvp6_part.qmd
-    #- article3.qmd
-    #- bcp_sequestration.qmd
+    #- merci.qmd
+    - summary.qmd
+    - intro.qmd
+    - observingCarbonCycle.qmd
+    - uvp6_part.qmd
+    - article3.qmd
+    - bcp_sequestration.qmd
     - discussion.qmd
     - references.qmd
   #appendices: 

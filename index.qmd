@@ -1,9 +1,8 @@
 # Foreword {.unnumbered}
 
-```{=html}
-<!--  As of 2022, it has now become obvious to the general public that the Earth's climate is changing. Massive flood events, repeated heatwaves, never-ending droughts, disappearing glaciers, biodiversity collapse, … Reports on weather anomalies were already published in the 1960's, the Intergovernmental Panel on Climate Change (IPCC) was created in 1988, the Kyoto Protocol was adopted in 1997, An Inconvenient Truth was released in 2006, the Paris Agreement was signed in 2015 and still, what has really changed? 
+As of 2022, it has now become obvious to the general public that the Earth's climate is changing. Massive flood events, repeated heatwaves, never-ending droughts, disappearing glaciers, biodiversity collapse, … Reports on weather anomalies were already published in the 1960's, the Intergovernmental Panel on Climate Change (IPCC) was created in 1988, the Kyoto Protocol was adopted in 1997, An Inconvenient Truth was released in 2006, the Paris Agreement was signed in 2015 and still, what has really changed? 
 
-As I am writing this part, the COP27 (sponsored by Coca-Cola, no joke) is taking place with an acknowledged record number of fossil fuels lobbyists, bloody stadiums with outside air conditioning are about to be used in the desert for a month and it seems like 'leaders' of the Free World have been having hearing issues. See for yourself:
+As I am writing this part, the COP27 (sponsored by Coca-Cola, no joke) is taking place with an acknowledged record number of fossil fuel lobbyists, bloody stadiums with outside air conditioning are about to be used in the desert for a month and it seems like 'leaders' of the Free World have been having hearing issues. See for yourself:
 
 *"I am drowning"* said Pakistan
 
@@ -15,18 +14,6 @@ As I am writing this part, the COP27 (sponsored by Coca-Cola, no joke) is taking
 
 *"We are suffocating"* said India
 
-*"Of course, I would love building new pipelines in your garden"* said the Free World
+*"Aaaah okay. Yes you're absolutely right, let's save the banks one more time"* said the Free World
 
-While I am not an activist (yet?) or a politician (I am too honest to be elected), rest assured, there are no fake news in this work.
-
-I hope you will enjoy it.
-```
-```{=html}
-<!-- This thesis started in probably the worst conditions possible but here it is, it is finally over. Why such a relief? I have my personal case which I really do not wish to anyone. I hope things have changed but when I reached for help at my university, I quickly understood that I had to shut my mouth. Wait, it is not that I have understood, I was told out loud that if I kept pushing, I was going to be laid off. I was not, do you want to know why?
-
-#Respect, I got so many emails about that, it is hilarious. Instead of tweeting, perhaps some people should listen and act. For what , academia is a centralized institution without safeguards. The same person can be faculty president, lab chief, group master and mental health hotline (true story) at the same time. The only difference with politics is that you do not get more money in your pocket by cumulating
-
-Here it is, the product of my resilience. I have to say that I am wrapping this up in a good shape, both mentally and physically. I am a lucky one. Some people are surprised that some of us do not want to pursue a career in academia. Just wait for it.
-
-I truly wish good luck to all current and future PhD students and I hope they can have the strength to say no when they need to. Trust me, it will be useful. -->
-```
+Although I am not an activist (yet?) or a politician (I am too honest to be elected), rest assured that there is no fake news in this work. I hope you will enjoy it.

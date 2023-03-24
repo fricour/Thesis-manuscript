@@ -1,4 +1,4 @@
-# Revisiting the BCP with the CONVERSE framework {#bcp-sequestration}
+# Revisiting the BCP with the CONVERSE framework {#sec-bcp-sequestration}
 
 Initially, it was not intended that I work on this topic. As I will briefly explain in the general discussion, my attempts to find a global (or regional) relationship to derive POC fluxes from UVP5 size spectra failed constantly. Therefore, I was proposed to work on a new concept related to carbon sequestration. I was told I would be co-author, that it would be done quickly and that it was only about revising the carbon sequestration flux of the gravitational pump.
 

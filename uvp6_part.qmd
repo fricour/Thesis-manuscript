@@ -203,10 +203,12 @@ f1_score_cnn <- c(0.68,0.66,0.88,0.63,0.69,0.63,0.82,0.58,0.89,0.57,0.56,0.82,0.
 cf_uvp5_xgboost_cnn <- tibble(labels, precision, recall, f1_score, precision_cnn, recall_cnn, f1_score_cnn)
 colnames(cf_uvp5_xgboost_cnn) <- c('Labels', 'Precision', 'Recall', 'F1-score', 'Precision', 'Recall', 'F1-score')
 
-kable(cf_uvp5_xgboost_cnn) |> row_spec(0, bold=T, align = 'c') |> #row_spec(1:16, align = 'c') |>
-  row_spec(row = 12:16, background = '#F2F2F2') |> add_header_above(c(" " = 1, "XGBoost" = 3, "CNN" = 3))
-  #column_spec(2, background = spec_color(cf_uvp5_xgboost$precision))
-  #row_spec(12:16, background = '#F2F2F2')
+# kable(cf_uvp5_xgboost_cnn) |> row_spec(0, bold=T, align = 'c') |> #row_spec(1:16, align = 'c') |>
+#   row_spec(row = 12:16, background = '#F2F2F2') |> add_header_above(c(" " = 1, "XGBoost" = 3, "CNN" = 3))
+#   #column_spec(2, background = spec_color(cf_uvp5_xgboost$precision))
+#   #row_spec(12:16, background = '#F2F2F2')
+
+kable(cf_uvp5_xgboost_cnn) |> row_spec(0, bold=T, align = 'c') |> add_header_above(c(" " = 1, "XGBoost" = 3, "CNN" = 3))
 ```
 
 In machine learning tasks, it is common to split the data into a training set, a validation set and a test set. The validation set is usually used to assess the quality of a model by tuning hyperparameters while avoiding overfitting (stopping the training before the model is too acquainted with the data). Ideally, the test set is not to be used during any step except at the very end where it is used to assess the global quality of the final model. In our case, both data sets (UVP5 and UVP6) are very imbalanced towards few non-biological classes (mostly detritus). As a result, in order for the model to see as much biological data as possible during training, we did not use a validation set but instead we did a threefold cross-validation.
@@ -403,8 +405,10 @@ f1_score_cnn <- c(0.99,0.57,0.47,0.86,0.86,0.65,0.81,0.59,0.82,0.80,0.81,0.93,0.
 cf_uvp6_xgboost_cnn <- tibble(labels, precision, recall, f1_score, precision_cnn, recall_cnn, f1_score_cnn)
 colnames(cf_uvp6_xgboost_cnn) <- c('Labels', 'Precision', 'Recall', 'F1-score', 'Precision', 'Recall', 'F1-score')
 
-kable(cf_uvp6_xgboost_cnn) |> row_spec(0, bold=T, align = 'c') |> #row_spec(1:16, align = 'c') |>
-  row_spec(row = 21:25, background = '#F2F2F2') |> add_header_above(c(" " = 1, "XGBoost" = 3, "CNN" = 3))
+# kable(cf_uvp6_xgboost_cnn) |> row_spec(0, bold=T, align = 'c') |> #row_spec(1:16, align = 'c') |>
+#   row_spec(row = 21:25, background = '#F2F2F2') |> add_header_above(c(" " = 1, "XGBoost" = 3, "CNN" = 3))
+
+kable(cf_uvp6_xgboost_cnn) |> row_spec(0, bold=T, align = 'c') |> add_header_above(c(" " = 1, "XGBoost" = 3, "CNN" = 3))
 ```
 
 #### How to use the CR in real applications?
