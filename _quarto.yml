@@ -10,7 +10,8 @@ book:
   chapters:
     - index.qmd
     #- merci.qmd
-    - summary.qmd
+    #- scientific_activities.qmd
+    #- summary.qmd
     - intro.qmd
     - observingCarbonCycle.qmd
     - uvp6_part.qmd
@@ -35,6 +36,8 @@ format:
     documentclass: scrreprt
     #cite-method: biblatex
     include-in-header: preamble.tex
+    #template-partials: 
+    #  - before-body.tex
     lof: true
     lot: true
 

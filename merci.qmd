@@ -1,16 +1,16 @@
-# Acknowledgments
+# Acknowledgments {.unnumbered}
 
-Thanks to the members of the jury for taking the time to read and evaluate this three and a half year work. I am looking forward to debate it during the defense.
+I would like to thank the members of the jury for taking the time to read and evaluate this three and a half year work. I look forward to discussing it during the defense.
 
 Merci aux membres du comité de thèse pour leur temps et leurs retours sur l'évolution du projet.
 
-Cette thèse a été particulière à bien des égards, avec son lot de positifs et de négatifs mais surtout avec son lot de rebondissements qui m'ont permis d'affûter mes connaissances, ma résilience et je l'espère ma tolérance. Pour cela, je tiens à remercier chaleureusement toutes les personnes y ayant contribué de près ou de loin.
+Cette thèse a été particulière à bien des égards, avec son lot de points positifs et négatifs mais surtout avec son lot de rebondissements qui m'ont permis d'affûter mes connaissances, ma résilience et je l'espère ma tolérance. Pour cela, je tiens à remercier chaleureusement toutes les personnes y ayant contribué de près ou de loin.
 
 Merci à Hervé, Lionel et Jean-Olivier pour leur accueil au Laboratoire de Villefranche-sur-Mer et pour leur disponibilité ainsi que pour leurs conseils avisés, tant scientifiques que personnels.
 
 Merci à Alex, Charles et Arthur pour leur aide et leur gentillesse.
 
-Merci également aux personnes que j'ai pu cotoyer à COMPLEX comme chez OMTAB depuis mon passage en stage en 2018 et les multiples allers-retours Belgique-France.
+Merci également aux personnes que j'ai pu côtoyer à COMPLEX comme chez OMTAB depuis mon passage en stage en 2018 et les multiples allers-retours Belgique-France.
 
 Merci à Antoine Mangin de m'avoir prêté un bureau dans les locaux d'ACRI sur Grasse l'été dernier pendant que mon appartement servait d'Airbnb estival pour le plus grand bonheur du portefeuille de mon proprio.
 
@@ -26,7 +26,7 @@ Merci également à Alex qui a été un excellent roommate pendant les confineme
 
 Merci aux Liégeois(es) (Thomas, Florent, Flop, Nico, Evgeny et Lucie) et en particulier Hadrien qui a accepté de m'avoir comme coloc pendant plusieurs mois (et qui y a survécu).
 
-Merci aux Montois (Mathieu, Chris, Flo, Ju & Ju) pour votre soutien à distance, un mariage en 3 actes et pour vos visites sur Nice. Petite dédicace à Ju K qui, à force d'avoir joué avec le diable en subissant l'enfer des pourcentages, va littéralement en devenir un. Vivement 2024 pour casser la baraque.
+Merci aux Montois (Mathieu, Chris, Flo, Ju & Ju) pour votre soutien à distance, un mariage en 3 actes et pour vos visites sur Nice. Petite dédicace à Ju K qui, à force d'avoir joué avec le diable en subissant l'enfer des pourcentages, va littéralement en devenir un. Vivement 2024 pour casser la baraque!
 
 Un très grand merci à ma famille nucléaire qui ne comprend toujours pas mon job mais qui fait semblant quand je lui explique, c'est le principal. C'est vrai que la défense tombe mal au niveau timing donc on se voit à la Ducasse :-)
 
