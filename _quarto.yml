@@ -12,7 +12,7 @@ book:
     #- merci.qmd
     #- scientific_activities.qmd
     #- summary.qmd
-    - intro.qmd
+    #- intro.qmd
     - observingCarbonCycle.qmd
     - uvp6_part.qmd
     - article3.qmd
