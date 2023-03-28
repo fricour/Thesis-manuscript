@@ -16,7 +16,7 @@ The goals of this study are threefold: 1) the comparison of the UVP6 and the OST
 
 ### Deployment and floats configuration
 
-Two pairs of BGC-Argo floats were deployed in the Labrador Sea in late May 2022. The first pair (WMO 6904240 and 4903634) was deployed on the 22$^{nd}$ at coordinates (-49.3°E, 58.9°N) while the second pair (WMO 6904241 and 1902578) was deployed on the 29$^{th}$ at coordinates (-52.4°E, 56.8°N).
+Two pairs of BGC-Argo floats were deployed in the Labrador Sea in late May 2022 (@fig-float-position). The first pair (WMO 6904240 and 4903634) was deployed on the 22$^{nd}$ at coordinates (-49.3°E, 58.9°N) while the second pair (WMO 6904241 and 1902578) was deployed on the 29$^{th}$ at coordinates (-52.4°E, 56.8°N).
 
 All 4 floats used in this study are PROVOR Jumbo floats (NKE Instrumentation, France) equipped with a CTD SBE41-CP (Sea-Bird Scientific, USA), a UVP6-LP (Hydroptic, France), a c-Rover 660 nm beam transmissometer (WETLabs, USA) and a ECO FLBBCD (WETLabs, USA) that includes a Chla fluorometer (excitation at 470 nm, emission at 695 nm), a colored dissolved organic matter (CDOM) fluorometer (excitation at 370 nm, emission at 460 nm) and a 700 nm particle backscatteringmeter ($b_{bp}$). <!-- All floats are equipped with a OCR-504 Multispectral Radiometer (Sea-Bird Scientific, USA) except float 1902578 that is equipped with a RAMSES hyperspectral radiometer (TriOS, Germany) to measure the downwelling irradiance at three wavelengths (380, 412, 490 nm) and of the light available for photosynthesis (PAR). -->
 
@@ -53,7 +53,7 @@ library(spatialrisk)
 library(ggOceanMaps)
 ```
 
-```{r, map of 4 floats, fig.height=6, fig.width=6}
+```{r, map of 4 floats, fig.height=5, fig.width=6}
 #| label: fig-float-position
 #| fig-cap: Trajectory of each float since their deployment (black triangles). Dots represent ascending profiles. The profile that concludes the time series for each float is highlighted by a black contour.
 
@@ -108,6 +108,9 @@ p +
                                                   shape = c(NA, NA, NA, NA)))) +
   annotation_scale(location = "br") + 
   annotation_north_arrow(location = "tr", which_north = "true") 
+```
+```{=latex}
+\newpage
 ```
 
 ### Data processing
