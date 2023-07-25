@@ -8,7 +8,7 @@ The biological carbon pump (BCP) refers to a series of processes that transport 
 
 The UVP6 is a portable version of the UVP5 [@Picheral2010-to], specifically designed for AUVs [@Picheral2021-sx]. It consists of an underwater camera that counts particles and takes images of objects in, respectively, the 0.1 - 2.5 mm and 0.6 - 2.5 cm size range. In contrast with UVP5 deployments on cabled platforms, UVP6 deployed on long-term drifting AUVs (e.g. BGC-Argo floats) are rarely recovered. Therefore, the latest version of the UVP6 also embarks an embedded image classification algorithm that transmits the abundance of 20 classes (16 biological classes) in near-real time. The OST consists of a vertically mounted transmissometer whose upward-facing optical window intercepts sinking particles to estimate the downward POC flux. The latter have already been used on AUVs [@Bishop2004-at; @Bishop2009-ka; @Estapa2013-gw; @Estapa2017-jr; @Estapa2019-nk] and have demonstrated their usefulness to characterize the gravitational pump.
 
-For the first time, BGC-Argo floats equipped with both the UVP6 and an OST were deployed in the Labrador Sea (LS) to investigate the seasonal and episodic dynamics of particles and carbon fluxes. The LS is a basin of the subpolar North Atlantic (NA) ocean which represents 20% of the global ocean carbon sink [@Takahashi2009-rv]. The efficiency of this sink is explained by both deep winter convection that traps CO$_{2}$ from the atmosphere [@Vage2008-qa; @Yashayaev2009-fe; @Yashayaev2017-mn] and by the largest spring phytoplankton bloom [@Siegel2002-hk] that consumes CO$_{2}$ for the photosynthetic production of organic matter. The triggering mechanism of the NA bloom was initially explained by the 'Critical Depth Hypothesis' of @Sverdrup1953-ki that defines a critical surface mixing depth where phytoplankton growth is equal to phytoplankton losses. According to @Sverdrup1953-ki, a bloom is therefore triggered when the surface mixed layer depth (MLD) is shallower than this critical depth resulting in a positive phytoplankton growth rate. However, this hypothesis was challenged by @Behrenfeld2010-my who suggested that the initiation of the NA bloom begins in winter with a slow phytoplankton biomass increase over the following months (i.e. 'Dilution-Recoupling' hypothesis). These hypotheses have been investigated with BGC-Argo floats but the debate still remains [@Mignot2018-gm; @Yang2020-hw; @Boss2010-do]. Distinct NA bloom phenologies were highlighted by @Lacour2015-da who used a climatology of satellite Chla to divide the NA into 6 bioregions. In their bioregionalization (see also their Figure 2), the LS is characterized by two bioregions with distinct bloom phenologies on both side of the 60°N parallel. The northern part is characterized by a short and potentially more intense spring bloom in late April whereas the bloom in the southern part starts in April-May and slowly develops to reach its maximum in June. @Lacour2015-da concluded that the concurrent influence of surface light and mixing was the first order mechanism controlling the onset of the spring bloom in both bioregions. This is coherent with the results of @Wu2008-vw and @Frajka-Williams2010-ph who found that the early bloom in the northern part is due to a very shallow mixed layer associated with low-salinity waters (i.e. haline stratification) while the southern bloom is related to the development of the seasonal thermocline (i.e. thermal stratification due to increased solar radiation). In late May 2022, two pairs of BGC-Argo floats were deployed in the southern part of the LS at the time of the spring bloom. While BGC-Argo floats typically drift at 1000 m for 10 days between each ascending profile, all floats were configured to drift at three distinct parking depths (200 m, 500 m and 1000 m) to study the downward POC flux and its attenuation derived from beam attenuance [@Estapa2023-oz] and to study particle size distributions (PSDs) and concentrations with the UVP6.
+For the first time, BGC-Argo floats equipped with both the UVP6 and an OST were deployed in the Labrador Sea (LS) to investigate the seasonal and episodic dynamics of particles and carbon fluxes. The LS is a basin of the subpolar North Atlantic (NA) ocean which represents 20% of the global ocean carbon sink [@Takahashi2009-rv]. The efficiency of this sink is explained by both deep winter convection that traps CO$_{2}$ from the atmosphere [@Vage2008-qa; @Yashayaev2009-fe; @Yashayaev2017-mn] and by the largest spring phytoplankton bloom [@Siegel2002-hk] that consumes CO$_{2}$ for the photosynthetic production of organic matter. The triggering mechanism of the NA bloom was initially explained by the 'Critical Depth Hypothesis' of @Sverdrup1953-ki that defines a critical surface mixing depth where phytoplankton growth is equal to phytoplankton losses. According to @Sverdrup1953-ki, a bloom is therefore triggered when the surface mixed layer depth (MLD) is shallower than this critical depth resulting in a positive phytoplankton growth rate. However, this hypothesis was challenged by @Behrenfeld2010-my who suggested that the initiation of the NA bloom begins in winter with a slow phytoplankton biomass increase over the following months (i.e. 'Dilution-Recoupling' hypothesis). These hypotheses have been investigated with BGC-Argo floats but the debate still remains [@Mignot2018-gm; @Yang2020-hw; @Boss2010-do]. Distinct NA bloom phenologies were highlighted by @Lacour2015-da who used a climatology of satellite Chla to divide the NA into 6 bioregions. In their bioregionalization (see also their Figure 2), the LS is characterized by two bioregions with distinct bloom phenologies on both side of the 60°N parallel. The northern part is characterized by a short and potentially more intense spring bloom in late April whereas the bloom in the southern part starts in April-May and slowly develops to reach its maximum in June. @Lacour2015-da concluded that the concurrent influence of surface light and mixing was the first order mechanism controlling the onset of the spring bloom in both bioregions. This is coherent with the results of @Wu2008-vw and @Frajka-Williams2010-ph who found that the early bloom in the northern part is due to a very shallow mixed layer associated with low-salinity waters (i.e. haline stratification) while the southern bloom is related to the development of the seasonal thermocline (i.e. thermal stratification due to increased solar radiation). In late May 2022, two pairs of BGC-Argo floats were deployed in the southern part of the LS at the time of the spring bloom. While BGC-Argo floats typically drift at 1000 m for 10 days between each ascending profile, all floats were configured to drift at three distinct parking depths (200 m, 500 m and 1000 m) to study the downward POC flux and its attenuation derived from beam attenuance [@Estapa2013-gw; @Estapa2019-nk] and to study particle size distributions (PSDs) and concentrations with the UVP6.
 
 The goals of this study are threefold: 1) the comparison of the UVP6 and the OST as two independent measurements of downward carbon fluxes and particle abundance on BGC-Argo floats; 2) the exploration of the seasonality (bloom and non-bloom periods) of downward POC fluxes and particle abundance in the LS; 3) the evaluation of the new drifting configuration and how it could be improved to study specific BCP-related questions.
 
@@ -20,7 +20,7 @@ Two pairs of BGC-Argo floats were deployed in the Labrador Sea in late May 2022 
 
 All 4 floats used in this study are PROVOR Jumbo floats (NKE Instrumentation, France) equipped with a CTD SBE41-CP (Sea-Bird Scientific, USA), a UVP6-LP (Hydroptic, France), a c-Rover 660 nm beam transmissometer (WETLabs, USA) and a ECO FLBBCD (WETLabs, USA) that includes a Chla fluorometer (excitation at 470 nm, emission at 695 nm), a colored dissolved organic matter (CDOM) fluorometer (excitation at 370 nm, emission at 460 nm) and a 700 nm particle backscatteringmeter ($b_{bp}$). <!-- All floats are equipped with a OCR-504 Multispectral Radiometer (Sea-Bird Scientific, USA) except float 1902578 that is equipped with a RAMSES hyperspectral radiometer (TriOS, Germany) to measure the downwelling irradiance at three wavelengths (380, 412, 490 nm) and of the light available for photosynthesis (PAR). -->
 
-All 4 floats have been configured to drift at 3 distinct parking depths (respectively, 200 m, 500 m and 1000 m for approximately 1, 3 and 5 days) to study the downward carbon flux and its attenuation. During these drift phases, measurements of particle abundance (14 size classes, between 0.1 mm and 2.5 mm) are taken every 20 minutes at 200 m and every 2h at 500 m and 1000 m whereas $c_{p}$ measurements are taken every 30 minutes at all depths. This configuration can be adjusted during the mission of the float via two-way Iridium communication. Finally, the vertical orientation of the transmissometer causes the accumulation of sinking material on the optical window. Therefore, a pump is cleaning the latter to remove the accumulated material between each drifting phase and subsequently avoid sensor drift.
+All 4 floats have been configured to drift at 3 distinct parking depths (respectively, 200 m, 500 m and 1000 m for approximately 1, 3 and 5 days) to study the downward carbon flux and its attenuation. During these drift phases, measurements of particle abundance (14 size classes, between 0.1 mm and 2.5 mm) are taken every 20 minutes at 200 m and every 2h at 500 m and 1000 m whereas $c_{p}$ measurements are taken every 30 minutes at all depths. This configuration can be adjusted during the mission of the float via two-way Iridium communication. Finally, the vertical orientation of the transmissometer causes the accumulation of sinking material on the optical window. Therefore, a dedicated pump is used to clean the latter to remove the accumulated material between each drifting phase and subsequently avoid sensor drift.
 
 ```{r, load libraries}
 library(tidyverse)
@@ -58,10 +58,15 @@ library(ggOceanMaps)
 #| fig-cap: Trajectory of each float since their deployment (black triangles). Dots represent ascending profiles. The profile that concludes the time series for each float is highlighted by a black contour.
 
 # read floats data
-float_6904240 <- vroom('/home/flo/dox/ArgoShine/6904240_FromNetCDF.csv')
-float_6904241 <- vroom('/home/flo/dox/ArgoShine/6904241_FromNetCDF.csv')
-float_4903634 <- vroom('/home/flo/dox/ArgoShine/4903634_FromNetCDF.csv')
-float_1902578 <- vroom('/home/flo/dox/ArgoShine/1902578_FromNetCDF.csv')
+float_6904240 <- vroom('/home/flo/dox/ArgoShine/SAVE_FOR_MANUSCRIPT/6904240_FromNetCDF.csv')
+float_6904241 <- vroom('/home/flo/dox/ArgoShine/SAVE_FOR_MANUSCRIPT/6904241_FromNetCDF.csv')
+float_4903634 <- vroom('/home/flo/dox/ArgoShine/SAVE_FOR_MANUSCRIPT/4903634_FromNetCDF.csv')
+float_1902578 <- vroom('/home/flo/dox/ArgoShine/SAVE_FOR_MANUSCRIPT/1902578_FromNetCDF.csv')
+
+# float_6904240 <- vroom('/home/flo/dox/ArgoShine/6904240_FromNetCDF.csv')
+# float_6904241 <- vroom('/home/flo/dox/ArgoShine/6904241_FromNetCDF.csv')
+# float_4903634 <- vroom('/home/flo/dox/ArgoShine/4903634_FromNetCDF.csv')
+# float_1902578 <- vroom('/home/flo/dox/ArgoShine/1902578_FromNetCDF.csv')
 
 # combine all data
 all_floats <- rbind(float_6904240, float_6904241, float_4903634, float_1902578)
@@ -99,7 +104,9 @@ p <- p +
 p +
   geom_path(data = argo_map_geo, aes(lon, lat, colour = WMO), linewidth = 1) + 
   geom_point(data = argo_map_geo, aes(x= lon, y = lat, colour = WMO), size = 2) +
-  scale_color_brewer(palette = 'Dark2') + theme_bw() +
+  #scale_color_brewer(palette = 'Dark2') + 
+  theme_bw() +
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   geom_point(data = transform_coord(argo_map_first), aes(lon, lat), shape = 17, size = 3) +
   geom_point(data = argo_map_last_geo, aes(lon, lat, colour = WMO), size = 4) +
   geom_point(data = argo_map_last_geo, aes(lon, lat), fill = 'black', size = 4, shape = 1) +
@@ -109,10 +116,10 @@ p +
   annotation_scale(location = "br") + 
   annotation_north_arrow(location = "tr", which_north = "true") 
 ```
+
 ```{=latex}
 \newpage
 ```
-
 ### Data processing
 
 Data were downloaded from the Coriolis data center (*ftp://ftp.ifremer.fr/ifremer/argo/*, with biogeochemical data at *dac/coriolis/* and UVP6 data at *aux/coriolis/*, last accessed: March 6, 2023). Chla data were quality controlled for Non-Photochemical Quenching (NPQ), a photoprotective mechanism that decreases the apparent fluorescence per unit of Chla following the method implemented by @Terrats2020-ef who modified the method of @Xing2018-pn for shallow-mixing cases. Chla data were also divided by a slope factor of 2 following the recommendation of @Roesler2017-me for obtaining unbiased Chla estimates from in situ WETLabs ECO fluorometers. Temperature and salinity data were quality controlled using @Wong2022-hz. The potential density anomaly was computed with the function swSigma0 of the oce R package [@Kelley2021-sw] and the MLD was determined using the 0.03 kg m$^{-3}$ density criterion at a reference depth of 10 m [@De_Boyer_Montegut2004-hh]. $c_{p}$ data were converted from counts to physical units (m$^{-1}$) using the following relationship
@@ -293,7 +300,7 @@ We used the same relationship to compute $F_{large}$ by replacing $slope_{w}$ as
 
 ### Satellite data
 
-Satellite Chla data were downloaded from a daily-merged cloud free GlobColour product (doi: 10.48670/moi-00281) with a spatial resolution of 4 km. MLD derived from satellite observations were downloaded from near-real time weekly data from the ARMOR3D product (doi: 10.48670/moi-00052) with a spatial resolution of 0.25°.
+Satellite Chla data were downloaded from a daily-merged cloud free GlobColour product (doi: 10.48670/moi-00281) with a spatial resolution of 4 km. MLD data were downloaded from near-real time weekly data from the ARMOR3D product (doi: 10.48670/moi-00052) with a spatial resolution of 0.25°.
 
 ```{=latex}
 \newpage
@@ -310,6 +317,14 @@ Vertical profiles of particle concentrations in the lower (102 - 512 $\mu$m, see
 #| label: fig-uvp6-profiling-102-406
 #| fig-cap: Vertical profiles of UVP6 particle concentrations for size classes in the 102 - 512 $\mu$m size range. Concentrations were normalized for each size class. The colorbar is in log$_{10}$ scale.
 
+
+lpm_class <- c("NP_Size_102", "NP_Size_128", "NP_Size_161",
+                         "NP_Size_203", "NP_Size_256", "NP_Size_323",
+                         "NP_Size_406", "NP_Size_512", "NP_Size_645",
+                         "NP_Size_813", "NP_Size_1020", "NP_Size_1290",
+                        "NP_Size_1630", "NP_Size_2050")
+
+
 particles <- all_floats |> filter(PhaseName == 'NPAR') |> select(juld, cycle, depth = pres, wmo, all_of(lpm_class), MLD) |> drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld))
 
 particles_bis <- particles |> pivot_longer(cols = all_of(lpm_class), names_to = 'size', values_to = 'concentration') |> dplyr::mutate(size = size |> str_remove('NP_Size_') |> as.numeric()) 
@@ -320,9 +335,23 @@ particles_bis <- particles_bis |> filter(depth >= 0)
 # rel_conc
 particles_bis <- particles_bis |> dplyr::group_by(wmo, size) |> dplyr::mutate(rel_conc = (concentration-min(concentration))/(max(concentration) - min(concentration)))
 
+particles_bis <- particles_bis |> mutate(wmo = factor(wmo, levels = c(6904240,4903634,6904241,1902578)))
+
+facet_names_up <- c(`102` = '102 - 128 µm',
+                 `128` = '128 - 161 µm',
+                 `161` = '161 - 203 µm',
+                 `203` = '203 - 256 µm',
+                 `256` = '256 - 323 µm',
+                 `323` = '323 - 406 µm',
+                 `406` = '406 - 512 µm',
+                 `6904240` = '6904240',
+                 `6904241` = '6904241',
+                 `4903634` = '4903634',
+                 `1902578` = '1902578')
+
 up_part <- particles_bis |> filter(depth < 2000, size < 512) |>
   #group_by(size) |>
-  ggplot() + facet_grid(wmo~size) + theme_bw() +
+  ggplot() + facet_grid(wmo~size, labeller = as_labeller(facet_names_up)) + theme_bw() +
   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
   scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
   scale_y_reverse() +
@@ -336,9 +365,21 @@ up_part
 #| label: fig-uvp6-profiling-512-2500
 #| fig-cap: Vertical profiles of UVP6 particle concentrations for size classes in the 0.512 - 2.5 mm size range. Concentrations were normalized for each size class. The colorbar is in log$_{10}$ scale. The gray background depicts the absence of particle in the specified size class.
 
+facet_names_down <- c(`512` = '512 - 645 µm',
+                 `645` = '645 - 813 µm',
+                 `813` = '0.81 - 1.02 mm',
+                 `1020` = '1.02 - 1.29 mm',
+                 `1290` = '1.29 - 1.63 mm',
+                 `1630` = '1.63 - 2.05 mm',
+                 `2050` = '2.05 - 2.50 mm',
+                 `6904240` = '6904240',
+                 `6904241` = '6904241',
+                 `4903634` = '4903634',
+                 `1902578` = '1902578')
+
 down_part <- particles_bis |> filter(depth < 2000, size >= 512) |>
   #group_by(size) |>
-  ggplot() + facet_grid(wmo~size) + theme_bw() +
+  ggplot() + facet_grid(wmo~size, labeller = as_labeller(facet_names_down)) + theme_bw() +
   geom_point(aes(x=juld, y=depth, colour=log10(rel_conc)), size=1, shape=15) +
   scale_colour_viridis(option = 'A', limits = c(-2.5,-1), oob = scales::squish, na.value = 'grey', direction = -1) + 
   scale_y_reverse() +
@@ -356,11 +397,6 @@ down_part
 
 ```{r, uvp data}
 
-lpm_class <- c("NP_Size_102", "NP_Size_128", "NP_Size_161",
-                         "NP_Size_203", "NP_Size_256", "NP_Size_323",
-                         "NP_Size_406", "NP_Size_512", "NP_Size_645",
-                         "NP_Size_813", "NP_Size_1020", "NP_Size_1290",
-                        "NP_Size_1630", "NP_Size_2050")
 
 uvp_data <- all_floats |> filter(PhaseName == 'PAR') |> dplyr::mutate(month = month(juld), week = week(juld), DOY = yday(juld), short_date = ymd(juld)) |> select(juld, month, week, DOY, short_date, cycle, wmo, park_depth, all_of(lpm_class)) |> 
   drop_na(NP_Size_102) |> dplyr::mutate(juld = as_date(juld), WMO = factor(wmo))
@@ -377,6 +413,21 @@ In this study, we focus on 14 size classes, from 102 $\mu$m to 2.5 mm. In @fig-u
 #| label: fig-uvp-200m
 #| fig-cap: Daily averaged concentrations of particle abundance in 14 size classes measured by the UVP6 for each float at 200 m. Black lines and shaded areas represent, respectively, the daily mean particle abundance and the 95% confidence interval around the mean. Dashed vertical lines indicate the time at which the daily mean particle abundance is maximum.
 
+facet_all <- c(`102` = '102 - 128 µm',
+                 `128` = '128 - 161 µm',
+                 `161` = '161 - 203 µm',
+                 `203` = '203 - 256 µm',
+                 `256` = '256 - 323 µm',
+                 `323` = '323 - 406 µm',
+                 `406` = '406 - 512 µm',
+                 `512` = '512 - 645 µm',
+                 `645` = '645 - 813 µm',
+                 `813` = '0.81 - 1.02 mm',
+                 `1020` = '1.02 - 1.29 mm',
+                 `1290` = '1.29 - 1.63 mm',
+                 `1630` = '1.63 - 2.05 mm',
+                 `2050` = '2.05 - 2.50 mm')
+
 # add blank
 blank_data <- tibble(cycle = c(NA, NA), WMO = rep(as.factor(4903634),2), size = c(102,102), park_depth = c('200 m', '500 m'),
                      juld = rep(as.Date('2023-03-05'),2), mean_conc = c(NA,NA))
@@ -385,11 +436,12 @@ mean_uvp_data <- rbind(mean_uvp_data, blank_data)
 
 p200m <- mean_uvp_data |> filter(park_depth == '200 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '2 month') +
   theme_bw() + labs(x = 'Month', y = 'Particle abundance (#/L)') +
   scale_y_continuous(trans = 'log10') +
-  facet_wrap(~size, scales = 'free_y') #+
+  facet_wrap(~size, scales = 'free_y', labeller = as_labeller(facet_all)) #+
   #geom_vline(data = test, aes(xintercept = date_max))
 
 tmp200m <- ggplot_build(p200m)
@@ -399,11 +451,12 @@ test$size <- unique(uvp_data$size)
 
 p200m <- mean_uvp_data |> filter(park_depth == '200 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '2 month') +
   theme_bw() + labs(x = 'Month', y = 'Particle abundance (#/L)') +
   scale_y_continuous(trans = 'log10') +
-  facet_wrap(~size, scales = 'free_y') +
+  facet_wrap(~size, scales = 'free_y', labeller = as_labeller(facet_all)) +
   geom_vline(data = test, aes(xintercept = date_max), linetype = 'dashed')
 
 p200m
@@ -415,11 +468,12 @@ p200m
 
 p500m <- mean_uvp_data |> filter(park_depth == '500 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '2 month') +
   theme_bw() + labs(x = 'Month', y = 'Particle abundance (#/L)') +
   scale_y_continuous(trans = 'log10') +
-  facet_wrap(~size, scales = 'free_y') #+
+  facet_wrap(~size, scales = 'free_y', labeller = as_labeller(facet_all)) 
   #geom_vline(data = test, aes(xintercept = date_max))
 
 tmp500m <- ggplot_build(p500m)
@@ -429,11 +483,12 @@ test$size <- unique(uvp_data$size)
 
 p500m <- mean_uvp_data |> filter(park_depth == '500 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '2 month') +
   theme_bw() + labs(x = 'Month', y = 'Particle abundance (#/L)') +
   scale_y_continuous(trans = 'log10') +
-  facet_wrap(~size, scales = 'free_y') +
+  facet_wrap(~size, scales = 'free_y', labeller = as_labeller(facet_all)) +
   geom_vline(data = test, aes(xintercept = date_max), linetype = 'dashed')
 
 p500m
@@ -448,11 +503,12 @@ p500m
 
 p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '2 month') +
   theme_bw() + labs(x = 'Month', y = 'Particle abundance (#/L)') +
   scale_y_continuous(trans = 'log10') +
-  facet_wrap(~size, scales = 'free_y') #+
+  facet_wrap(~size, scales = 'free_y', labeller = as_labeller(facet_all)) #+
   #geom_vline(data = test, aes(xintercept = date_max))
 
 tmp1000m <- ggplot_build(p1000m)
@@ -462,11 +518,12 @@ test$size <- unique(uvp_data$size)
 
 p1000m <- mean_uvp_data |> filter(park_depth == '1000 m') |> ggplot() + geom_point(aes(juld, mean_conc, colour = WMO, shape = WMO)) +
   geom_smooth(aes(juld, mean_conc), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '2 month') +
   theme_bw() + labs(x = 'Month', y = 'Particle abundance (#/L)') +
   scale_y_continuous(trans = 'log10') +
-  facet_wrap(~size, scales = 'free_y') +
+  facet_wrap(~size, scales = 'free_y', labeller = as_labeller(facet_all)) +
   geom_vline(data = test, aes(xintercept = date_max), linetype = 'dashed')
 
 p1000m
@@ -684,7 +741,8 @@ tmp <- rbind(cflux, blank_data)
 up <- tmp |> ggplot(aes(x = date, y = small_flux)) +
     geom_point(data = tmp, aes(x = date, y = small_flux, colour = WMO, shape = WMO)) +
   geom_smooth(data = tmp, aes(x = date, y = small_flux), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
   guides(fill=guide_legend(title="WMO")) +
   facet_wrap(~park_depth, scales = 'free') +
@@ -695,7 +753,8 @@ up <- tmp |> ggplot(aes(x = date, y = small_flux)) +
 down <- tmp |> ggplot(aes(x = date, y = large_flux)) +
   geom_point(data = tmp, aes(x = date, y = large_flux, colour = WMO, shape = WMO)) +
   geom_smooth(data = tmp, aes(x = date, y = large_flux), colour = 'black') +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
   guides(fill=guide_legend(title="WMO")) +
   facet_wrap(~park_depth, scales = 'free') +
@@ -715,6 +774,8 @@ $F_{large}$ was estimated at 200 m between 0 (no deposition of large particles o
 
 # add MLD here
 mld_data <- vroom('/home/flo/dox/ArgoShine/npq_corrected_data.csv')
+#filter date until March
+mld_data <- mld_data[mld_data$juld < "2023-03-05",]
 # clean and smoothed chla data
 mld_data <- mld_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> dplyr::mutate(date = as_date(juld), WMO = factor(wmo, levels = c(6904240,4903634,6904241,1902578)))
 mld_data <- mld_data |> group_by(date, WMO, pres, cycle) |> summarize(mean_chla = mean(chla_npq, na.rm=T), mld = unique(MLD))
@@ -742,7 +803,8 @@ mld_data <- mld_data |> group_by(date, WMO, pres, cycle) |> summarize(mean_chla 
 
 mld_plot <- ggplot(mld_data) + geom_line(aes(x = date, y = mld, colour = WMO), size = 1) +
   labs(x = 'Month', y = 'MLD (m)') + scale_y_reverse() +
-  scale_color_brewer(palette = 'Dark2') + 
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
   scale_x_date(labels = date_format("%m"), date_breaks = '1 month') + theme_bw() +
   geom_hline(yintercept = 200, colour = 'black', linetype = 'dashed') +
   geom_hline(yintercept = 500, colour = 'black', linetype = 'dashed')
@@ -769,6 +831,9 @@ The Chla satellite pattern for the 6904240-4903634 pair typically describes the 
 
 # fetch data
 npq_data <- vroom('/home/flo/dox/ArgoShine/npq_corrected_data.csv')
+
+#filter date until March
+npq_data <- npq_data[npq_data$juld < "2023-03-05",]
 
 # clean and smoothed chla data
 d <- npq_data |> select(cycle, MLD, pres, juld, wmo, chla_npq) |> dplyr::mutate(date = as_date(juld))
@@ -888,11 +953,14 @@ chla_mld <- d_chla |> drop_na(chla_0_100m)
 chla_plot_mld <- ggplot(chla_mld) + geom_line(aes(x = date, y = chla_0_mld, colour = as.factor(wmo)), linewidth = 1) + labs(x = 'Month', y = TeX('Integrated Chla content (mg m$^{-2}$)'), colour = 'WMO') +
   theme_bw() + scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
   #scale_colour_manual(values = c('#003366', '#E31B23'))
-  scale_color_brewer(palette = 'Dark2') 
+  #scale_color_brewer(palette = 'Dark2') 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) 
 
 chla_plot_100m <- ggplot(chla_mld) + geom_line(aes(x = date, y = chla_0_100m, colour = as.factor(wmo)), linewidth = 1) + labs(x = 'Month', y = TeX('Integrated Chla content (mg m$^{-2}$)'), colour = 'WMO') +
   theme_bw() + scale_x_date(labels = date_format("%m"), date_breaks = '1 month') +
-  scale_color_brewer(palette = 'Dark2') + theme(legend.position = 'none')
+  #scale_color_brewer(palette = 'Dark2') + 
+  scale_colour_manual(values = c('#D95F02', '#7570B3', '#E6AB02', '#1B9E77')) +
+  theme(legend.position = 'none')
 
 chla_plot_mld / chla_plot_100m
 ```
@@ -1009,7 +1077,7 @@ spectral_slope_plot <- vertical_profiles |> filter(depth <= 1000) |> mutate(wmo 
 density / spiciness / taxo_plot / spectral_slope_plot / part102
 ```
 
-Still, it is unclear why we observe a progressive emptying of the water column starting below 500 m for size classes below 323 $\mu$m (@fig-uvp6-profiling-102-406). This pattern could result from several causes. It could either be the signature of a subduction event [@Llort2018-pa] either the end of a slow sinking export (i.e latent dynamics of the system) or a sign of fragmentation processes by zooplankton (i.e. zooplankton feeding). Therefore, we looked at physical properties (density anomaly and spiciness) and well as particle characteristics (zooplankton concentration and spectral slope) to investigate this particularity (@fig-spice). Spiciness is a variable that allows the differentiation of water masses with distinct thermohaline properties but similar density [@Flament2002-zm]. @fig-spice shows that both the density and the spiciness fields are uniform below 500 m hence it is unlikely that a subduction event would be the reason for this decrease in particle abundance below 500 m. Using the embedded zooplankton classification results from the UVP6, we looked at concentrations of *Calanoida*, a species that is abundant in the NA [@Corkett1979-ha]. @fig-spice shows that the concentration of *Calanoida* is higher from the end of May to July in the surface layer. There also seems to be a lower patch between 250 and 500 m from August to November however it is difficult to estimate their impact on particle concentrations at this stage. Finally, we computed the spectral slope to look for aggregation/fragmentation processes. The spectral slope defines the slope of the PSD where a high (in absolute values) spectral slope indicates that small particules dominate the PSD. Here, the panel on spectral slopes in @fig-spice shows a lower (in absolute values) spectral slope at the beginning of the time series but it is also difficult to relate it to biological processes such as zooplankton feeding without any additional data.
+Still, it is unclear why we observe a progressive emptying of the water column starting below 500 m for size classes below 323 $\mu$m (@fig-uvp6-profiling-102-406). This pattern could result from several causes. It could either be the signature of a subduction event [@Llort2018-pa] either the end of a slow sinking export (i.e seasonal dynamics of the system) or a sign of fragmentation processes by zooplankton (i.e. zooplankton feeding). Therefore, we looked at physical properties (density anomaly and spiciness) and well as particle characteristics (zooplankton concentration and spectral slope) to investigate this particularity (@fig-spice). Spiciness is a variable that allows the differentiation of water masses with distinct thermohaline properties but similar density [@Flament2002-zm]. @fig-spice shows that both the density and the spiciness fields are uniform below 500 m hence it is unlikely that a subduction event would be the reason for this decrease in particle abundance below 500 m. Using the embedded zooplankton classification results from the UVP6, we looked at concentrations of *Calanoida*, a species that is abundant in the NA [@Corkett1979-ha]. @fig-spice shows that the concentration of *Calanoida* is higher from the end of May to July in the surface layer. There also seems to be a lower patch between 250 and 500 m from August to November however it is difficult to estimate their impact on particle concentrations at this stage because more data are needed. Finally, we computed the spectral slope to look for aggregation/fragmentation processes. The spectral slope defines the slope of the PSD where a high (in absolute values) spectral slope indicates that small particules dominate the PSD. Here, the panel on spectral slopes in @fig-spice shows a lower (in absolute values) spectral slope (i.e. large particles dominate) at the beginning of the time series but it is also difficult to relate it to biological processes such as zooplankton feeding without any additional data.
 
 All things considered, it is not straightforward to conclude for the presence of a carbon export event. First, the 10-day profiling configuration hinders the characterization of particle export events that are transient processes. Second, the plume of large particles can be misleading because the abundance measured by the UVP6 are very low (usually \< 0.1 #/L). However, the plume could be the result of aggregation (repackaging) by zooplankton feeding on small particles. Third, all floats measured the same particle dynamics in distinct zones which suggests that if the two systems were initially different (i.e. different bloom dynamics), they merged back after the bloom of May. Therefore, we suggest that we mostly observe the latent dynamics of the system rather than clear export signatures that would likely be spotted with both higher bloom intensities (e.g. the May bloom that was missed) and a higher profiling temporal resolution.
 
@@ -1110,7 +1178,7 @@ ggplot(comparison_flux_ost_uvp) + geom_line(aes(x = date, y = total_flux), colou
 
 ```{r, correlations between OST and UVP carbon fluxes}
 #| label: tbl-correlation
-#| tbl-cap: Pearson correlations between UVP6 PSD-derived carbon fluxes and total, large and small particle carbon fluxes measured by the OST at 3 drifting depths.
+#| tbl-cap: Pearson correlations (all statistically significant with a p-value < 0.01) between UVP6 PSD-derived carbon fluxes and total, large and small particle carbon fluxes measured by the OST at 3 drifting depths.
 correlations <- comparison_flux_ost_uvp |> dplyr::select(park_depth, wmo, cycle, guidi_flux, small_flux, large_flux, date, total_flux) |> dplyr::group_by(wmo, park_depth, cycle) |> dplyr::mutate(median_guidi_flux = median(guidi_flux)) |> dplyr::group_by(park_depth, wmo) |> dplyr::summarize(cor_small = round(cor(median_guidi_flux, small_flux),2), cor_large = round(cor(median_guidi_flux, large_flux),2), cor_total = round(cor(median_guidi_flux, total_flux),2))
 
 correlations <- correlations |> pivot_wider(names_from = park_depth, values_from = c(cor_small, cor_large, cor_total))
@@ -1427,7 +1495,7 @@ uvp_ost_down <- ggplot(diff_jump_vs_biovolume, aes(y = biovolume, x = diff_jump,
 uvp_ost_up / uvp_ost_down
 ```
 
-@fig-biovolume-slope shows that there is no clear relationship between the biovolume seen by the UVP6 and the attenuation (continuous or stochastic) measured by the OST. For small particles, the relationship between the ATN slope and the average biovolume shows a weak correlation (0.30 at 500 m and 1000 m). For large particles, the OST misses particles that are seen by the UVP6 (see 500 m and 1000 m in the lower panel). It is coherent with the fact that OSTs were not designed to intercept and detect large sinking particles [@Estapa2023-oz]. The current version of the OST has a housing above the optical window which, together with the float itself, can produce a "self-shading" effect [@Estapa2017-jr] that prevents the collection of fast sinking particles (assumed here to be large particles). In addition, the nature of particles is also a source of uncertainty in the attenuation signal. Mathematically, the attenuation efficiency ($Q_{c}$) of a spherical particle can be defined [@Mobley2022-de] as
+@fig-biovolume-slope shows that there is no clear relationship between the biovolume seen by the UVP6 and the attenuation (continuous or stochastic) measured by the OST. For small particles, the relationship between the ATN slope and the average biovolume shows a weak correlation (0.30 at 500 m and 1000 m). For large particles, the OST misses particles that are seen by the UVP6 (see 500 m and 1000 m in the lower panel). It is coherent with the fact that OSTs were not designed to intercept and detect large sinking particles [@Estapa2023-oz]. The current version of the OST has a housing above the optical window which, together with the float itself, can produce a "self-shading" effect [@Estapa2017-jr] that prevents the collection of fast sinking particles (assumed here to be large particles). In addition, the nature of particles is also a source of uncertainty in the optical attenuation signal. Mathematically, the attenuation efficiency ($Q_{c}$) of a spherical particle can be defined [@Mobley2022-de] as
 
 $$
 Q_{c} = Q_{a} + Q_{b}

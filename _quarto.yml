@@ -9,18 +9,13 @@ book:
   author: ""
   chapters:
     - index.qmd
-    #- merci.qmd
-    #- scientific_activities.qmd
-    #- summary.qmd
-    #- intro.qmd
-    - observingCarbonCycle.qmd
-    - uvp6_part.qmd
+    #- article3_UPDATE.qmd
+    #- observingCarbonCycle.qmd
+    #- uvp6_part.qmd
     - article3.qmd
-    - bcp_sequestration.qmd
-    - discussion.qmd
-    - references.qmd
-  #appendices: 
-    #- annexes.qmd
+    #- bcp_sequestration.qmd
+    #- discussion.qmd
+    #- references.qmd
     
 bibliography: references.bib
 csl: journal-of-oceanography.csl
