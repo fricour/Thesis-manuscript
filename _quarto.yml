@@ -10,12 +10,12 @@ book:
   chapters:
     - index.qmd
     #- article3_UPDATE.qmd
-    #- observingCarbonCycle.qmd
-    #- uvp6_part.qmd
+    - observingCarbonCycle.qmd
+    - uvp6_part.qmd
     - article3.qmd
-    #- bcp_sequestration.qmd
-    #- discussion.qmd
-    #- references.qmd
+    - bcp_sequestration.qmd
+    - discussion.qmd
+    - references.qmd
     
 bibliography: references.bib
 csl: journal-of-oceanography.csl

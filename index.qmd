@@ -8,7 +8,7 @@ The global carbon cycle (@fig-global_carbon_cycle) consists of a series of excha
 
 ![Illustration of the global carbon cycle (numbers represent a global average for the decade 2012-2021). Arrows and circles depict, respectively, carbon fluxes in Pg C year$^{-1}$ and carbon content in Pg C. Figure taken from @Friedlingstein2022-th.](image/intro/global_carbon_cycle.png){#fig-global_carbon_cycle}
 
-The global carbon cycle had been at close equilibrium for millions of years before the industrial revolution started in the 18th century. Since then, human have been burning fossil fuels at an unprecedented rate, releasing huge amounts of carbon dioxide ($CO_{2}$) in the atmosphere that should have been discharged slowly through the slow carbon cycle [@Bertrand2021-nh]. These emissions, resulting from the burning of fossil fuels but also from land use change (e.g. deforestation, land management) have been estimated around 700 Pg C since 1750 [@Canadell2021-ds].
+The global carbon cycle had been at close equilibrium for millions of years before the industrial revolution started in the 18th century. Since then, human have been burning fossil fuels at an unprecedented rate, releasing huge amounts of carbon dioxide ($CO_{2}$) in the atmosphere that should have been discharged slowly through the slow carbon cycle [@Bertrand2021-nh]. These emissions, resulting from the burning of fossil fuels but also from land use change (e.g. deforestation, land management), have been estimated around 700 Pg C since 1750 [@Canadell2021-ds].
 
 Thankfully, more than half of this anthropogenic $CO_{2}$ has been absorbed by terrestrial ecosystems and by the ocean [@Friedlingstein2022-th], forming major carbon sinks.
 
@@ -108,7 +108,7 @@ where $K_{0}$ is the solubility coefficient of $CO_{2}$ in seawater.
 
 $K_{0}$ is a function of temperature and salinity with a strong dependence on the former [@Sarmiento2006-ec] such that the solubility of $CO_{2}$ increases with decreasing temperature. Consequently, waters that cool as they are transported to higher latitudes by the thermohaline circulation will be undersaturated in $CO_{2}$ once they reach the surface. Thus, there will be a net exchange of carbon dioxide from the atmosphere to the ocean, enriching surface waters in DIC before they dive back to the abyss at deep water formation zones in North Atlantic polar regions (e.g. the Labrador Sea) and along the Antarctic shelf in the Southern Ocean [@DeVries2022-of].
 
-The solubility pump is responsible for the great majority of all the anthropogenic $CO_{2}$ that has been absorbed by the ocean and it would be contributing to 10% of the observed vertical DIC gradient according to @Sarmiento2006-ec.
+The solubility pump is responsible for the great majority of all anthropogenic $CO_{2}$ that has been absorbed by the ocean and it would be contributing to 10% of the observed vertical DIC gradient according to @Sarmiento2006-ec.
 
 #### Carbonate pump {#sec-carbonate-pump}
 
@@ -298,7 +298,7 @@ tbl-cap-location: top
 ---
 
 | Pump                   | POC export/injection depth range | DOC injection depth range | Sequestration time potential (years) |
-|------------------------|----------------------------------|---------------------------|--------------------------------------|
+|-----------------|-------------------|-----------------|---------------------|
 | Gravitational          | export depth - sediment          | None                      | N/A (142)                            |
 | Mixed layer            | 200 - 1,000 m                    | 200 - 1,000 m             | 25 - 100 (54$^{b}$)                  |
 | Eddy subduction        | 150 - 400 m                      | 150 - 400 m               | up to 150 (N/A)                      |
