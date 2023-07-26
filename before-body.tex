@@ -1,0 +1,83 @@
+\documentclass[a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{geometry} % Added for adjusting the page margins
+
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% Added for adjusting the page margins
+\geometry{
+    left=3cm,
+    right=3cm,
+    top=1cm,
+    bottom=3cm
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \includegraphics[width=0.3\textwidth]{FRS-FNR_S2-PANT_UK_CS.png} % Insert your university logo here
+        \vspace{1cm}
+        
+        \LARGE \textbf{University of Liège}\\
+        \LARGE \textbf{Sorbonne University}\\
+        
+        \vspace{1.5cm}
+        %{\huge \textbf{Doctoral Thesis}}\\[0.5cm]
+        
+        \hrulefill \\
+        \vspace{0.5cm}
+        {\huge \textbf{Towards a new insight of the carbon transport in the global ocean}} \\
+        \hrulefill
+        
+        \vspace{1.5cm}
+        {\Large \textbf{Florian Ricour}}
+
+        \vspace{1cm}
+
+        Dissertation presented in fulfillment for the degree of Doctor of Sciences
+        
+        \vfill
+
+        \begin{flushleft}
+            \large
+            \textbf{Supervisors}\\
+            \vspace{0.1cm}
+            Hervé Claustre, director\\
+            Marilaure Grégoire, director\\
+            Alexander Barth, co-director\\
+        \end{flushleft}
+        
+        \begin{flushleft}
+            \large
+            \textbf{Jury Members}\\
+            \vspace{0.1cm}
+            \begin{tabular}{lll}
+                Pr. Stephanie Henson & University of Southampton & Reviewer\\
+                Dr. Margaret Estapa & University of Maine & Reviewer \\
+                Dr. Griet Neukermans & University of Ghent & Examiner \\
+                Dr. Ivona Cetini\'{c} & Morgan State University & Examiner\\
+                Pr. Lars Stemmann & Sorbonne University & Examiner\\
+                Dr. Lionel Guidi & Sorbonne University & Guest\\
+                Dr. Hervé Claustre & Sorbonne University & PhD Director\\
+                Pr. Marilaure Grégoire & University of Liège & PhD Director\\
+                Dr. Alexander Barth & University of Liège & PhD Co-director\\
+            \end{tabular}
+        \end{flushleft}
+        
+        \vspace{1cm}
+        {\large May 2023} % Replace with the month and year of submission
+   
+    \end{center}
+\end{titlepage}
+
+\newpage
+\thispagestyle{empty}
+\null
+
+\end{document}

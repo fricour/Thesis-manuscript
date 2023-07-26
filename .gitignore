@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+/.quarto/
+DATA/GLODAP/GLODAPv2.2022_Merged_Master_File.csv
+DATA/SATELLITE
+*_cache
+*_files
+_book/
+*.log
+*.gz
